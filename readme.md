@@ -4,9 +4,6 @@
 Contenu : 
 - [Prérequis](#prérequis)
 - [Démarrage](#démarrage)
-  - [1. Forker le modèle de stack](#1-forker-le-modèle-de-stack)
-  - [2. Cloner la stack du projet](#2-cloner-la-stack-du-projet)
-  - [3. Démarrer la stack du projet](#3-démarrer-la-stack-du-projet)
 - [Initialiser le service `sfapp`](#initialiser-le-service-sfapp)
 - [Partager le projet](#partager-le-projet)
 
