@@ -30,62 +30,28 @@ De manière optionnelle, mais fortement recommandée :
 
 ## Démarrage
 
-### 1. Forker le modèle de stack
+Démarrage rapide
+----------------
 
-**UN.E SEUL.E** des développeuses/développeurs de votre équipe va **fork** le présent dépôt, pour en créer un nouveau, 
-dans le groupe correspondant à votre équipe :  
-_Par exemple pour l'équipe 1 du groupe de TP K1, le groupe est :_ `2024-2025-BUT-INFO2-A-SAE34/K1/K11`
+Dans un terminal :  
+`git clone`
 
-**Remarque** : 
->Il n'est pas nécessaire de conserver le lien avec le modèle de stack, vous pouvez donc aller dans  
-> Settings > General > Advanced (dans Gitlab) pour supprimer le "Fork relationship" de votre projet
+Depuis le terminal dans le dossier de la stack : 
+`docker compose up --build -d`
 
+Une fois les containers démarrés, vous pouvez vérifier que php fonctionne :  
+`docker exec -it iut-php php -v`
 
-### 2. Cloner la stack du projet 
+Pour exécuter un script php contenu dans un fichier (par exemple index.php) :  
+`docker exec -it iut-php php index.php`
 
-Le membre de l'équipe qui a réalisé le fork, doit cloner ce dépôt sur son poste de travail 
+Un shell interactif php est disponible en faisant :  
+`docker exec -it iut-php php -a`  
 
-⚠️ **Si vous êtes sous Linux**  
-> Avant de démarrer la stack, il faut renseigner les variables qui se trouvent dans le fichier `.env` à la racine du dépôt     
-> Vous pouvez obtenir l'id de votre user (et de son groupe) en lançant la commande `id -u ${USER}` dans un terminal
+Dans la stack docker dans interactive dans iut-php :  
+`composer install`  
 
-### 3. Démarrer la stack du projet 
-
-Dans un terminal positionné dans le dossier de la stack du projet : 
-
-- Créer le dossier `sfapp`
-```
-mkdir sfapp
-```
-
-- démarrer la stack    
-```
-docker compose up --build
-```
-
-- inspecter l'état des services 
-```
-docker compose ps
-```
-
-## Initialiser le service `sfapp`
-
-Dans un terminal positionné dans le dossier de la stack du projet : 
- 
- - on se connecte au conteneur associé su service `sfapp` 
-```bash
-docker compose exec sfapp bash
-```
-- après connexion, on doit être dans `/app`, vérifier 
-```
-pwd 
-```
-- créer le projet `sfapp`
-```
-composer create-project symfony/skeleton:"6.3.*" sfapp
-```
-
-- vérifier l'exécution du service `sfapp`
+- vérifier l'exécution du service `sfapp` a 
 ```
 localhost:8000
 ```
