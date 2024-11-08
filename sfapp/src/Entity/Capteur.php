@@ -16,8 +16,8 @@ class Capteur
     #[ORM\Column(length: 50)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $type = null;
+    #[ORM\Column(type: 'string', length: 255, enumType: TypeCapteur::class)]
+    private ?TypeCapteur $type = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
