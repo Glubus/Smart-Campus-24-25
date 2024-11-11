@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une salle{% endblock %}
+
+{% block body %}
+    <a class="btn btn-primary margin-10" href="{{ path('app_salle')}}" role="button">Retour</a>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Ajouter une salle</h1>
+
+        {{ form_start(form) }}
+
+        <div class="form-group">
+            <label for="{{ form.batiment.vars.id }}">{{ form_label(form.batiment) }}</label>
+            <div>
+                {{ form_widget(form.batiment, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_errors(form.batiment) }}
+        </div>
+
+        <div class="form-group" id="etage-container">
+            <label for="{{ form.etage.vars.id }}">{{ form_label(form.etage) }}</label>
+            <div>
+                {{ form_widget(form.etage, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_errors(form.etage) }}
+        </div>
+
+        <div class="form-group" id="numero-container">
+            <label for="{{ form.numero.vars.id }}">{{ form_label(form.numero) }}</label>
+            <div>
+                {{ form_widget(form.numero, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_errors(form.numero) }}
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">Créer la salle</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
