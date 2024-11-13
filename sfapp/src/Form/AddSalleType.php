@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 class AddSalleType extends AbstractType
@@ -48,7 +50,8 @@ class AddSalleType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'Choisir un numero...',
-                ]
+                    'maxlength' => 2,
+                ],
             ]);
     }
 
