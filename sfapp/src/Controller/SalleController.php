@@ -18,7 +18,7 @@ class SalleController extends AbstractController
     {
 
 
-        return $this->render('salle/index.html.twig', [
+        return $this->render('salle/ajout.html.twig', [
             'controller_name' => 'SalleController',
         ]);
     }
