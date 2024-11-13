@@ -10,18 +10,32 @@
             <table class="table table-striped table-bordered text-center align-middle">
                 <thead>
                 <tr class="table-dark">
+                    <th class="nom">Nom</th>
                     <th class="col">Batiment</th>
                     <th class="col">Etage</th>
                     <th class="col">Numéro de salle</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for salle in salles %}
-                    <tr class="text-center align-middle">
-                        <td>{{ salle.batiment.value }}</td>
-                        <td>{{ salle.etage.value }}</td>
-                        <td>{{ salle.numero }}</td>
-                    </tr>
+                        <tr class="text-center align-middle">
+                            <td>
+                                {{ noms[loop.index0] }}
+                            </td>
+                            <td>
+                                Batiment {{ salle.batiment.value }}
+                            </td>
+                            <td>
+                                {{ salle.etage.value }}
+                            </td>
+                            <td>
+                                {{ salle.numero }}
+                            </td>
+                            <td style="width: 10%">
+                                <a class="btn btn-outline-danger" href="{{ path('app_salle')}}" role="button">Supprimer</a>
+                            </td>
+                        </tr>
                 {% endfor %}
                 </tbody>
             </table>

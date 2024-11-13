@@ -17,10 +17,15 @@ class SalleController extends AbstractController
     public function index(SalleRepository $salleRepository): Response
     {
         $salles = $salleRepository->findAll();
+        $noms = array();
+        foreach ($salles as $salle) {
+            array_push($noms, $salle->getSalleNom());
+        }
 
         return $this->render('salle/index.html.twig', [
             'controller_name' => 'SalleController',
             'salles' => $salles,
+            'noms' => $noms,
         ]);
     }
 
