@@ -35,7 +35,7 @@ class AddSalleType extends AbstractType
 
             ->add('etage', ChoiceType::class, [
                 'choices' => [
-                    'Rez-de-chaussée' => EtageSalle::RESDECHAUSSE,
+                    'Rez-de-chaussée' => EtageSalle::REZDECHAUSSEE,
                     '1' => EtageSalle::PREMIER,
                     '2' => EtageSalle::DEUXIEME,
                     '3' => EtageSalle::TROISIEME,

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Salle;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Expr\Cast\Bool_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,12 +38,17 @@ class SalleController extends AbstractController
 
         $form->handleRequest($request);
 
-        $data = $form->getData();
-
         if ($form->isSubmitted() && $form->isValid()) {
-            if(ctype_digit($data->getNumero())) {
-                $entityManager->persist($salle);
-                $entityManager->flush();
+            if(ctype_digit($salle->getNumero())) {
+                $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
+                if($salleExistante) {
+                    $this->addFlash('error', 'Cette salle existe déjà');
+                }
+                else {
+                    $entityManager->persist($salle);
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_salle');
+                }
             }
             else {
                 $this->addFlash('error', 'Entiers uniquement');
