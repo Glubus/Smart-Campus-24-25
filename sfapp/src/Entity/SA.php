@@ -18,7 +18,7 @@ class SA
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $DateCreation = null;
+    private ?\DateTimeInterface $dateAjout = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Salle $salle = null;
@@ -47,14 +47,14 @@ class SA
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTimeInterface
+    public function getDateAjout(): ?\DateTimeInterface
     {
-        return $this->DateCreation;
+        return $this->dateAjout;
     }
 
-    public function setDateCreation(\DateTimeInterface $DateCreation): static
+    public function setDateAjout(\DateTimeInterface $dateAjout): static
     {
-        $this->DateCreation = $DateCreation;
+        $this->dateAjout = $dateAjout;
 
         return $this;
     }

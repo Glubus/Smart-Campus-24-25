@@ -3,13 +3,10 @@
 {% block title %}Ajouter un systeme d'acquisition (SA){% endblock %}
 
 {% block body %}
-    <a class="btn btn-primary margin-10" href="{{ path('app_salle')}}" role="button">Retour</a>
+    <a class="btn btn-primary margin-10" href="{{ path('app_sa_liste')}}" role="button">Retour</a>
     <div class="container my-5">
         <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn">Soumettre</button>
-        {{ form_end(form) }}
+        <a class="btn btn-primary margin-10" href="{{ path('app_sa_ajout')}}" role="button">Ajouter un SA</a>
 
     </div>
 {% endblock %}
