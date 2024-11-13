@@ -14,14 +14,20 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-class SuppressionSAType extends AbstractType
+class SuppressionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $phrase = $options['phrase'];
+        $phrase = 'Entrez la phrase : '.$options['phrase'];
         $builder
             ->add('inputString', TextType::class, [
-                'label' => 'Entrez la phrase : '. $phrase,
+                'label' => $phrase,
+                'label_attr' => [
+                    'class' => 'badge bg-warning text-dark w-100 py-2 text-center' // Classe Bootstrap pour le bandeau jaune
+                ],
+                'attr' => [
+                    'class' => 'form-control' // Classe Bootstrap pour le champ de saisie
+                ],
                 'required' => true,
             ]);
     }
