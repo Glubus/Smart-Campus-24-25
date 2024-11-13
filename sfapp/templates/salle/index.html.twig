@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello SalleController!{% endblock %}
+
+{% block body %}
+<a class="btn btn-primary margin-10" href="{{ path('app_salle')}}" role="button">Retour</a>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Salles</h1>
+            <a class="btn btn-primary margin-10" href="{{ path('app_salle_create')}}" role="button">Ajouter une salle</a>
+    </div>
+{% endblock %}
