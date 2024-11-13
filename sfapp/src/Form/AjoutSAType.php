@@ -31,6 +31,7 @@ class AjoutSAType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => SA::class,
+
         ]);
     }
 }

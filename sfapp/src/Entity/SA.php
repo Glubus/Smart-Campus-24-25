@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\SysAcqRepository;
+use App\Repository\SARepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SysAcqRepository::class)]
+#[ORM\Entity(repositoryClass: SARepository::class)]
 class SA
 {
     #[ORM\Id]
@@ -15,6 +15,7 @@ class SA
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Unique]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
