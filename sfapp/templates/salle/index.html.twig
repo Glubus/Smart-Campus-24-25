@@ -33,7 +33,7 @@
                                 {{ salle.numero }}
                             </td>
                             <td style="width: 10%">
-                                <a class="btn btn-outline-danger" href="{{ path('app_salle')}}" role="button">Supprimer</a>
+                                <a class="btn btn-outline-danger" href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" role="button">Supprimer</a>
                             </td>
                         </tr>
                 {% endfor %}

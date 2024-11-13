@@ -30,7 +30,7 @@ class SalleController extends AbstractController
     }
 
     #[Route('/creerSalle', name: 'app_salle_create')]
-    public function create(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
+    public function ajouter(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
         $form = $this->createForm(AddSalleType::class, $salle);
@@ -53,6 +53,20 @@ class SalleController extends AbstractController
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
             'salle' => $salle,
+        ]);
+    }
+
+    #[Route('/supprSalle', name: 'app_salle_delete')]
+    public function retirer(EntityManagerInterface $entityManager, Request $request, SalleRepository $salleRepository): Response
+    {
+        $salle = $salleRepository->find($request->get('salle'));
+        #$form = $this->createForm();
+
+        $nomSalle = $salle->getSalleNom();
+
+        return $this->render('salle/delete.html.twig', [
+            'controller_name' => 'SalleController',
+            'nom' => $nomSalle,
         ]);
     }
 }
