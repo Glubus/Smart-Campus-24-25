@@ -36,11 +36,10 @@ class Salle
         return $this;
     }
 
-    public function getSalleNom(): static
+    public function getSalleNom(): string
     {
-        $this->nom = $this->batiment->value . $this->etage->value . str_pad($this->numero, 2, "0", STR_PAD_LEFT);
-
-        return $this;
+        $nom = $this->nom = $this->batiment->value . $this->etage->value . str_pad($this->numero, 2, "0", STR_PAD_LEFT);
+        return $nom;
     }
 
     public function getBatiment(): ?BatimentSalle

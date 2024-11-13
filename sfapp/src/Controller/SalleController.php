@@ -14,12 +14,18 @@ use App\Form\AddSalleType;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle')]
-    public function index(): Response
+    public function index(SalleRepository $salleRepository): Response
     {
-
+        $salles = $salleRepository->findAll();
+        $noms = array();
+        foreach ($salles as $salle) {
+            array_push($noms, $salle->getSalleNom());
+        }
 
         return $this->render('salle/index.html.twig', [
             'controller_name' => 'SalleController',
+            'salles' => $salles,
+            'noms' => $noms,
         ]);
     }
 
@@ -31,9 +37,16 @@ class SalleController extends AbstractController
 
         $form->handleRequest($request);
 
+        $data = $form->getData();
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($salle);
-            $entityManager->flush();
+            if(ctype_digit($data->getNumero())) {
+                $entityManager->persist($salle);
+                $entityManager->flush();
+            }
+            else {
+                $this->addFlash('error', 'Entiers uniquement');
+            }
         }
 
         return $this->render('salle/create.html.twig', [
