@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Salle;
 use App\Repository\SalleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ class SalleController extends AbstractController
     }
 
     #[Route('/creerSalle', name: 'app_salle_create')]
-    public function create(Request $request, SalleRepository $salleRepository): Response
+    public function create(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
         $form = $this->createForm(AddSalleType::class, $salle);
@@ -31,7 +32,8 @@ class SalleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $salle->setNom($salle->getBatiment(), $salle->getEtage(), $salle->getNumero());
+            $entityManager->persist($salle);
+            $entityManager->flush();
         }
 
         return $this->render('salle/create.html.twig', [

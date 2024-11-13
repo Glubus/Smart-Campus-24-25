@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\BatimentSalle;
+use App\Entity\EtageSalle;
 
 #[ORM\Entity(repositoryClass: SalleRepository::class)]
 class Salle
@@ -13,14 +15,11 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $nom = null;
+    #[ORM\Column(enumType: BatimentSalle::class)]
+    private ?BatimentSalle $batiment = null;
 
-    #[ORM\Column(length: 5)]
-    private ?string $batiment = null;
-
-    #[ORM\Column(length: 1, nullable: true)]
-    private ?string $etage = null;
+    #[ORM\Column(enumType: EtageSalle::class)]
+    private ?EtageSalle $etage = null;
 
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $numero = null;
@@ -37,36 +36,31 @@ class Salle
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getSalleNom(): static
     {
-        return $this->nom;
-    }
-
-    public function setNom(string $batiment, string $etage, string $numero): static
-    {
-        $this->nom = $batiment . $etage . str_pad($numero, 2, "0", STR_PAD_LEFT);
+        $this->nom = $this->batiment->value . $this->etage->value . str_pad($this->numero, 2, "0", STR_PAD_LEFT);
 
         return $this;
     }
 
-    public function getBatiment(): ?string
+    public function getBatiment(): ?BatimentSalle
     {
         return $this->batiment;
     }
 
-    public function setBatiment(string $batiment): static
+    public function setBatiment(BatimentSalle $batiment): static
     {
         $this->batiment = $batiment;
 
         return $this;
     }
 
-    public function getEtage(): ?int
+    public function getEtage(): ?EtageSalle
     {
         return $this->etage;
     }
 
-    public function setEtage(?int $etage): static
+    public function setEtage(?EtageSalle $etage): static
     {
         $this->etage = $etage;
 
