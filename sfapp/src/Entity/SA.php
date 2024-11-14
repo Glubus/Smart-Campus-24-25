@@ -18,9 +18,6 @@ class SA
     #[Assert\Unique]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $dateAjout = null;
-
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Salle $salle = null;
 
@@ -44,18 +41,6 @@ class SA
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getDateAjout(): ?\DateTimeInterface
-    {
-        return $this->dateAjout;
-    }
-
-    public function setDateAjout(\DateTimeInterface $dateAjout): static
-    {
-        $this->dateAjout = $dateAjout;
 
         return $this;
     }
