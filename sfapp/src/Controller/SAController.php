@@ -36,8 +36,6 @@ class SAController extends AbstractController
             }
             else{
                 // Sinon, on peut procéder à l'ajout dans la base
-                $aDate = new DateTime();
-                $SA->setDateAjout($aDate);
                 $entityManager->persist($SA);
                 $entityManager->flush();
 
