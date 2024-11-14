@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 
-class AddSalleType extends AbstractType
+class AjoutSalleType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

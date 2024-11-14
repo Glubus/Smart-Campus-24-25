@@ -75,7 +75,7 @@ class SAController extends AbstractController
                 return $this->redirectToRoute('app_sa_liste');
             }
             else {
-                $this->addFlash('error', 'La saisis est incorrect.');
+                $this->addFlash('error', 'La saisie est incorrect.');
             }
         }
 
