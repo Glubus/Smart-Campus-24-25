@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
+use App\Form\SuppressionType;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpParser\Node\Expr\Cast\Bool_;
@@ -10,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\AddSalleType;
+use App\Form\AjoutSalleType;
 
 class SalleController extends AbstractController
 {
@@ -34,7 +35,7 @@ class SalleController extends AbstractController
     public function ajouter(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
-        $form = $this->createForm(AddSalleType::class, $salle);
+        $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
 
@@ -66,13 +67,29 @@ class SalleController extends AbstractController
     public function retirer(EntityManagerInterface $entityManager, Request $request, SalleRepository $salleRepository): Response
     {
         $salle = $salleRepository->find($request->get('salle'));
-        #$form = $this->createForm();
+        if($salle) {
+            $form = $this->createForm(SuppressionType::class, null, [
+                'phrase' => $salle->getSalleNom(), // Passer la variable au formulaire
+            ]);
+            $form->handleRequest($request);
+        }
 
-        $nomSalle = $salle->getSalleNom();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $submittedString = $form->get('inputString')->getData();
+            if ($submittedString==$salle->getSalleNom()){
+                $entityManager->remove($salle);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_salle');
+            }
+            else {
+                $this->addFlash('error', 'La saisie est incorrect.');
+            }
+        }
 
         return $this->render('salle/suppression.html.twig', [
             'controller_name' => 'SalleController',
-            'nom' => $nomSalle,
+            'form' => $form->createView(),
+            'salle' => $salle->getSalleNom(),
         ]);
     }
 }
