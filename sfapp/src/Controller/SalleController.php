@@ -23,7 +23,7 @@ class SalleController extends AbstractController
             array_push($noms, $salle->getSalleNom());
         }
 
-        return $this->render('salle/ajout.html.twig', [
+        return $this->render('salle/index.html.twig', [
             'controller_name' => 'SalleController',
             'salles' => $salles,
             'noms' => $noms,
@@ -55,7 +55,7 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/create.html.twig', [
+        return $this->render('salle/ajout.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
             'salle' => $salle,
@@ -70,7 +70,7 @@ class SalleController extends AbstractController
 
         $nomSalle = $salle->getSalleNom();
 
-        return $this->render('salle/delete.html.twig', [
+        return $this->render('salle/suppression.html.twig', [
             'controller_name' => 'SalleController',
             'nom' => $nomSalle,
         ]);
