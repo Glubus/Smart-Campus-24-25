@@ -23,7 +23,7 @@ class SalleController extends AbstractController
             array_push($noms, $salle->getSalleNom());
         }
 
-        return $this->render('salle/index.html.twig', [
+        return $this->render('salle/ajout.html.twig', [
             'controller_name' => 'SalleController',
             'salles' => $salles,
             'noms' => $noms,

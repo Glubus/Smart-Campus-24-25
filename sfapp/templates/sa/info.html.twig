@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SA - {{ SA.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <a class="btn btn-secondary mb-3" href="{{ path('app_sa_liste') }}" role="button">Retour</a>
+
+        <h1 class="text-center mb-4">SA - {{ SA.nom }}</h1>
+
+        <div class="row">
+            <!-- Colonne gauche : Détails de l'entité SA -->
+            <div class="col-md-6">
+                <h3>Détails de SA</h3>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Nom:</strong> {{ SA.nom }}</li>
+                    {#
+                        {% if SA.salle is not null %}
+                            <li class="list-group-item"><strong>Salle assignée:</strong> {{ SA.salle.nom }} (ID: {{ SA.salle.id }})</li>
+                        {% else %}
+                            <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
+                        {% endif %}
+                    #}
+                </ul>
+
+                {% if SA.salle is null %}
+                    <a href="" class="btn btn-primary mt-3">Assigner une salle</a>
+                {% endif %}
+            </div>
+
+            <!-- Colonne droite : Informations supplémentaires -->
+            <div class="col-md-6">
+                <h3>Informations supplémentaires</h3>
+            </div>
+        </div>
+
+        <a class="btn btn-success mt-3" href="{{ path('app_sa_ajout') }}" role="button">Ajouter un SA</a>
+    </div>
+{% endblock %}
