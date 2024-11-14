@@ -3,10 +3,8 @@
 {% block title %}Ajouter une salle{% endblock %}
 
 {% block body %}
-    <a class="btn btn-primary margin-10" href="{{ path('app_salle')}}" role="button">Retour</a>
-    <div class="container my-5">
+    <div class="container my-5" style="width: 40%">
         <h1 class="text-center mb-4">Ajouter une salle</h1>
-
         {{ form_start(form) }}
 
         <div class="form-group">
@@ -33,10 +31,18 @@
             {{ form_errors(form.numero) }}
         </div>
 
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" style="margin-top: 10px">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <div class="form-group text-center">
-            <a href="{{ path('app_salle') }}"><button type="submit" class="btn btn-primary">Créer la salle</button></a>
+            <button type="submit" class="btn btn-primary" style="margin: 10px" role="button">Créer la salle</button>
+            <a href="{{ path('app_salle')}}" class="btn btn-primary" role="button">Annuler</a>
         </div>
 
         {{ form_end(form) }}
     </div>
 {% endblock %}
+
