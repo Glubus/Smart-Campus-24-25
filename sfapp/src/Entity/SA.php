@@ -18,9 +18,6 @@ class SA
     #[Assert\Unique]
     private ?string $nom = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Salle $salle = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -45,15 +42,4 @@ class SA
         return $this;
     }
 
-    public function getSalle(): ?Salle
-    {
-        return $this->salle;
-    }
-
-    public function setSalle(?Salle $salle): static
-    {
-        $this->salle = $salle;
-
-        return $this;
-    }
 }

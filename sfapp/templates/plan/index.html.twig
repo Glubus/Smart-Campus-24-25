@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plan du Rez-de-Chaussée{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center min-vh-100"> <!-- Centre le contenu sur toute la hauteur de la fenêtre -->
+        <div class="text-center"> <!-- Centre le texte -->
+            <h1 class="mb-3">Plan du Rez-de-Chaussée. {{ count }} trouvées</h1> <!-- Réduit l'espace sous le titre -->
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="plan-container">
+            {% for salle in salles %}
+                {# Ajoute un indicateur au-dessus de chaque salle #}
+                <div id="{{ salle.Salle.getSalleNom }}" class="indicateur {% if salle.SA is not null %}active{% endif %}">
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .plan-container {
+            position: relative;
+            width: 100%; /* Ajuste la taille en fonction de tes besoins */
+            max-width: 800px; /* ou la largeur que tu souhaites */
+            background-image: url('image/schema_rdc.png'); /* Chemin vers l'image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: auto;
+            aspect-ratio: 3.5/1; /* Ajuste pour correspondre au ratio de ton image */
+        }
+
+        .indicateur {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red; /* Rouge par défaut */
+            position: absolute;
+            /* Positionne les indicateurs au-dessus des salles avec CSS */
+        }
+
+        .indicateur.active {
+            background-color: green; /* Vert si SA présent */
+        }
+
+        /* Position des indicateurs par rapport à l'image */
+        #C002 { top: 150px; left: 343px; }
+        #C005 { top: 100px; left: 267px; }
+        #C007 { top: 100px; left: 135px; }
+        #C006 { top: 150px; left: 87px; }
+        #C004 { top: 150px; left: 218px; }
+        #D005 { top: 100px; left: 700px; }
+        #D004 { top: 150px; left: 562px; }
+        #D001 { top: 100px; left: 485px; }
+        #D002 { top: 150px; left: 400px; }
+        #D003 { top: 100px; left: 590px; }
+        /* Continue pour chaque salle... */
+    </style>
+{% endblock %}
