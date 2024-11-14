@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Batiment;
 use App\Entity\BatimentSalle;
 use App\Entity\EtageSalle;
 use App\Entity\Salle;
@@ -20,19 +21,12 @@ class AddSalleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('batiment', ChoiceType::class, [
-                'choices' => [
-                    'Bâtiment D' => BatimentSalle::D,
-                    'Bâtiment C' => BatimentSalle::C,
-                    'Amphithéâtre' => BatimentSalle::AMPHI,
-                ],
+            ->add('batiment', EntityType::class, [
+                'class' => Batiment::class,
+                'choice_label' => 'nom', // Assumes 'nom' is a property of 'Usager'
+                'label' => 'Batiment',
                 'required' => true,
-                'attr' => [
-                    'class' => 'form-select',
-                    'placeholder' => 'Choisir un bâtiment...',
-                ],
             ])
-
             ->add('etage', ChoiceType::class, [
                 'choices' => [
                     'Rez-de-chaussée' => EtageSalle::REZDECHAUSSEE,
