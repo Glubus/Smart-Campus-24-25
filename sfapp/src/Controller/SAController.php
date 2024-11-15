@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SAController extends AbstractController
 {
     #[Route('/sa/ajout', name: 'app_sa_ajout')]
-    public function ajout(Request $request, EntityManagerInterface $entityManager): Response
+    public function ajouter(Request $request, EntityManagerInterface $entityManager): Response
     {
         // Création du nouvel objet
         $SA = new SA();
@@ -50,7 +50,7 @@ class SAController extends AbstractController
         ]);
     }
     #[Route('/sa', name: 'app_sa_liste')]
-    public function liste(SARepository $saRepo): Response
+    public function lister(SARepository $saRepo): Response
     {
         $sa = $saRepo->findAll();
         return $this->render('sa/liste.html.twig', [
@@ -59,7 +59,7 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa/{id}/suppression', name: 'app_sa_suppression')]
-    public function suppression(Request $request, int $id, SARepository $repo, EntityManagerInterface $em): Response
+    public function supprimer(Request $request, int $id, SARepository $repo, EntityManagerInterface $em): Response
     {
         $SA=$repo->find($id);
         if ($SA){
