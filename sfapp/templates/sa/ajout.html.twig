@@ -12,10 +12,7 @@
     <div class="container my-5">
         <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
         {{ form_start(form) }}
-        <div>
-            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-        </div>
-        {{ form_errors(form.nom) }}
+        {{ form_widget(form) }}
         <button type="submit" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Créer le SA</button>
         <a href="/sa" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Annuler</a>
         {{ form_end(form) }}
