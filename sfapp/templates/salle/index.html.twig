@@ -7,29 +7,29 @@
     <div class="container my-5">
         <h1 class="text-center mb-4">Salles</h1>
         <div class="center mb-4" style="max-width: 100%;">
-            <table class="table table-striped table-bordered text-center align-middle">
+            <table class="salle table table-striped table-bordered text-center align-middle">
                 <thead>
                 <tr class="table-dark">
-                    <th class="nom">Nom</th>
-                    <th class="col">Batiment</th>
-                    <th class="col">Etage</th>
-                    <th class="col">Numéro de salle</th>
+                    <th>Nom</th>
+                    <th>Batiment</th>
+                    <th>Etage</th>
+                    <th>Numéro de salle</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for salle in salles %}
                         <tr class="text-center align-middle">
-                            <td>
+                            <td  class="nom">
                                 {{ noms[loop.index0] }}
                             </td>
-                            <td>
+                            <td  class="bat">
                                 Batiment {{ salle.batiment.nom }}
                             </td>
-                            <td>
+                            <td  class="etage">
                                 {{ salle.etage.value }}
                             </td>
-                            <td>
+                            <td class="numSalle">
                                 {{ salle.numero }}
                             </td>
                             <td style="width: 10%">
