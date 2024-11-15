@@ -1,0 +1,29 @@
+{# templates/plan/ajouter.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un plan{% endblock %}
+
+{% block body %}
+    <h1>Ajouter un plan</h1>
+
+    {# Formulaire Symfony #}
+    {{ form_start(form) }}
+    {{ form_row(form.SA) }} {# Affiche le champ SA #}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    {{ form_end(form) }}
+
+    {# Intégration de Select2 pour la recherche dans le select #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function() {
+            // Applique select2 sur les éléments avec la classe 'sa-searchable'
+            $('.sa-searchable').select2({
+                placeholder: "Sélectionnez un système d'acquisition",
+                allowClear: true
+            });
+        });
+    </script>
+{% endblock %}
