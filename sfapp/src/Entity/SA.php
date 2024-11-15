@@ -18,8 +18,9 @@ class SA
     #[Assert\Unique]
     private ?string $nom = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Salle $salle = null;
+    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
+    private ?Plan $plan = null;
+
 
     public function getId(): ?int
     {
@@ -53,6 +54,23 @@ class SA
     public function setSalle(?Salle $salle): static
     {
         $this->salle = $salle;
+
+        return $this;
+    }
+
+    public function getPlan(): ?Plan
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(Plan $plan): static
+    {
+        // set the owning side of the relation if necessary
+        if ($plan->getSa() !== $this) {
+            $plan->setSa($this);
+        }
+
+        $this->plan = $plan;
 
         return $this;
     }

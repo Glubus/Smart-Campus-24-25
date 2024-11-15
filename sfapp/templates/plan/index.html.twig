@@ -5,13 +5,15 @@
 {% block title %}Ajouter un plan{% endblock %}
 
 {% block body %}
-    <h1>Ajouter un plan</h1>
+    <div class="container my-5" style="width: 40%">
+        <h1>Ajouter un plan</h1>
 
-    {# Formulaire Symfony #}
-    {{ form_start(form) }}
-    {{ form_row(form.SA) }} {# Affiche le champ SA #}
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    {{ form_end(form) }}
+        {# Formulaire Symfony #}
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
 
     {# Intégration de Select2 pour la recherche dans le select #}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
@@ -19,11 +21,19 @@
 
     <script>
         $(document).ready(function() {
-            // Applique select2 sur les éléments avec la classe 'sa-searchable'
+            // Applique select2 sur les éléments avec la classe 'sa-searchable' pour le SA
             $('.sa-searchable').select2({
                 placeholder: "Sélectionnez un système d'acquisition",
                 allowClear: true
             });
+
+            // Applique select2 sur les éléments avec la classe 'salle-searchable' pour la Salle
+            $('.salle-searchable').select2({
+                placeholder: "Sélectionnez une salle",
+                allowClear: true
+            });
         });
     </script>
+
 {% endblock %}
+
