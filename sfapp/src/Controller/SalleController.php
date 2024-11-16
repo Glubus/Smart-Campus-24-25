@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
+use App\Form\ModificationSalleType;
 use App\Form\SuppressionType;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,16 +20,22 @@ class SalleController extends AbstractController
     public function index(SalleRepository $salleRepository): Response
     {
         $salles = $salleRepository->findAll();
-        $noms = array();
-        foreach ($salles as $salle) {
-            array_push($noms, $salle->getSalleNom());
-        }
 
-        return $this->render('salle/index.html.twig', [
-            'controller_name' => 'SalleController',
-            'salles' => $salles,
-            'noms' => $noms,
-        ]);
+        if($salles) {
+            $noms = array();
+            foreach ($salles as $salle) {
+                array_push($noms, $salle->getSalleNom());
+            }
+
+            return $this->render('salle/index.html.twig', [
+                'controller_name' => 'SalleController',
+                'salles' => $salles,
+                'noms' => $noms,
+            ]);
+        }
+        else {
+            return $this->render('salle/notfound.html.twig', []);
+        }
     }
 
     #[Route('/creerSalle', name: 'app_salle_create')]
@@ -87,6 +94,39 @@ class SalleController extends AbstractController
         }
 
         return $this->render('salle/suppression.html.twig', [
+            'controller_name' => 'SalleController',
+            'form' => $form->createView(),
+            'salle' => $salle->getSalleNom(),
+        ]);
+    }
+
+    #[Route('/modifierSalle', name: 'app_salle_update')]
+    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
+    {
+        $salle = $salleRepository->find($request->get('salle'));
+        $form = $this->createForm(AjoutSalleType::class, $salle);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            if(ctype_digit($salle->getNumero())) {
+                $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
+                if($salleExistante) {
+                    $this->addFlash('error', 'Cette salle existe déjà');
+                }
+                else {
+                    $entityManager->persist($salle);
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_salle');
+                }
+            }
+            else {
+                $this->addFlash('error', 'Entiers uniquement');
+            }
+        }
+
+        return $this->render('salle/modification.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
             'salle' => $salle->getSalleNom(),
