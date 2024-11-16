@@ -14,6 +14,7 @@
                     <th class="col">Etage</th>
                     <th class="col">Numéro de salle</th>
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,6 +31,9 @@
                             </td>
                             <td>
                                 {{ salle.numero }}
+                            </td>
+                            <td style="width: 10%">
+                                <a class="btn btn-outline-success" href="{{ path('app_salle_update') }}?salle={{ salle.id }}" role="button">Modifier</a>
                             </td>
                             <td style="width: 10%">
                                 <a class="btn btn-outline-danger" href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" role="button">Supprimer</a>
