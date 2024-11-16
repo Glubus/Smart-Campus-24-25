@@ -3,12 +3,12 @@
 {% block title %}Smart Campus{% endblock %}
 
 {% block body %}
-    <!-- La div qui prend toute la taille de l'écran -->
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <!-- La div centrée avec une largeur, une hauteur, un fond grisé et une bordure -->
-        <div class="d-flex flex-column align-items-center w-50 h-75 bg-light rounded p-4">
-            <h1>Panneau d'administration</h1>
-            <a class="btn btn-primary btn-lg w-25" href="/salle">Ajouter une salle</a>
-        </div>
+    <link rel="stylesheet" href="/css/pageAccueil.css">
+    <div class="container my-5 text-center" style="width: 80%">
+        <h1 class="text-center mb-4" style="margin: 20px">Accueil</h1>
+        <h2 class="text-center mb-4">Smart campus</h2>
+            <p class="text-center contexte">Dans un contexte où la gestion de l'environnement intérieur (qualité de l'air, température et humidité)
+                devient cruciale pour le confort des individus,
+                ce projet cherche à concevoir un système efficace pour surveiller et optimiser ces paramètres. </p>
     </div>
 {% endblock %}

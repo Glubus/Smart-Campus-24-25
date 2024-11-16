@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des salles{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Salles</h1>
+        <h3 class="mb-4">Aucune salle trouvée...</h3>
+        <a class="btn btn-primary" href="{{ path('app_salle_create')}}" role="button">Ajouter une salle</a>
+    </div>
+{% endblock %}

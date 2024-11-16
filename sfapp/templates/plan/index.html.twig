@@ -1,61 +1,39 @@
+{# templates/plan/ajouter.html.twig #}
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Plan du Rez-de-Chaussée{% endblock %}
+{% block title %}Ajouter un plan{% endblock %}
 
 {% block body %}
-    <div class="d-flex justify-content-center align-items-center min-vh-100"> <!-- Centre le contenu sur toute la hauteur de la fenêtre -->
-        <div class="text-center"> <!-- Centre le texte -->
-            <h1 class="mb-3">Plan du Rez-de-Chaussée. {{ count }} trouvées</h1> <!-- Réduit l'espace sous le titre -->
-        </div>
+    <div class="container my-5" style="width: 40%">
+        <h1>Ajouter un plan</h1>
+
+        {# Formulaire Symfony #}
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        {{ form_end(form) }}
     </div>
 
-    <div class="d-flex justify-content-center align-items-center">
-        <div class="plan-container">
-            {% for salle in salles %}
-                {# Ajoute un indicateur au-dessus de chaque salle #}
-                <div id="{{ salle.Salle.getSalleNom }}" class="indicateur {% if salle.SA is not null %}active{% endif %}">
+    {# Intégration de Select2 pour la recherche dans le select #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+    <script>
+        $(document).ready(function() {
+            // Applique select2 sur les éléments avec la classe 'sa-searchable' pour le SA
+            $('.sa-searchable').select2({
+                placeholder: "Sélectionnez un système d'acquisition",
+                allowClear: true
+            });
 
-    <style>
-        .plan-container {
-            position: relative;
-            width: 100%; /* Ajuste la taille en fonction de tes besoins */
-            max-width: 800px; /* ou la largeur que tu souhaites */
-            background-image: url('image/schema_rdc.png'); /* Chemin vers l'image */
-            background-size: cover;
-            background-repeat: no-repeat;
-            height: auto;
-            aspect-ratio: 3.5/1; /* Ajuste pour correspondre au ratio de ton image */
-        }
+            // Applique select2 sur les éléments avec la classe 'salle-searchable' pour la Salle
+            $('.salle-searchable').select2({
+                placeholder: "Sélectionnez une salle",
+                allowClear: true
+            });
+        });
+    </script>
 
-        .indicateur {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: red; /* Rouge par défaut */
-            position: absolute;
-            /* Positionne les indicateurs au-dessus des salles avec CSS */
-        }
-
-        .indicateur.active {
-            background-color: green; /* Vert si SA présent */
-        }
-
-        /* Position des indicateurs par rapport à l'image */
-        #C002 { top: 150px; left: 343px; }
-        #C005 { top: 100px; left: 267px; }
-        #C007 { top: 100px; left: 135px; }
-        #C006 { top: 150px; left: 87px; }
-        #C004 { top: 150px; left: 218px; }
-        #D005 { top: 100px; left: 700px; }
-        #D004 { top: 150px; left: 562px; }
-        #D001 { top: 100px; left: 485px; }
-        #D002 { top: 150px; left: 400px; }
-        #D003 { top: 100px; left: 590px; }
-        /* Continue pour chaque salle... */
-    </style>
 {% endblock %}
+

@@ -80,4 +80,21 @@ class SA
 
         return $this;
     }
+
+    public function getPlan(): ?Plan
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(Plan $plan): static
+    {
+        // set the owning side of the relation if necessary
+        if ($plan->getSa() !== $this) {
+            $plan->setSa($this);
+        }
+
+        $this->plan = $plan;
+
+        return $this;
+    }
 }

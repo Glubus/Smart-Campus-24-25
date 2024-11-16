@@ -1,0 +1,36 @@
+{# templates/plan/list.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des plans{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>Liste des plans</h1>
+
+        {% if plans is not empty %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Système d'acquisition</th>
+                    <th>Salle</th>
+                    <th>Date d'ajout</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for plan in plans %}
+                    <tr>
+                        <td>{{ plan.id }}</td>
+                        <td>{{ plan.sa.nom }}</td> {# Affiche le nom du système d'acquisition #}
+                        <td>{{ plan.Salle.getSalleNom }}</td> {# Affiche le nom de la salle #}
+                        <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucun plan trouvé.</p>
+        {% endif %}
+    </div>
+{% endblock %}
