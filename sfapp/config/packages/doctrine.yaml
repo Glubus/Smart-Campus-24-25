@@ -45,6 +45,6 @@ when@prod:
         cache:
             pools:
                 doctrine.result_cache_pool:
-                    adapter: cache.app
+                    adapter: cache.assets
                 doctrine.system_cache_pool:
                     adapter: cache.system

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\EtageSalle;
 use App\Entity\Salle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,7 +21,6 @@ class SalleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Salle::class);
     }
-
 //    /**
 //     * @return Salle[] Returns an array of Salle objects
 //     */

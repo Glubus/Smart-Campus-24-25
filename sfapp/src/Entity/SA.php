@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\SARepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SARepository::class)]
@@ -14,24 +14,23 @@ class SA
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\Unique]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
-    private ?Plan $plan = null;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $dateAjout = null;
 
+    #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
+    private Collection $capteurs;
+
+    public function __construct()
+    {
+        $this->capteurs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -42,18 +41,42 @@ class SA
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+        return $this;
+    }
+
+    public function getDateAjout(): ?\DateTime
+    {
+        return $this->dateAjout;
+    }
+
+    public function setDateAjout(\DateTime $dateAjout): static
+    {
+        $this->dateAjout = $dateAjout;
+        return $this;
+    }
+
+    public function getCapteurs(): Collection
+    {
+        return $this->capteurs;
+    }
+
+    public function addCapteur(Capteur $capteur): static
+    {
+        if (!$this->capteurs->contains($capteur)) {
+            $this->capteurs->add($capteur);
+            $capteur->setSA($this);
+        }
 
         return $this;
     }
 
-    public function getSalle(): ?Salle
+    public function removeCapteur(Capteur $capteur): static
     {
-        return $this->salle;
-    }
-
-    public function setSalle(?Salle $salle): static
-    {
-        $this->salle = $salle;
+        if ($this->capteurs->removeElement($capteur)) {
+            if ($capteur->getSA() === $this) {
+                $capteur->setSA(null);
+            }
+        }
 
         return $this;
     }
