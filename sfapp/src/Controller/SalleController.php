@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Salle;
 use App\Form\ModificationSalleType;
 use App\Form\SuppressionType;
+use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpParser\Node\Expr\Cast\Bool_;
@@ -36,6 +37,26 @@ class SalleController extends AbstractController
         else {
             return $this->render('salle/notfound.html.twig', []);
         }
+    }
+
+    #[Route('/salle/{id}', name: 'app_salle_infos')]
+    public function infos(Salle $salle, PlanRepository $planRepository): Response
+    {
+        $batiment = $salle->getBatiment();
+        $nom = $salle->getSalleNom();
+        $plan = $planRepository->findOneBy(['Salle' => $salle]);
+
+        $sa = null;
+        if($plan) {
+            $sa = $plan->getSA();
+        }
+
+        return $this->render('salle/infos.html.twig', [
+            'salle' => $salle,
+            'nom' => $nom,
+            'batiment' => $batiment,
+            'sa' => $sa,
+        ]);
     }
 
     #[Route('/creerSalle', name: 'app_salle_create')]
