@@ -21,7 +21,6 @@
         "symfony/twig-bundle": "6.3.*",
         "symfony/validator": "6.3.*",
         "symfony/webpack-encore-bundle": "^2.2",
-        "symfony/webpack-encore-pack": "^1.0.2",
         "symfony/yaml": "6.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
