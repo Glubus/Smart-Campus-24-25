@@ -104,6 +104,13 @@ class SAController extends AbstractController
 
         return $this->render('sa/notfound.html.twig', []);
     }
+    #[Route('/sa/{id}', name: 'app_sa_infos')]
+    public function affichage_SA(Request $request, int $id, SARepository $repo, EntityManagerInterface $em): Response{
+            $SA=$repo->find($id);
+            return $this->render('sa/info.html.twig', [
+                'SA'=>$SA,
+            ]);
+    }
 
     #[Route('/sa/{id}', name: 'app_sa_infos')]
     public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager): Response
