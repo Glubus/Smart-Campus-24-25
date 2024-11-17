@@ -23,15 +23,10 @@ class SalleController extends AbstractController
         $salles = $salleRepository->findAll();
 
         if($salles) {
-            $noms = array();
-            foreach ($salles as $salle) {
-                array_push($noms, $salle->getSalleNom());
-            }
 
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
-                'noms' => $noms,
             ]);
         }
         else {

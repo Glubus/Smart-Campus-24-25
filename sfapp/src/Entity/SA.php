@@ -17,8 +17,6 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTime $dateAjout = null;
 
     #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
     private Collection $capteurs;
