@@ -21,6 +21,18 @@ class SARepository extends ServiceEntityRepository
         parent::__construct($registry, SA::class);
     }
 
+    public function findByNomSA(?string $nomSa)
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        if ($nomSa) {
+            $queryBuilder->andWhere('s.nom LIKE :nomSa')
+                ->setParameter('nomSa', '%' . $nomSa . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return SA[] Returns an array of SA objects
 //     */

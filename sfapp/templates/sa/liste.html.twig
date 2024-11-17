@@ -14,7 +14,15 @@
             </tr>
             </thead>
             <tbody>
-            {% for SA in liste_SA %}
+            <div class="d-flex">
+                {{ form_start(form) }}
+                <div class="form-group mr-2" >
+                {{ form_row(form.nom) }}
+                </div>
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+                {{ form_end(form) }}
+                {% for SA in liste_SA %}
+            </div></br>
                 <tr>
                     <td class="nom">
                         {{ SA.nom }}
