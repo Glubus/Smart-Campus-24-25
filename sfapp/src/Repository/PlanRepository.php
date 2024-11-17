@@ -24,7 +24,7 @@ class PlanRepository extends ServiceEntityRepository
     public function findSallesRezDeChaussee()
     {
         return $this->createQueryBuilder('p')
-            ->join('p.Salle', 's') // Jointure avec l'entité Salle
+            ->join('p.salle', 's') // Jointure avec l'entité Salle
             ->where('s.etage = :etage') // Filtrer par étage dans Salle
             ->setParameter('etage', EtageSalle::REZDECHAUSSEE)
             ->getQuery()

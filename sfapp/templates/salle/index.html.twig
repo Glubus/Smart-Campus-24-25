@@ -22,6 +22,7 @@
                     <th class="col">Batiment</th>
                     <th class="col">Etage</th>
                     <th class="col">Numéro de salle</th>
+                    <th class="col">Informations</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -30,7 +31,7 @@
                 {% for salle in salles %}
                         <tr class="text-center align-middle">
                             <td>
-                                {{ noms[loop.index0] }}
+                                {{ salle.getSalleNom}}
                             </td>
                             <td>
                                 Batiment {{ salle.batiment.nom }}
@@ -40,6 +41,9 @@
                             </td>
                             <td>
                                 {{ salle.numero }}
+                            </td>
+                            <td style="width: 10%">
+                                <a class="btn btn-outline-info" href="{{ path('app_salle_infos', { id: salle.id }) }}" role="button">Détails</a>
                             </td>
                             <td style="width: 10%">
                                 <a class="btn btn-outline-success" href="{{ path('app_salle_update') }}?salle={{ salle.id }}" role="button">Modifier</a>

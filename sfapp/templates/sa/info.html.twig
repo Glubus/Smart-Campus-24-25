@@ -12,14 +12,16 @@
                 <h3>Détails de SA</h3>
                 <ul class="list-group">
                     <li class="list-group-item"><strong>Nom:</strong> {{ SA.nom }}</li>
-                    {% if salle %}
-                        <li class="list-group-item"><strong>Salle associée:</strong> {{ salle.getSalleNom() }}</li>
-                    {% else %}
-                        <li class="list-group-item"><strong>Salle associée:</strong> Aucune salle associée.</li>
-                    {% endif %}
+                        {% if SA.plan is not null %}
+                            <li class="list-group-item"><strong>Salle assignée:</strong> {{ SA.plan.Salle.getSalleNom }} (ID: {{ SA.plan.Salle.id }})</li>
+                        {% else %}
+                            <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
+                        {% endif %}
                 </ul>
-                    <a href="" class="btn btn-primary mt-3">Assigner une salle</a>
 
+                {% if SA.plan is null %}
+                    <a href="{{ path('app_plan', {'sa_id': SA.id}) }}" class="btn btn-primary mt-3">Assigner une salle</a>
+                {% endif %}
             </div>
 
             <!-- Colonne droite : Informations supplémentaires -->

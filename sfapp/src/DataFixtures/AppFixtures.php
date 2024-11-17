@@ -29,6 +29,7 @@ class AppFixtures extends Fixture
         $Salle->setBatiment($batimentC);
         $Salle->setEtage(EtageSalle::REZDECHAUSSEE);
         $Salle->setNumero("06");
+        $manager->persist($Salle);
 
         $SA = new SA();
         $SA->setNom('SATest');

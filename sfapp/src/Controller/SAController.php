@@ -113,7 +113,7 @@ class SAController extends AbstractController
             throw $this->createNotFoundException('SA introuvable.');
         }
         // trouver la salle d'un Sa
-        $plan = $entityManager->getRepository(Plan::class)->findOneBy(['SA' => $SA]);
+        $plan = $entityManager->getRepository(Plan::class)->findOneBy(['sa' => $SA]);
         $salle = $plan ? $plan->getSalle() : null;
 
         return $this->render('sa/info.html.twig', [

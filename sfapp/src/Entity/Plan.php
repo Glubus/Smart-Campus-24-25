@@ -15,16 +15,17 @@ class Plan
     private ?int $id = null;
 
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Salle $Salle = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
     #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?SA $sa = null;
+
+    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Salle $salle = null;
+
 
     public function getId(): ?int
     {
@@ -45,12 +46,12 @@ class Plan
 
     public function getSalle(): ?Salle
     {
-        return $this->Salle;
+        return $this->salle;
     }
 
     public function setSalle(Salle $Salle): static
     {
-        $this->Salle = $Salle;
+        $this->salle = $Salle;
 
         return $this;
     }
