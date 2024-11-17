@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
+use App\Form\RechercheSalleType;
 use App\Form\ModificationSalleType;
 use App\Form\SuppressionType;
 use App\Repository\PlanRepository;
@@ -18,19 +19,49 @@ use App\Form\AjoutSalleType;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle')]
-    public function index(SalleRepository $salleRepository): Response
+    public function index(Request $request, SalleRepository $salleRepository): Response
     {
-        $salles = $salleRepository->findAll();
+        // Création du formulaire de recherche
+        $form = $this->createForm(RechercheSalleType::class);
 
-        if($salles) {
+        // Traitement du formulaire de recherche
+        $form->handleRequest($request);
+        $salles = [];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $salleNom = $form->get('salleNom')->getData();
+
+            // Si un nom a été saisi, on filtre les salles par le nom du bâtiment ou l'étage
+            if ($salleNom) {
+                // Chercher les salles dont le nom du bâtiment ou l'étage ou le numéro pourrait correspondre
+                $salles = $salleRepository->findAll();
+
+                // Filtrer les résultats avec getSalleNom() en PHP
+                $salles = array_filter($salles, function($salle) use ($salleNom) {
+                    return stripos($salle->getSalleNom(), $salleNom) !== false;
+                });
+            }
+        } else {
+            // Si aucun nom n'est saisi, afficher toutes les salles
+            $salles = $salleRepository->findAll();
+        }
+
+        if ($salles) {
+            $noms = array();
+            foreach ($salles as $salle) {
+                array_push($noms, $salle->getSalleNom());
+            }
 
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
+                'noms' => $noms,
+                'form' => $form->createView(), // Passer le formulaire à la vue
             ]);
-        }
-        else {
-            return $this->render('salle/notfound.html.twig', []);
+        } else {
+            return $this->render('salle/notfound.html.twig', [
+                'form' => $form->createView(),
+            ]);
         }
     }
 

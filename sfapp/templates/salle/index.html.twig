@@ -5,7 +5,16 @@
 {% block body %}
     <div class="container my-5">
         <h1 class="text-center mb-4">Salles</h1>
-        <div class="center mb-4" style="max-width: 100%;">
+        <br class="center mb-4" style="max-width: 100%;">
+            <div class="d-flex">
+                {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                <div class="form-group mr-2" >
+                    {{ form_row(form.salleNom) }}
+                </div>
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+                {{ form_end(form) }}
+            </div></br>
+
             <table class="table table-striped table-bordered text-center align-middle">
                 <thead>
                 <tr class="table-dark">
