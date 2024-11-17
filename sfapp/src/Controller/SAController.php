@@ -7,6 +7,7 @@ use App\Entity\Capteur;
 use App\Entity\Plan;
 use App\Entity\TypeCapteur;
 use App\Form\AjoutSAType;
+use App\Form\RechercheSaType;
 use App\Form\SuppressionType;
 use App\Repository\SARepository;
 use App\Repository\SalleRepository;
@@ -25,6 +26,7 @@ class SAController extends AbstractController
         $SA = new SA();
 
         // Création du formulaire
+
         $form = $this->createForm(AjoutSAType::class, $SA);
         $form->handleRequest($request);
 
@@ -67,14 +69,29 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa', name: 'app_sa_liste')]
-    public function lister(SARepository $saRepo): Response
+    public function lister(SARepository $saRepo, Request $request): Response
     {
-        $sa = $saRepo->findAll();
+        // Create the form for searching
+        $form = $this->createForm(RechercheSaType::class);
+        $form->handleRequest($request);
+
+        // Check if the form is submitted and valid, then filter results
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            // Filter the `SA` entities based on the search term
+            $sa = $saRepo->findByNomSA($data['nom']);
+        } else {
+            // If no filtering, get all entities
+            $sa = $saRepo->findAll();
+        }
+
+        // Render the page with the form and filtered results
         return $this->render('sa/liste.html.twig', [
             "liste_SA" => $sa,
+            'form' => $form->createView(),
         ]);
     }
-
     #[Route('/sa/{id}/suppression', name: 'app_sa_suppression')]
     public function supprimer(Request $request, int $id, SARepository $repo, EntityManagerInterface $em): Response
     {

@@ -13,7 +13,7 @@ class RechercheSalleType extends AbstractType
     {
         $builder
             ->add('salleNom', TextType::class, [
-                'label' => 'Nom de la salle',
+                'label' => 'Nom de la salle: ',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Rechercher par nom...'
