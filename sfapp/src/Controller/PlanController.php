@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Plan;
+use App\Entity\SA;
 use App\Form\AssociationSASalle;
 use App\Repository\PlanRepository;
 use DateTime;
@@ -17,7 +18,26 @@ class PlanController extends AbstractController
     #[Route('/plan/ajouter', name: 'app_plan')]
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
-        $plan = new Plan(); // Créez un objet Plan
+        $sa_id = $request->query->get('sa_id');
+        if ($sa_id){
+            $sa = $em->getRepository(SA::class)->find($sa_id);
+
+            if (!$sa) {
+                throw $this->createNotFoundException('Système d\'acquisition non trouvé.');
+            }
+
+            // Utiliser findBy pour récupérer tous les plans associés à ce SA
+            $plan = $em->getRepository(Plan::class)->findOneBy([
+                'sa' => $sa  // On filtre les plans par l'objet SA
+            ]);
+            if (!$plan)
+            {
+                $plan = new Plan();
+                $plan->setSa($sa);
+            }
+        }else{
+            $plan = new Plan(); // Créez un objet Plan
+        }
         $form = $this->createForm(AssociationSASalle::class, $plan); // Assurez-vous d'avoir un formulaire `PlanType`
 
         $form->handleRequest($request);
