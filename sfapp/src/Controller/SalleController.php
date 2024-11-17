@@ -39,7 +39,7 @@ class SalleController extends AbstractController
     {
         $batiment = $salle->getBatiment();
         $nom = $salle->getSalleNom();
-        $plan = $planRepository->findOneBy(['Salle' => $salle]);
+        $plan = $planRepository->findOneBy(['salle' => $salle]);
 
         $sa = null;
         if($plan) {

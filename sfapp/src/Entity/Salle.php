@@ -24,6 +24,9 @@ class Salle
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
+    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist', 'remove'])]
+    private ?Plan $plan = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +77,23 @@ class Salle
     public function setBatiment(?Batiment $batiment): static
     {
         $this->batiment = $batiment;
+
+        return $this;
+    }
+
+    public function getPlan(): ?Plan
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(Plan $plan): static
+    {
+        // set the owning side of the relation if necessary
+        if ($plan->getSalle() !== $this) {
+            $plan->setSalle($this);
+        }
+
+        $this->plan = $plan;
 
         return $this;
     }

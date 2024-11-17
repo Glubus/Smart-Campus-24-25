@@ -21,6 +21,9 @@ class SA
     #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
     private Collection $capteurs;
 
+    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
+    private ?Plan $plan = null;
+
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
