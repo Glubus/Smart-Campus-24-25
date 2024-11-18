@@ -38,11 +38,13 @@ class BatimentController extends AbstractController
     }
 
     #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
-    public function ajouter(Request $request, EntityManagerInterface $em): Response
+    public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
-        // Initialisation d'un nouveau bâtiment
-        $batiment = new Batiment();
-
+        $batiment = $batimentRepository->find($request->get('batiment'));
+        if (!$batiment) {
+            // Initialisation d'un nouveau bâtiment
+            $batiment = new Batiment();
+        }
         // Création du formulaire
         $form = $this->createForm(AjoutBatimentType::class, $batiment);
 
