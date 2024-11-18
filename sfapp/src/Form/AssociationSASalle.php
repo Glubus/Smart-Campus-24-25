@@ -47,6 +47,8 @@ class AssociationSASalle extends AbstractType
             'required' => true,
             'query_builder' => function (EntityRepository $er) {
                 return $er->createQueryBuilder('s')
+                    ->leftJoin('s.plan', 'plan')
+                    ->where('plan.id IS NULL')
                     ->orderBy('s.batiment', 'ASC');  // Trie les salles par nom
             },
             'attr' => [

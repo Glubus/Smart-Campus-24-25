@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SalleRepository;
+use App\Entity\Batiment;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\EtageSalle;
 
