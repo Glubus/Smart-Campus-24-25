@@ -9,6 +9,7 @@
             <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
         </div>
 
+
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
@@ -16,6 +17,8 @@
                     <th scope="col">#</th>
                     <th scope="col">Nom</th>
                     <th scope="col">Adresse</th>
+                    <th scope="col">Supprimer</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -24,14 +27,24 @@
                         <td>{{ batiment.id }}</td>
                         <td>{{ batiment.nom }}</td>
                         <td>{{ batiment.adresse }}</td>
+                    <td>
+                        <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}" class="btn btn-outline-danger">supprimer</a>
+                    </td>
                     </tr>
                 {% else %}
                     <tr>
                         <td colspan="3" class="text-center">Aucun bâtiment trouvé.</td>
                     </tr>
+
                 {% endfor %}
                 </tbody>
             </table>
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
         </div>
     </div>
 {% endblock %}
