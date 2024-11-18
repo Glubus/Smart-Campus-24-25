@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Bâtiments{% endblock %}
+
+{% block body %}
+    <h1>Liste des Bâtiments</h1>
+
+    <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary mb-3">Ajouter un Bâtiment</a>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Adresse</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for batiment in batiments %}
+            <tr>
+                <td>{{ batiment.id }}</td>
+                <td>{{ batiment.nom }}</td>
+                <td>{{ batiment.adresse }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">Aucun bâtiment trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
