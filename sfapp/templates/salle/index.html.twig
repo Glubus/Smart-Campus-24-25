@@ -14,7 +14,7 @@
                 <button type="submit" class="btn btn-primary">Rechercher</button>
                 {{ form_end(form) }}
             </div></br>
-
+        <a class="btn btn-primary" href="{{ path('app_salle_ajout')}}" role="button">Ajouter une salle</a>
             <table class="table table-striped table-bordered text-center align-middle">
                 <thead>
                 <tr class="table-dark">
@@ -31,7 +31,7 @@
                 {% for salle in salles %}
                         <tr class="text-center align-middle">
                             <td>
-                                {{ salle.getSalleNom}}
+                                {{ salle.getSalleNom }}
                             </td>
                             <td>
                                 Batiment {{ salle.batiment.nom }}
@@ -55,7 +55,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-primary" href="{{ path('app_salle_create')}}" role="button">Ajouter une salle</a>
+
         </div>
     </div>
 {% endblock %}

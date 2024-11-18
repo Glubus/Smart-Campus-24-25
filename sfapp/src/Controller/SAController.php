@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SAController extends AbstractController
 {
-    #[Route('/sa/liste.html.twig', name: 'app_sa_ajout')]
+    #[Route('/sa/ajout', name: 'app_sa_ajout')]
     public function ajouter(Request $request, EntityManagerInterface $entityManager): Response
     {
         // Création du nouvel objet SA
@@ -63,7 +63,7 @@ class SAController extends AbstractController
         }
 
         // Affichage du formulaire
-        return $this->render('sa/liste.html.twig.html.twig', [
+        return $this->render('sa/ajout.html.twig', [
             'form' => $form->createView(),
         ]);
     }

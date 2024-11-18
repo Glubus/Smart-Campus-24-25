@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
+use App\Entity\Batiment;
 use App\Form\RechercheSalleType;
-use App\Form\ModificationSalleType;
 use App\Form\SuppressionType;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
@@ -65,12 +65,13 @@ class SalleController extends AbstractController
         }
     }
 
-    #[Route('/salle/{id}', name: 'app_salle_infos')]
-    public function infos(Salle $salle, PlanRepository $planRepository): Response
+    #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
+    public function infos(int $id, SalleRepository $aRepo, PlanRepository $planRepository): Response
     {
+        $salle = $aRepo->find($id);
         $batiment = $salle->getBatiment();
         $nom = $salle->getSalleNom();
-        $plan = $planRepository->findOneBy(['salle' => $salle]);
+        $plan = $planRepository->findOneBy(['salle' => $id]);
 
         $sa = null;
         if($plan) {
@@ -85,7 +86,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/creerSalle', name: 'app_salle_create')]
+    #[Route('/salle/ajout', name: 'app_salle_ajout')]
     public function ajouter(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
@@ -95,7 +96,8 @@ class SalleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if(ctype_digit($salle->getNumero())) {
-                $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
+                $salleExistante = $salleRepository->findOneBy(
+                    ['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
                 if($salleExistante) {
                     $this->addFlash('error', 'Cette salle existe déjà');
                 }
@@ -110,7 +112,7 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/liste.html.twig.html.twig', [
+        return $this->render('salle/ajout.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
             'salle' => $salle,
