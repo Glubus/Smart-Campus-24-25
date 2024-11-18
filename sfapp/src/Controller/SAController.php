@@ -20,11 +20,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class SAController extends AbstractController
 {
     #[Route('/sa/ajout', name: 'app_sa_ajout')]
-    public function ajouter(Request $request, EntityManagerInterface $entityManager): Response
+    public function ajouter(Request $request, SARepository $SARepository, EntityManagerInterface $entityManager): Response
     {
-        // Création du nouvel objet SA
-        $SA = new SA();
+        $req=$request->get('sa');
+        $SA=null;
 
+
+        if ($req) {
+            $SA = $SARepository->find($request->get('sa'));
+        }
+        if (!$SA) {
+            // Création du nouvel objet SA
+            $SA = new SA();
+        }
         // Création du formulaire
 
         $form = $this->createForm(AjoutSAType::class, $SA);
@@ -40,18 +48,18 @@ class SAController extends AbstractController
             } else {
                 // Persister l'entité SA
                 $entityManager->persist($SA);
+                if ($SA->getCapteurs()->isEmpty()) {
+                    // Créer et associer 3 capteurs à cet SA
+                    for ($i = 1; $i <= 3; $i++) {
+                        $type = TypeCapteur::cases()[$i - 1];
+                        $capteur = new Capteur();
+                        $capteur->setNom('Capteur ' . $i)
+                            ->setType($type)
+                            ->setSA($SA);
 
-                // Créer et associer 3 capteurs à cet SA
-                for ($i = 1; $i <= 3; $i++) {
-                    $type = TypeCapteur::cases()[$i-1];
-                    $capteur = new Capteur();
-                    $capteur->setNom('Capteur ' .$i .' '. $SA->getNom())
-                        ->setType($type)
-                        ->setSA($SA);
-
-                    $entityManager->persist($capteur);
+                        $entityManager->persist($capteur);
+                    }
                 }
-
                 // Sauvegarder dans la base de données
                 $entityManager->flush();
 

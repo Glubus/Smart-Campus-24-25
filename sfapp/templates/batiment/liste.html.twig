@@ -27,12 +27,12 @@
                         <td>{{ batiment.id }}</td>
                         <td>{{ batiment.nom }}</td>
                         <td>{{ batiment.adresse }}</td>
-                    <td>
-                        <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}" class="btn btn-outline-danger">supprimer</a>
-                    </td>
                         <td style="width: 10%">
                             <a class="btn btn-outline-success" href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}" role="button">Modifier</a>
                         </td>
+                    <td>
+                        <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}" class="btn btn-outline-danger">supprimer</a>
+                    </td>
                     </tr>
                 {% else %}
                     <tr>

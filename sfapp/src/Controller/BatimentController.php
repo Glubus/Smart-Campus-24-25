@@ -21,7 +21,7 @@ class BatimentController extends AbstractController
         // Récupération de tous les bâtiments depuis la base de données
         $batiments = $em->getRepository(Batiment::class)->findAll();
 
-        return $this->render('batiment/index.html.twig', [
+        return $this->render('batiment/ajouter.html.twig', [
             'batiments' => $batiments,
         ]);
     }
@@ -40,7 +40,11 @@ class BatimentController extends AbstractController
     #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
-        $batiment = $batimentRepository->find($request->get('batiment'));
+        $req=$request->get('batiment');
+        $batiment=null;
+        if ($req) {
+            $batiment = $batimentRepository->find($req);
+        }
         if (!$batiment) {
             // Initialisation d'un nouveau bâtiment
             $batiment = new Batiment();

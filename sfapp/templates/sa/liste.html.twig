@@ -11,6 +11,7 @@
                 <th class="nom">Nom</th>
                 <th class="col">Détails</th>
                 <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -31,6 +32,9 @@
                         <a href="{{ path("app_sa_infos", {id:SA.id })}}">
                             voir
                         </a>
+                    </td>
+                    <td style="width: 10%">
+                        <a class="btn btn-outline-success" href="{{ path('app_sa_ajout') }}?sa={{ SA.id }}" role="button">Modifier</a>
                     </td>
                     <td style="width: 10%">
                         <a href="{{ path("app_sa_suppression", { id : SA.id }) }}" class="btn btn-outline-danger">

@@ -50,7 +50,7 @@ class PlanController extends AbstractController
             return $this->redirectToRoute('plans_liste'); // Redirection après soumission
         }
 
-        return $this->render('plan/index.html.twig', [
+        return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
     }
