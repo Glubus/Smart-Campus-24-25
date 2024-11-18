@@ -18,11 +18,11 @@ class Plan
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?SA $sa = null;
 
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Salle $salle = null;
 
