@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\US2;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class US2Test extends WebTestCase
+class saTest extends WebTestCase
 {
     public function test_page_SA_existe(): void
     {

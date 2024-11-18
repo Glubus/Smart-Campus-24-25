@@ -25,10 +25,10 @@ class SalleRepository extends ServiceEntityRepository
     {
         $salles = $this->findAll();
         foreach ($salles as $salle) {
-            if(strcmp($salle->getSalleNom(), $name) === 0)
+            if(strcmp($salle->getSalleNom(), $name) == 0)
                 return $salle;
-            return null;
         }
+        return null;
     }
 //    /**
 //     * @return Salle[] Returns an array of Salle objects
