@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Batiment;
 use App\Form\AjoutBatimentType;
+use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
+use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,4 +65,55 @@ class BatimentController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/batiment/{id}/suppression', name: 'app_batiment_suppression')]
+    public function supprimer(
+        Request $request,
+        int $id,
+        BatimentRepository $repo,
+        SalleRepository $salleRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $batiment = $repo->find($id);
+
+        // Vérification si le bâtiment existe
+        if (!$batiment) {
+            return $this->render('batiment/notfound.html.twig', []);
+        }
+
+        // Vérification des salles associées
+        $sallesAssociees = $salleRepo->findBy(['batiment' => $batiment]);
+        if (!empty($sallesAssociees)) {
+            // Ajouter un message d'erreur et rediriger
+            $this->addFlash('error', 'Impossible de supprimer ce bâtiment car des salles y sont associées.');
+            return $this->redirectToRoute('app_batiment_liste');
+        }
+
+        // Création du formulaire
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => $batiment->getNom(),
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $submittedString = $form->get('inputString')->getData();
+            if ($submittedString === $batiment->getNom()) {
+                // Suppression du bâtiment
+                $em->remove($batiment);
+                $em->flush();
+                $this->addFlash('success', 'Bâtiment supprimé avec succès.');
+                return $this->redirectToRoute('app_batiment_liste');
+            } else {
+                $this->addFlash('error', 'La saisie est incorrecte.');
+            }
+        }
+
+        return $this->render('batiment/suppression.html.twig', [
+            "form" => $form->createView(),
+            "batiment" => $batiment,
+        ]);
+    }
+
+
+
 }
