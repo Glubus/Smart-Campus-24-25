@@ -52,12 +52,3 @@ Dans la stack docker dans interactive dans iut-php :
 ```
 localhost:8000
 ```
-
-## Partager le projet
-
-À ce stade, les services `sfapp`, `database` et `nginx` sont créés et démarrés, autrement dit fonctionnels, alors : 
-- on fait `commit` et `push` pour partager avec les autres membres de l'équipe
-- on déclare tout les membres de l'équipe dans le dépôt du projet avec le rôle `Developer` (si ce n'est pas déjà fait :-))
-- chaque membre de l'équipe peut alors 
-  - cloner ce nouveau dépôt sur son poste de travail 
-  - démarrer toute la stack docker du projet 
