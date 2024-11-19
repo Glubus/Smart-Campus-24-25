@@ -55,13 +55,9 @@ class BatimentController extends AbstractController
         // Gestion de la requête
         $form->handleRequest($request);
 
-        // Vérification de la soumission et de la validation
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($batiment);
             $em->flush();
-
-            // Message flash pour confirmer l'ajout
-            $this->addFlash('success', 'Bâtiment ajouté avec succès.');
 
             // Redirection vers la liste des bâtiments après ajout
             return $this->redirectToRoute('app_batiment_liste');

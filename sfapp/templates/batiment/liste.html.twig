@@ -8,6 +8,12 @@
             <h1 class="text-center">Liste des Bâtiments</h1>
         </div>
 
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -42,11 +48,6 @@
                 </tbody>
             </table>
             <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-danger">
-                    {{ message }}
-                </div>
-            {% endfor %}
 
         </div>
     </div>
