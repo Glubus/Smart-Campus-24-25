@@ -3,13 +3,14 @@
 {% block title %}Ajouter un systeme d'acquisition (SA){% endblock %}
 
 {% block body %}
-    <div class="container my-5" style="width: 50%">
+    <div class="container my-5" >
         <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
         <table class="table table-striped table-bordered text-center align-middle">
             <thead>
             <tr class="table-dark">
                 <th class="nom">Nom</th>
                 <th class="col">Détails</th>
+                <th></th>
                 <th></th>
             </tr>
             </thead>
@@ -31,6 +32,9 @@
                         <a href="{{ path("app_sa_infos", {id:SA.id })}}">
                             voir
                         </a>
+                    </td>
+                    <td style="width: 10%">
+                        <a class="btn btn-outline-success" href="{{ path('app_sa_ajout') }}?sa={{ SA.id }}" role="button">Modifier</a>
                     </td>
                     <td style="width: 10%">
                         <a href="{{ path("app_sa_suppression", { id : SA.id }) }}" class="btn btn-outline-danger">

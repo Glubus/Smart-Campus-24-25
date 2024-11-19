@@ -25,7 +25,7 @@ class Salle
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist','remove'])]
     private ?Plan $plan = null;
 
     public function getId(): ?int

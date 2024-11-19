@@ -6,8 +6,8 @@
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="text-center">Liste des Bâtiments</h1>
-            <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
         </div>
+
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -16,6 +16,8 @@
                     <th scope="col">#</th>
                     <th scope="col">Nom</th>
                     <th scope="col">Adresse</th>
+                    <th scope="col">Supprimer</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -24,14 +26,28 @@
                         <td>{{ batiment.id }}</td>
                         <td>{{ batiment.nom }}</td>
                         <td>{{ batiment.adresse }}</td>
+                        <td style="width: 10%">
+                            <a class="btn btn-outline-success" href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}" role="button">Modifier</a>
+                        </td>
+                    <td>
+                        <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}" class="btn btn-outline-danger">supprimer</a>
+                    </td>
                     </tr>
                 {% else %}
                     <tr>
                         <td colspan="3" class="text-center">Aucun bâtiment trouvé.</td>
                     </tr>
+
                 {% endfor %}
                 </tbody>
             </table>
+            <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
         </div>
     </div>
 {% endblock %}

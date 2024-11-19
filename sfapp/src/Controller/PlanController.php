@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Plan;
 use App\Entity\SA;
 use App\Form\AssociationSASalle;
+use App\Form\SuppressionType;
 use App\Repository\PlanRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlanController extends AbstractController
 {
-    #[Route('/plan/ajouter', name: 'app_plan')]
+    #[Route('/plan/ajouter', name: 'app_plan_ajout')]
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
         $sa_id = $request->query->get('sa_id');
@@ -47,14 +48,14 @@ class PlanController extends AbstractController
             $em->persist($plan);
             $em->flush();
 
-            return $this->redirectToRoute('plans_liste'); // Redirection après soumission
+            return $this->redirectToRoute('app_plan_liste'); // Redirection après soumission
         }
 
-        return $this->render('plan/index.html.twig', [
+        return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-    #[Route('/plans', name: 'plans_liste')]
+    #[Route('/plan', name: 'app_plan_liste')]
     public function list(PlanRepository $em): Response
     {
         // Récupérer tous les plans
@@ -64,5 +65,35 @@ class PlanController extends AbstractController
         return $this->render('plan/liste.html.twig', [
             'plans' => $plans,
         ]);
+    }
+    #[Route('/plan/{id}/suppression', name: 'app_plan_suppression')]
+    public function supprimer(Request $request, int $id, PlanRepository $repo, EntityManagerInterface $em): Response
+    {
+        $plan = $repo->find($id);
+        if ($plan) {
+            $phrase=$plan->getSalle()->getSalleNom().' vers '.$plan->getSA()->getNom();
+            $form = $this->createForm(SuppressionType::class, null, [
+                'phrase' => $phrase, // Passer la variable au formulaire
+            ]);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $submittedString = $form->get('inputString')->getData();
+                if ($submittedString == $phrase) {
+                    $em->remove($plan);
+                    $em->flush();
+                    $this->addFlash('success', 'Attribution supprimé avec succès.');
+                    return $this->redirectToRoute('app_plan_liste');
+                } else {
+                    $this->addFlash('error', 'La saisie est incorrecte.');
+                }
+            }
+
+            return $this->render('plan/suppression.html.twig', [
+                "form" => $form->createView(),
+                "plan" => $plan,
+            ]);
+        }
+
+        return $this->render('sa/notfound.html.twig', []);
     }
 }
