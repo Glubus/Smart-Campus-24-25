@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lister Salle{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Salles</h1>
+        <br class="center mb-4" style="max-width: 100%;">
+            <div class="d-flex">
+                {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                <div class="form-group mr-2" >
+                    {{ form_row(form.salleNom) }}
+                </div>
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+                {{ form_end(form) }}
+            </div></br>
+        <a class="btn btn-primary" href="{{ path('app_salle_ajout')}}" role="button">Ajouter une salle</a>
+            <table class="salle table table-striped table-bordered text-center align-middle">
+                <thead>
+                <tr class="table-dark">
+                    <th class="nom">Nom</th>
+                    <th class="col">Batiment</th>
+                    <th class="col">Etage</th>
+                    <th class="col">Numéro de salle</th>
+                    <th class="col">Informations</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                {% for salle in salles %}
+                        <tr class="text-center align-middle">
+                            <td class="nom">
+                                {{ salle.getSalleNom }}
+                            </td>
+                            <td  class="bat">
+                                Batiment {{ salle.batiment.nom }}
+                            </td>
+                            <td  class="etage">
+                                {{ salle.etage.value }}
+                            </td>
+                            <td class="numSalle">
+                                {{ salle.numero }}
+                            </td>
+                            <td class="info" style="width: 10%">
+                                <a class="btn btn-outline-info" href="{{ path('app_salle_infos', { id: salle.id }) }}" role="button">Détails</a>
+                            </td>
+                            <td class="maj" style="width: 10%">
+                                <a class="btn btn-outline-success" href="{{ path('app_salle_update') }}?salle={{ salle.id }}" role="button">Modifier</a>
+                            </td>
+                            <td class="supprimer" style="width: 10%">
+                                <a class="btn btn-outline-danger" href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" role="button">Supprimer</a>
+                            </td>
+                        </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}

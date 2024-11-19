@@ -14,11 +14,23 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method SA[]    findAll()
  * @method SA[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SysAcqRepository extends ServiceEntityRepository
+class SARepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, SA::class);
+    }
+
+    public function findByNomSA(?string $nomSa)
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        if ($nomSa) {
+            $queryBuilder->andWhere('s.nom LIKE :nomSa')
+                ->setParameter('nomSa', '%' . $nomSa . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
 //    /**

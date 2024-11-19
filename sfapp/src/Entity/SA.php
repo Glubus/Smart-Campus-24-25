@@ -1,12 +1,12 @@
 <?php
-
 namespace App\Entity;
 
-use App\Repository\SysAcqRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Repository\SARepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SysAcqRepository::class)]
+#[ORM\Entity(repositoryClass: SARepository::class)]
 class SA
 {
     #[ORM\Id]
@@ -14,25 +14,24 @@ class SA
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $DateCreation = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Salle $salle = null;
+    #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
+    private Collection $capteurs;
+
+    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
+    private ?Plan $plan = null;
+
+    public function __construct()
+    {
+        $this->capteurs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -43,30 +42,59 @@ class SA
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+        return $this;
+    }
+
+    public function getDateAjout(): ?\DateTime
+    {
+        return $this->dateAjout;
+    }
+
+    public function setDateAjout(\DateTime $dateAjout): static
+    {
+        $this->dateAjout = $dateAjout;
+        return $this;
+    }
+
+    public function getCapteurs(): Collection
+    {
+        return $this->capteurs;
+    }
+
+    public function addCapteur(Capteur $capteur): static
+    {
+        if (!$this->capteurs->contains($capteur)) {
+            $this->capteurs->add($capteur);
+            $capteur->setSA($this);
+        }
 
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTimeInterface
+    public function removeCapteur(Capteur $capteur): static
     {
-        return $this->DateCreation;
-    }
-
-    public function setDateCreation(\DateTimeInterface $DateCreation): static
-    {
-        $this->DateCreation = $DateCreation;
+        if ($this->capteurs->removeElement($capteur)) {
+            if ($capteur->getSA() === $this) {
+                $capteur->setSA(null);
+            }
+        }
 
         return $this;
     }
 
-    public function getSalle(): ?Salle
+    public function getPlan(): ?Plan
     {
-        return $this->salle;
+        return $this->plan;
     }
 
-    public function setSalle(?Salle $salle): static
+    public function setPlan(Plan $plan): static
     {
-        $this->salle = $salle;
+        // set the owning side of the relation if necessary
+        if ($plan->getSa() !== $this) {
+            $plan->setSa($this);
+        }
+
+        $this->plan = $plan;
 
         return $this;
     }

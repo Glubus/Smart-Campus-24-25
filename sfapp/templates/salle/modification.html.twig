@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification salle{% endblock %}
+
+{% block body %}
+    <div class="container my-5" style="width: 40%">
+        <h1 class="text-center mb-4">Modification {{ salle }}</h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" style="margin-top: 10px">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" type="submit">Modifier</button>
+        <a class="btn btn-primary" href="{{ path('app_salle') }}" style="margin-right: 10px; margin-top: 10px">Annuler</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

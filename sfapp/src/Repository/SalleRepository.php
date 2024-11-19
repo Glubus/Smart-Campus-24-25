@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\EtageSalle;
 use App\Entity\Salle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,6 +20,16 @@ class SalleRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Salle::class);
+    }
+
+    public function findByName(string $name): ?Salle
+    {
+        $salles = $this->findAll();
+        foreach ($salles as $salle) {
+            if(strcmp($salle->getSalleNom(), $name) == 0)
+                return $salle;
+        }
+        return null;
     }
 
 //    /**

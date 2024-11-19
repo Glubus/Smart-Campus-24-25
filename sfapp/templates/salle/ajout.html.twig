@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une salle{% endblock %}
+
+{% block body %}
+    <div class="container my-5" style="width: 40%">
+        <h1 class="text-center mb-4">Ajouter une salle</h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" style="margin-top: 10px">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Créer la salle</button>
+            <a href="{{ path('app_salle')}}" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Annuler</a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+

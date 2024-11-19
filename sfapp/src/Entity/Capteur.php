@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Entity;
 
-use App\Repository\CapteurRepository;
+use App\Entity\TypeCapteur;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CapteurRepository::class)]
@@ -31,7 +30,6 @@ class Capteur
     public function setId(int $id): static
     {
         $this->id = $id;
-
         return $this;
     }
 
@@ -43,19 +41,17 @@ class Capteur
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?TypeCapteur
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(TypeCapteur $type): static
     {
         $this->type = $type;
-
         return $this;
     }
 
@@ -67,7 +63,11 @@ class Capteur
     public function setSA(?SA $SA): static
     {
         $this->SA = $SA;
-
         return $this;
+    }
+
+    public function getTypeString(): ?string
+    {
+        return $this->type?->value;
     }
 }
