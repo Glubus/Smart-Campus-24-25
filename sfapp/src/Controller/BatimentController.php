@@ -55,7 +55,6 @@ class BatimentController extends AbstractController
         // Gestion de la requête
         $form->handleRequest($request);
 
-        // Vérification de la soumission et de la validation
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($batiment);
             $em->flush();

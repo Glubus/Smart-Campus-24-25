@@ -17,14 +17,14 @@ class AjoutSAType extends AbstractType
             ->add('nom', TextType::class, [
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Choisir un nom de SA..', // Placeholder pour le champ
+                    'placeholder' => 'Choisir un nom de SA..',
                 ],
                 'label' => 'Nom du système d\'acquisition',
                 'label_attr' => [
-                    'class' => 'form-label'  // Classe pour le label
+                    'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'  // Classe pour le champ
+                    'class' => 'form-control'
                 ],
             ]);
     }
