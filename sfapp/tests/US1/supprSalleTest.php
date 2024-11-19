@@ -28,7 +28,7 @@ class supprSalleTest extends WebTestCase
         $D001 = $container->get(SalleRepository::class)->findByName('D001');
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
-        $selecteur = "a[href='/salle']";
+        $selecteur = "a.btn[href='/salle']";
         $this->assertSelectorExists($selecteur);
         $this->assertSelectorTextSame($selecteur, "Annuler");
     }

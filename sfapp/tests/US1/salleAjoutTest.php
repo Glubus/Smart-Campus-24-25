@@ -6,12 +6,12 @@ use App\Entity\Salle;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class creerSalleTest extends WebTestCase
+class salleAjoutTest extends WebTestCase
 {
-    public function test_page_creerSalle_existe(): void
+    public function test_page_salle_ajout_existe(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
 
         $this->assertResponseIsSuccessful();
     }
@@ -19,18 +19,18 @@ class creerSalleTest extends WebTestCase
     public function test_bouton_annuler_dispo(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
 
-        $selecteur = "a[href='/salle']";
+        $selecteur = "a.btn[href='/salle']";
 
         $this->assertSelectorExists($selecteur);
         $this->assertSelectorTextSame($selecteur, "Annuler");
     }
 
-    public function test_valeur_champ_form_creerSalle(): void
+    public function test_valeur_champ_form_salle_aJout(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
 
         $selecteur = "form select#ajout_salle_batiment";
         $this->assertSelectorExists($selecteur);
@@ -46,10 +46,10 @@ class creerSalleTest extends WebTestCase
         $this->assertSelectorExists($selecteur);
     }
 
-    public function test_submit_form_valide_creerSalle(): void
+    public function test_submit_form_valide_salle_ajout(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
 
         $form = $crawler->selectButton("Créer la salle")->form();
         $optionValue = null;
@@ -82,7 +82,7 @@ class creerSalleTest extends WebTestCase
     public function test_submit_form_invalide_numero_salle_non_entier(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
         $optionValue = null;
         foreach ($crawler->filter('select[name="ajout_salle[batiment]"] option') as $option) {
             if ($option->nodeValue === 'C') {
@@ -103,7 +103,7 @@ class creerSalleTest extends WebTestCase
     public function test_submit_form_invalide_salle_duplique(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/creerSalle');
+        $crawler = $client->request('GET', '/salle/ajout');
         $optionValue = null;
         foreach ($crawler->filter('select[name="ajout_salle[batiment]"] option') as $option) {
             if ($option->nodeValue === 'D') {

@@ -53,7 +53,7 @@ class salleTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle');
 
-        $selecteur = "a[href='/creerSalle']";
+        $selecteur = "a[href='/salle/ajout']";
 
         $this->assertSelectorExists($selecteur);
         $this->assertSelectorTextSame($selecteur, "Ajouter une salle");

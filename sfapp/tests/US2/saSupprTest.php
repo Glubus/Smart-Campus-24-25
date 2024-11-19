@@ -12,9 +12,8 @@ class saSupprTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $SA01 = $container->get(SARepository::class)->findOneBy(['nom'=>'SA01']);
-
-        $crawler = $client->request('GET', '/sa/'.$SA01->getId().'/suppression');
+        $SATest = $container->get(SARepository::class)->findOneBy(['nom'=>'SATest']);
+        $crawler = $client->request('GET', '/sa/'.$SATest->getId().'/suppression');
         $this->assertResponseIsSuccessful();
     }
 }
