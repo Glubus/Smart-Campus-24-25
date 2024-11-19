@@ -94,6 +94,7 @@ class SalleController extends AbstractController
 
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             if(ctype_digit($salle->getNumero())) {
                 $salleExistante = $salleRepository->findOneBy(
