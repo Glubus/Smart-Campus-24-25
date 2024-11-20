@@ -4,10 +4,10 @@
 
 {% block body %}
     <div class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text-center">Liste des Bâtiments</h1>
+        <h1 class="text-center">Liste des Bâtiments</h1>
+        <div class="d-flex justify-content-end align-items-center mb-4">
+            <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
         </div>
-
         {% for message in app.flashes('error') %}
             <div class="alert alert-danger">
                 {{ message }}
@@ -47,8 +47,6 @@
                 {% endfor %}
                 </tbody>
             </table>
-            <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
-
         </div>
     </div>
 {% endblock %}
