@@ -19,9 +19,9 @@
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th scope="col">#</th>
                     <th scope="col">Nom</th>
                     <th scope="col">Adresse</th>
+                    <th scope="col">Nombre d'étages</th>
                     <th scope="col">Supprimer</th>
                     <th></th>
                 </tr>
@@ -29,9 +29,9 @@
                 <tbody>
                 {% for batiment in batiments %}
                     <tr>
-                        <td>{{ batiment.id }}</td>
                         <td>{{ batiment.nom }}</td>
                         <td>{{ batiment.adresse }}</td>
+                        <td>{{ batiment.nbEtages }}</td>
                         <td style="width: 10%">
                             <a class="btn btn-outline-success" href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}" role="button">Modifier</a>
                         </td>

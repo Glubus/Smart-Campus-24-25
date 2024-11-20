@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container my-5" style="width: 40%">
-        <h1 class="text-center mb-4">Modification {{ salle }}</h1>
+        <h1 class="text-center mb-4">Modification {{ salle.nom }}</h1>
         {{ form_start(form) }}
         {{ form_widget(form) }}
         {% for message in app.flashes('error') %}
