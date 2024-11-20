@@ -12,11 +12,12 @@ class RechercheSaType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => 'Nom du sa: ',
                 'required' => false,
+                'label' => false,
                 'attr' => [
+                    'class' => 'form-control',
                     'placeholder' => 'Rechercher par nom...'
-                ]
+                ],
             ]);
     }
 
