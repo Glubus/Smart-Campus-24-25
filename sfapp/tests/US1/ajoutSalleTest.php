@@ -6,7 +6,7 @@ use App\Entity\Salle;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class salleAjoutTest extends WebTestCase
+class ajoutSalleTest extends WebTestCase
 {
     public function test_page_salle_ajout_existe(): void
     {
