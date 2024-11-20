@@ -17,16 +17,13 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-
-    #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
-    private Collection $capteurs;
-
-    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
-    private ?Plan $plan = null;
+    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'sa')]
+    private Collection $plans;
 
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
+        $this->plans = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -95,6 +92,36 @@ class SA
         }
 
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Plan>
+     */
+    public function getPlans(): Collection
+    {
+        return $this->plans;
+    }
+
+    public function addPlan(Plan $plan): static
+    {
+        if (!$this->plans->contains($plan)) {
+            $this->plans->add($plan);
+            $plan->setSa($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlan(Plan $plan): static
+    {
+        if ($this->plans->removeElement($plan)) {
+            // set the owning side to null (unless already changed)
+            if ($plan->getSa() === $this) {
+                $plan->setSa(null);
+            }
+        }
 
         return $this;
     }
