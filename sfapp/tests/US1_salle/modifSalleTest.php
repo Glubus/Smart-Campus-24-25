@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -43,13 +43,5 @@ class modifSalleTest extends WebTestCase
         $crawler = $client->request('GET', '/salle');
         $this->assertSelectorTextSame('table.salle td.nom', 'D101');
         $this->assertSelectorTextSame('table.salle td.etage', '1');
-
-        // Remise D101 en D001
-        $container = $client->getContainer();
-        $D101 = $container->get(SalleRepository::class)->findByName('D101');
-        $crawler = $client->request('GET', '/modifierSalle?salle=' . $D101->getId());
-        $form = $crawler->selectButton("Modifier")->form();
-        $form['ajout_salle[etage]'] = '0';
-        $client->submit($form);
     }
 }

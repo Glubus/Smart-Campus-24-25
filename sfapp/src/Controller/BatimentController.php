@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BatimentController extends AbstractController
 {
-    #[Route('/batiment', name: 'app_batiment')]
+    /*#[Route('/batiment', name: 'app_batiment')]
     public function index(EntityManagerInterface $em): Response
     {
         // Récupération de tous les bâtiments depuis la base de données
@@ -24,9 +24,9 @@ class BatimentController extends AbstractController
         return $this->render('batiment/ajouter.html.twig', [
             'batiments' => $batiments,
         ]);
-    }
+    }*/
 
-    #[Route('/batiment/liste', name: 'app_batiment_liste')]
+    #[Route('/batiment', name: 'app_batiment_liste')]
     public function liste(EntityManagerInterface $em): Response
     {
         // Récupérer la liste des bâtiments
@@ -37,7 +37,7 @@ class BatimentController extends AbstractController
         ]);
     }
 
-    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
+    #[Route('/batiment/ajout', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
         $req=$request->get('batiment');
@@ -57,14 +57,21 @@ class BatimentController extends AbstractController
 
         // Vérification de la soumission et de la validation
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($batiment);
-            $em->flush();
+            $batimentExistante = $batimentRepository->findOneBy(
+                ['nom' => $batiment->getNom()]);
+            if($batimentExistante) {
+                $this->addFlash('error', 'Ce batiment existe déjà');
+            }
+            else{
+                $em->persist($batiment);
+                $em->flush();
 
-            // Message flash pour confirmer l'ajout
-            $this->addFlash('success', 'Bâtiment ajouté avec succès.');
+                // Message flash pour confirmer l'ajout
+                //$this->addFlash('success', 'Bâtiment ajouté avec succès.');
 
-            // Redirection vers la liste des bâtiments après ajout
-            return $this->redirectToRoute('app_batiment_liste');
+                // Redirection vers la liste des bâtiments après ajout
+                return $this->redirectToRoute('app_batiment_liste');
+                }
         }
 
         return $this->render('batiment/ajouter.html.twig', [

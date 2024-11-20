@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Repository\BatimentRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -56,6 +56,6 @@ class batimentTest extends WebTestCase
         $selecteur = "a[href='/batiment/ajout']";
 
         $this->assertSelectorExists($selecteur);
-        $this->assertSelectorTextSame($selecteur, "Ajouter un batiment");
+        $this->assertSelectorTextSame($selecteur, "Ajouter un bâtiment");
     }
 }

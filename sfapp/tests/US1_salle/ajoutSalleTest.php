@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Entity\Salle;
 use App\Repository\SalleRepository;
@@ -72,11 +72,6 @@ class ajoutSalleTest extends WebTestCase
         $crawler = $client->request('GET', '/salle');
         $this->assertSelectorTextContains('table.salle tr:nth-of-type(2) td.nom', 'C101');
 
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $C101 = $container->get(SalleRepository::class)->findByName('C101');
-        $entityManager->remove($C101);
-        $entityManager->flush();
     }
 
     public function test_submit_form_invalide_numero_salle_non_entier(): void

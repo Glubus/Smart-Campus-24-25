@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
+use App\Entity\Batiment;
 use App\Repository\BatimentRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -24,7 +25,7 @@ class supprBatimentTest extends WebTestCase
         $D = $container->get(BatimentRepository::class)->findOneBy(['nom' =>'D']);
 
         $crawler = $client->request('GET', '/batiment/'.$D->getId().'/suppression');
-        $this->assertResponseRedirects('batiment');
+        $this->assertResponseRedirects('/batiment');
 
         $crawler = $client->request('GET', '/batiment');
         $this->assertSelectorTextContains('.alert', 'Impossible de supprimer ce bâtiment');
@@ -69,31 +70,29 @@ class supprBatimentTest extends WebTestCase
         $C = $container->get(BatimentRepository::class)->findOneBy(['nom' =>'C']);
         $this->assertNull($C);
 
-        $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorNotExists('table.salle td.nom');
+        $crawler = $client->request('GET', '/batiment');
+        $this->assertSelectorTextNotContains('table td.nom', 'C');
 
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
-        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D']);
-        $D001 = new Salle();
-        $D001->setNumero("1");
-        $D001->setEtage(EtageSalle::REZDECHAUSSEE);
-        $D001->setBatiment($D);
-        $entityManager->persist($D001);
+        $batimentC = new Batiment();
+        $batimentC->setNom('C');
+        $batimentC->setAdresse('15 Rue François de Vaux de Foletier, 17000 La Rochelle');
+        $entityManager->persist($batimentC);
         $entityManager->flush();
     }
 
-    public function test_suppression_invalide_pour_D001(): void
+    public function test_suppression_invalide_pour_batC(): void
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $C = $container->get(BatimentRepository::class)->findOneBy(['nom' =>'C']);
 
-        $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
+        $crawler = $client->request('GET', '/batiment/'.$C->getId().'/suppression');
         $form = $crawler->selectButton("Supprimer")->form();
         $form["suppression[inputString]"] = 'Hello World' ;
         $client->submit($form);
 
-        $this->assertSelectorTextContains('.alert', 'Mauvaise phrase saisie');
+        $this->assertSelectorTextContains('.alert', 'La saisie est incorrecte.');
     }
 }

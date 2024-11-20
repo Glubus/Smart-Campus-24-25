@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Entity\EtageSalle;
 use App\Entity\Salle;
@@ -62,16 +62,6 @@ class supprSalleTest extends WebTestCase
 
         $crawler = $client->request('GET', '/salle');
         $this->assertSelectorNotExists('table.salle td.nom');
-
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D']);
-        $D001 = new Salle();
-        $D001->setNumero("1");
-        $D001->setEtage(EtageSalle::REZDECHAUSSEE);
-        $D001->setBatiment($D);
-        $entityManager->persist($D001);
-        $entityManager->flush();
     }
 
     public function test_suppression_invalide_pour_D001(): void
@@ -85,6 +75,6 @@ class supprSalleTest extends WebTestCase
         $form["suppression[inputString]"] = 'Hello World' ;
         $client->submit($form);
 
-        $this->assertSelectorTextContains('.alert', 'Mauvaise phrase saisie');
+        $this->assertSelectorTextContains('.alert', 'La saisie est incorrect.');
     }
 }

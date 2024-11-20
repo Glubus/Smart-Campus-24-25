@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Repository\BatimentRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -40,7 +40,7 @@ class ajoutBatimentTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/batiment/ajout');
 
-        $form = $crawler->selectButton("Créer")->form();
+        $form = $crawler->selectButton("Ajouter")->form();
         $form["ajout_batiment[nom]"] = 'A';
         $form["ajout_batiment[adresse]"] = '123 rue janisse';
         $client->submit($form);
@@ -52,12 +52,6 @@ class ajoutBatimentTest extends WebTestCase
 
         $crawler = $client->request('GET', '/batiment');
         $this->assertSelectorTextContains('table tr:nth-of-type(3) td.nom', 'A');
-
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $A = $container->get(BatimentRepository::class)->findOneBy(['nom' =>'A']);
-        $entityManager->remove($A);
-        $entityManager->flush();
     }
 
     public function test_submit_form_invalide_nom_batiment_duplique(): void
@@ -65,7 +59,7 @@ class ajoutBatimentTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/batiment/ajout');
 
-        $form = $crawler->selectButton("Créer")->form();
+        $form = $crawler->selectButton("Ajouter")->form();
         $form["ajout_batiment[nom]"] = 'D';
         $form["ajout_batiment[adresse]"] = '123 rue janisse';
         $client->submit($form);
