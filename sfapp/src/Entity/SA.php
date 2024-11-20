@@ -20,6 +20,9 @@ class SA
     #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'sa')]
     private Collection $plans;
 
+    #[ORM\OneToMany(targetEntity: Capteur::class, mappedBy: 'sa')]
+    private Collection $capteurs;
+
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
@@ -79,22 +82,6 @@ class SA
         return $this;
     }
 
-    public function getPlan(): ?Plan
-    {
-        return $this->plan;
-    }
-
-    public function setPlan(Plan $plan): static
-    {
-        // set the owning side of the relation if necessary
-        if ($plan->getSa() !== $this) {
-            $plan->setSa($this);
-        }
-
-        $this->plan = $plan;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Plan>

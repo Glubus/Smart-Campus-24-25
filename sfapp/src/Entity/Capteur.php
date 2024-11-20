@@ -22,6 +22,9 @@ class Capteur
     #[ORM\JoinColumn(nullable: false)]
     private ?SA $SA = null;
 
+    #[ORM\ManyToOne(inversedBy: 'capteurs')]
+    private ?SA $sa = null;
+
     public function getId(): ?int
     {
         return $this->id;
