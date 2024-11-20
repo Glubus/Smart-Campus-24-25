@@ -18,14 +18,11 @@ class Plan
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?SA $sa = null;
-
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'plans')]
     private ?Salle $salle = null;
 
+    #[ORM\ManyToOne(inversedBy: 'plans')]
+    private ?SA $sa = null;
 
     public function getId(): ?int
     {
