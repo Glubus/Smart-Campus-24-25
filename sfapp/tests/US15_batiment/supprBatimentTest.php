@@ -72,14 +72,6 @@ class supprBatimentTest extends WebTestCase
 
         $crawler = $client->request('GET', '/batiment');
         $this->assertSelectorTextNotContains('table td.nom', 'C');
-
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $batimentC = new Batiment();
-        $batimentC->setNom('C');
-        $batimentC->setAdresse('15 Rue François de Vaux de Foletier, 17000 La Rochelle');
-        $entityManager->persist($batimentC);
-        $entityManager->flush();
     }
 
     public function test_suppression_invalide_pour_batC(): void

@@ -31,14 +31,13 @@ class salleTest extends WebTestCase
         $this->assertSelectorTextContains('table.salle td.nom', 'D001');
         $this->assertSelectorTextSame('table.salle td.bat', 'Batiment D');
         $this->assertSelectorTextSame('table.salle td.etage', '0');
-        $this->assertSelectorTextSame('table.salle td.numSalle', '1');
     }
 
     public function testLienSupressionD001Dispo(): void
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/salle');
 
@@ -63,7 +62,7 @@ class salleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/salle');
 
@@ -109,7 +108,8 @@ class salleTest extends WebTestCase
         $client = static::createClient();
 
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
+
 
         $crawler = $client->request('GET', '/salle');
 

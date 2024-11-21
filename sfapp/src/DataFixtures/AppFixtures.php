@@ -35,8 +35,8 @@ class AppFixtures extends Fixture
 
         $D002 = new Salle();
         $D002->setBatiment($batimentD);
-        $D002->setEtage(EtageSalle::REZDECHAUSSEE);
-        $D002->setNumero("2");
+        $D002->setEtage(0);
+        $D002->setNom("D002");
         $manager->persist($D002);
 
         $SA = new SA();

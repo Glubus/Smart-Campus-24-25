@@ -1,6 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un bâtiment{% endblock %}
+{% block title %}
+    {% if app.request.query.get('batiment') is not null %}
+        Modifier
+    {% else %}
+        Ajouter
+    {% endif %}
+    un bâtiment
+{% endblock %}
 
 {% block body %}
     <div class="container my-5" style="max-width: 600px">

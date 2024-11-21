@@ -3,6 +3,7 @@
 namespace App\Tests\US1_salle;
 
 use App\Entity\Salle;
+use App\Repository\BatimentRepository;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
@@ -38,86 +39,85 @@ class ajoutSalleTest extends WebTestCase
         $this->assertSelectorTextContains($selecteur, "D");
         $this->assertSelectorTextContains($selecteur, "C");
 
-        $selecteur = "form select#ajout_salle_etage";
+        /*$selecteur = "form select#ajout_salle_etage";
         $this->assertSelectorExists($selecteur);
         $this->assertSelectorTextContains($selecteur, "Rez-de-chaussée");
-        $this->assertSelectorTextContains($selecteur, "1");
+        $this->assertSelectorTextContains($selecteur, "1");*/
 
-        $selecteur = "form input#ajout_salle_numero";
+        $selecteur = "form input#ajout_salle_nom";
         $this->assertSelectorExists($selecteur);
     }
 
-    public function test_submit_form_valide_salle_ajout(): void
+    public function test_submit_form_valide_nouvelle_salle(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle/ajout');
 
+        $container = $client->getContainer();
+        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D'])->getId();
+
         $form = $crawler->selectButton("Créer la salle")->form();
-        $optionValue = null;
-        foreach ($crawler->filter('select[name="ajout_salle[batiment]"] option') as $option) {
-            if ($option->nodeValue === 'C') {
-                $optionValue = $option->getAttribute('value');
-                break;  // Stop once we've found the option with the text 'C'
-            }
-        }
-        $form["ajout_salle[batiment]"] = $optionValue;
+        $form["ajout_salle[batiment]"] = $D;
         $form['ajout_salle[etage]'] = '1';
-        $form['ajout_salle[numero]'] = '1';
+        $form['ajout_salle[nom]'] = 'D101';
         $client->submit($form);
         $this->assertResponseRedirects('/salle');
 
-        $container = $client->getContainer();
-        $C101 = $container->get(SalleRepository::class)->findByName('C101');
-        $this->assertNotNull($C101);
+        $D101 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D101', 'batiment' => $D]);
+        $this->assertNotNull($D101);
+
         $crawler = $client->request('GET', '/salle');
         $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
             function (Crawler $node):string {
                 return $node->text();
             });
-
-        $this->assertContains('C101', $sallesAffiches);
-
+        $this->assertContains('D101', $sallesAffiches);
     }
 
-    public function test_submit_form_invalide_numero_salle_non_entier(): void
+
+    public function test_submit_form_invalide_salle_duplique_dans_meme_batiment(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle/ajout');
-        $optionValue = null;
-        foreach ($crawler->filter('select[name="ajout_salle[batiment]"] option') as $option) {
-            if ($option->nodeValue === 'C') {
-                $optionValue = $option->getAttribute('value');
-                break;  // Stop once we've found the option with the text 'C'
-            }
-        }
+
+        $container = $client->getContainer();
+        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D'])->getId();
 
         $form = $crawler->selectButton("Créer la salle")->form();
-        $form["ajout_salle[batiment]"] = $optionValue;
-        $form['ajout_salle[etage]'] = '1';
-        $form['ajout_salle[numero]'] = 'AB';
-        $client->submit($form);
-
-        $this->assertSelectorTextContains('.alert', 'Entiers uniquement');
-    }
-
-    public function test_submit_form_invalide_salle_duplique(): void
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/salle/ajout');
-        $optionValue = null;
-        foreach ($crawler->filter('select[name="ajout_salle[batiment]"] option') as $option) {
-            if ($option->nodeValue === 'D') {
-                $optionValue = $option->getAttribute('value');
-                break;  // Stop once we've found the option with the text 'C'
-            }
-        }
-
-        $form = $crawler->selectButton("Créer la salle")->form();
-        $form["ajout_salle[batiment]"] = $optionValue;
+        $form["ajout_salle[batiment]"] = $D;
         $form['ajout_salle[etage]'] = '0';
-        $form['ajout_salle[numero]'] = '1';
+        $form['ajout_salle[nom]'] = 'D001';
         $client->submit($form);
 
         $this->assertSelectorTextContains('.alert', 'Cette salle existe déjà');
+    }
+
+    public function test_submit_form_valide_salle_duplique_dans_batiments_differents(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/salle/ajout');
+
+        $container = $client->getContainer();
+        $C = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'C'])->getId();
+
+        $form = $crawler->selectButton("Créer la salle")->form();
+        $form["ajout_salle[batiment]"] = $C;
+        $form['ajout_salle[etage]'] = '1';
+        $form['ajout_salle[nom]'] = 'D001';
+        $client->submit($form);
+        $this->assertResponseRedirects('/salle');
+
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001', 'batiment' => $C]);
+        $this->assertNotNull($D001);
+
+        $crawler = $client->request('GET', '/salle');
+        $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
+            function (Crawler $node):string {
+                return $node->text();
+            });
+        $filtered = array_filter($sallesAffiches, function($value) {
+            return $value == 'D001';
+        });
+        $this->assertCount(2, $filtered);
     }
 }
