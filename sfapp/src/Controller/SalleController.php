@@ -6,11 +6,13 @@ use App\Entity\Salle;
 use App\Entity\Batiment;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpParser\Node\Expr\Cast\Bool_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +40,7 @@ class SalleController extends AbstractController
 
                 // Filtrer les résultats avec getSalleNom() en PHP
                 $salles = array_filter($salles, function($salle) use ($salleNom) {
-                    return stripos($salle->getSalleNom(), $salleNom) !== false;
+                    return stripos($salle->getNom(), $salleNom) !== false;
                 });
             }
         } else {
@@ -47,15 +49,9 @@ class SalleController extends AbstractController
         }
 
         if ($salles) {
-            $noms = array();
-            foreach ($salles as $salle) {
-                array_push($noms, $salle->getSalleNom());
-            }
-
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
-                'noms' => $noms,
                 'form' => $form->createView(), // Passer le formulaire à la vue
             ]);
         } else {
@@ -70,7 +66,6 @@ class SalleController extends AbstractController
     {
         $salle = $aRepo->find($id);
         $batiment = $salle->getBatiment();
-        $nom = $salle->getSalleNom();
         $plan = $planRepository->findOneBy(['salle' => $id]);
 
         $sa = null;
@@ -80,36 +75,28 @@ class SalleController extends AbstractController
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
-            'nom' => $nom,
-            'batiment' => $batiment,
             'sa' => $sa,
         ]);
     }
 
     #[Route('/salle/ajout', name: 'app_salle_ajout')]
-    public function ajouter(Request $request, SalleRepository $salleRepository, EntityManagerInterface $entityManager): Response
+    public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
         $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
-            if(ctype_digit($salle->getNumero())) {
-                $salleExistante = $salleRepository->findOneBy(
-                    ['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
-                if($salleExistante) {
-                    $this->addFlash('error', 'Cette salle existe déjà');
-                }
-                else {
-                    $entityManager->persist($salle);
-                    $entityManager->flush();
-                    return $this->redirectToRoute('app_salle');
-                }
+            $salleExistante = $salleRepository->findOneBy(
+                ['nom' => $salle->getNom()]);
+            if($salleExistante) {
+                $this->addFlash('error', 'Cette salle existe déjà');
             }
             else {
-                $this->addFlash('error', 'Entiers uniquement');
+                $entityManager->persist($salle);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_salle');
             }
         }
 
@@ -126,14 +113,14 @@ class SalleController extends AbstractController
         $salle = $salleRepository->find($request->get('salle'));
         if($salle) {
             $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $salle->getSalleNom(), // Passer la variable au formulaire
+                'phrase' => $salle->getNom(), // Passer la variable au formulaire
             ]);
             $form->handleRequest($request);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $submittedString = $form->get('inputString')->getData();
-            if ($submittedString==$salle->getSalleNom()){
+            if ($submittedString==$salle->getNom()){
                 $entityManager->remove($salle);
                 $entityManager->flush();
                 return $this->redirectToRoute('app_salle');
@@ -146,7 +133,7 @@ class SalleController extends AbstractController
         return $this->render('salle/suppression.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
-            'salle' => $salle->getSalleNom(),
+            'salle' => $salle,
         ]);
     }
 
@@ -160,26 +147,21 @@ class SalleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            if(ctype_digit($salle->getNumero())) {
-                $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'numero' => $salle->getNumero()]);
-                if($salleExistante) {
-                    $this->addFlash('error', 'Cette salle existe déjà');
-                }
-                else {
-                    $entityManager->persist($salle);
-                    $entityManager->flush();
-                    return $this->redirectToRoute('app_salle');
-                }
+            $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'nom' => $salle->getNom()]);
+            if($salleExistante) {
+                $this->addFlash('error', 'Cette salle existe déjà');
             }
             else {
-                $this->addFlash('error', 'Entiers uniquement');
+                $entityManager->persist($salle);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_salle');
             }
         }
 
         return $this->render('salle/modification.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
-            'salle' => $salle->getSalleNom(),
+            'salle' => $salle,
         ]);
     }
 }

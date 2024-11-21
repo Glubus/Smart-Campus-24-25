@@ -23,7 +23,6 @@
                     <th class="nom">Nom</th>
                     <th class="col">Batiment</th>
                     <th class="col">Etage</th>
-                    <th class="col">Numéro de salle</th>
                     <th class="col">Informations</th>
                     <th></th>
                     <th></th>
@@ -32,16 +31,13 @@
                 {% for salle in salles %}
                         <tr class="text-center align-middle">
                             <td class="nom">
-                                {{ salle.getSalleNom }}
+                                {{ salle.nom }}
                             </td>
                             <td  class="bat">
                                 Batiment {{ salle.batiment.nom }}
                             </td>
                             <td  class="etage">
-                                {{ salle.etage.value }}
-                            </td>
-                            <td class="numSalle">
-                                {{ salle.numero }}
+                                {{ salle.etage }}
                             </td>
                             <td class="info" style="width: 10%">
                                 <a class="btn btn-outline-info" href="{{ path('app_salle_infos', { id: salle.id }) }}" role="button">Détails</a>

@@ -17,18 +17,20 @@ class AppFixtures extends Fixture
     {
         $batimentC = new Batiment();
         $batimentC->setNom('C');
+        $batimentC->setNbEtages(4);
         $batimentC->setAdresse('15 Rue François de Vaux de Foletier, 17000 La Rochelle');
         $manager->persist($batimentC);
 
         $batimentD = new Batiment();
         $batimentD->setNom('D');
+        $batimentD->setNbEtages(4);
         $batimentD->setAdresse('13 Rue François de Vaux de Foletier, 17000 La Rochelle');
         $manager->persist($batimentD);
 
         $D001 = new Salle();
         $D001->setBatiment($batimentD);
-        $D001->setEtage(EtageSalle::REZDECHAUSSEE);
-        $D001->setNumero("1");
+        $D001->setEtage(0);
+        $D001->setNom("D001");
         $manager->persist($D001);
 
         $D002 = new Salle();

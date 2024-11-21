@@ -6,25 +6,22 @@
     <div class="container my-5">
         <div class="card shadow-lg">
             <div class="card-header text-center bg-secondary text-white">
-                <h2 class="mb-0">Détails de la salle : {{ nom }}</h2>
+                <h2 class="mb-0">Détails de la salle : {{ salle.nom }}</h2>
             </div>
             <div class="card-body">
                 <h4 class="card-title text-primary">Informations générales</h4>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        <strong>Nom :</strong> {{ nom }}
+                        <strong>Nom :</strong> {{ salle.nom }}
                     </li>
                     <li class="list-group-item">
-                        <strong>Bâtiment :</strong> {{ batiment.nom }}
+                        <strong>Bâtiment :</strong> {{ salle.batiment.nom }}
                     </li>
                     <li class="list-group-item">
-                        <strong>Adresse :</strong> {{ batiment.adresse }}
+                        <strong>Adresse :</strong> {{ salle.batiment.adresse }}
                     </li>
                     <li class="list-group-item">
-                        <strong>Étage :</strong> {{ salle.etage.value }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Numéro :</strong> {{ salle.numero }}
+                        <strong>Étage :</strong> {{ salle.etage }}
                     </li>
                     <li class="list-group-item">
                         <strong>SA attribué : </strong>
