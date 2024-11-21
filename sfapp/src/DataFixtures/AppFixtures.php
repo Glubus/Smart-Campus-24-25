@@ -22,7 +22,7 @@ class AppFixtures extends Fixture
 
         $batimentD = new Batiment();
         $batimentD->setNom('D');
-        $batimentD->setAdresse('15 Rue François de Vaux de Foletier, 17000 La Rochelle');
+        $batimentD->setAdresse('13 Rue François de Vaux de Foletier, 17000 La Rochelle');
         $manager->persist($batimentD);
 
         $D001 = new Salle();
@@ -31,13 +31,19 @@ class AppFixtures extends Fixture
         $D001->setNumero("1");
         $manager->persist($D001);
 
+        $D002 = new Salle();
+        $D002->setBatiment($batimentD);
+        $D002->setEtage(EtageSalle::REZDECHAUSSEE);
+        $D002->setNumero("2");
+        $manager->persist($D002);
+
         $SA = new SA();
         $SA->setNom('SATest');
         $manager->persist($SA);
 
         $plan=new Plan();
         $plan->setSA($SA);
-        $plan->setSalle($D001);
+        $plan->setSalle($D002);
         $plan->setDateAjout(new DateTime());
         $manager->persist($plan);
 

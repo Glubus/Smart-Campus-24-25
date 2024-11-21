@@ -61,7 +61,7 @@ class supprSalleTest extends WebTestCase
         $this->assertNull($D001);
 
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorNotExists('table.salle td.nom');
+        $this->assertSelectorTextNotContains('table.salle td.nom', 'D001');
     }
 
     public function test_suppression_invalide_pour_D001(): void

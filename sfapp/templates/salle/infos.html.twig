@@ -31,7 +31,7 @@
                         {% if sa is not null %}
                             <a href="{{ path('app_sa_infos', {id : sa.id}) }}" class="btn btn-outline-primary">{{ sa.nom }}</a>
                         {% else %}
-                            <a href="{{ path('app_plan_liste') }}" class="btn btn-primary">Attribuer un SA</a>
+                            <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
                         {% endif %}
                     </li>
                 </ul>

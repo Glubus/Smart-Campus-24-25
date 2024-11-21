@@ -1,20 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello SalleController!{% endblock %}
+{% block title %}Lister Salle{% endblock %}
 
 {% block body %}
     <div class="container my-5">
         <h1 class="text-center mb-4">Salles</h1>
         <br class="center mb-4" style="max-width: 100%;">
-            <div class="d-flex">
-                {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-                <div class="form-group mr-2" >
-                    {{ form_row(form.salleNom) }}
-                </div>
-                <button type="submit" class="btn btn-primary">Rechercher</button>
-                {{ form_end(form) }}
-            </div></br>
-        <a class="btn btn-primary" href="{{ path('app_salle_ajout')}}" role="button">Ajouter une salle</a>
+        <div class="d-flex justify-content-between align-items-center">
+            {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+            <div class="form-group mr-2">
+                {{ form_row(form.salleNom) }}
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+            {{ form_end(form) }}
+
+            <a class="btn btn-primary ml-3" href="{{ path('app_salle_ajout') }}" role="button">Ajouter une salle</a>
+        </div>
+    <br/>
             <table class="salle table table-striped table-bordered text-center align-middle">
                 <thead>
                 <tr class="table-dark">
@@ -23,6 +25,7 @@
                     <th class="col">Etage</th>
                     <th class="col">Numéro de salle</th>
                     <th class="col">Informations</th>
+                    <th></th>
                     <th></th>
                 </thead>
                 <tbody>

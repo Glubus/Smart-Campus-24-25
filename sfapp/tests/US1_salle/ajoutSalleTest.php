@@ -5,6 +5,7 @@ namespace App\Tests\US1_salle;
 use App\Entity\Salle;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ajoutSalleTest extends WebTestCase
 {
@@ -68,9 +69,13 @@ class ajoutSalleTest extends WebTestCase
         $container = $client->getContainer();
         $C101 = $container->get(SalleRepository::class)->findByName('C101');
         $this->assertNotNull($C101);
-
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorTextContains('table.salle tr:nth-of-type(2) td.nom', 'C101');
+        $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
+            function (Crawler $node):string {
+                return $node->text();
+            });
+
+        $this->assertContains('C101', $sallesAffiches);
 
     }
 

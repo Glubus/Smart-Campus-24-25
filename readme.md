@@ -53,6 +53,23 @@ Dans la stack docker dans interactive dans iut-php :
 localhost:8000
 ```
 
+## Erreur Possible :
+
+### Erreur 1 - Php\r(windows uniquement)
+
+```
+/usr/bin/env: 'php\r': No such file or directory
+```
+Résoudre : 
+```
+$ docker exec -it <container> bash
+$ cd bin
+$ tr -d '\015' <console >console.new
+$ mv console console.old
+$ mv console.new console
+$ chmod 777 console
+```
+
 ## Partager le projet
 
 À ce stade, les services `sfapp`, `database` et `nginx` sont créés et démarrés, autrement dit fonctionnels, alors : 
