@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Entity\Salle;
 use App\Repository\SalleRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
-class salleAjoutTest extends WebTestCase
+class ajoutSalleTest extends WebTestCase
 {
     public function test_page_salle_ajout_existe(): void
     {
@@ -68,15 +69,14 @@ class salleAjoutTest extends WebTestCase
         $container = $client->getContainer();
         $C101 = $container->get(SalleRepository::class)->findByName('C101');
         $this->assertNotNull($C101);
-
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorTextContains('table.salle tr:nth-of-type(2) td.nom', 'C101');
+        $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
+            function (Crawler $node):string {
+                return $node->text();
+            });
 
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $C101 = $container->get(SalleRepository::class)->findByName('C101');
-        $entityManager->remove($C101);
-        $entityManager->flush();
+        $this->assertContains('C101', $sallesAffiches);
+
     }
 
     public function test_submit_form_invalide_numero_salle_non_entier(): void

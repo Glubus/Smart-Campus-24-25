@@ -27,6 +27,10 @@ when@test:
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest
+            connections:
+                default:
+                    use_savepoints: true
+
 
 when@prod:
     doctrine:

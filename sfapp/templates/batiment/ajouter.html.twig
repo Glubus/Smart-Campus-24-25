@@ -6,12 +6,30 @@
     <div class="container my-5" style="max-width: 600px">
         <div class="card shadow">
             <div class="card-body">
-                <h2 class="text-center mb-4">Ajouter un bâtiment</h2>
+                <h2 class="text-center mb-4">
+                    {% if app.request.query.get('batiment') is not null %}
+                        Modifier
+                    {% else %}
+                        Ajouter
+                    {% endif %}
+                    un bâtiment
+                </h2>
 
                 {{ form_start(form, {attr: {class: 'needs-validation'}}) }}
                 {{ form_widget(form, {attr: {class: 'form-control mb-3'}}) }}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger" style="margin-top: 10px">
+                        {{ message }}
+                    </div>
+                {% endfor %}
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary">Créer</button>
+                    <button type="submit" class="btn btn-primary">
+                        {% if app.request.query.get('batiment') is not null %}
+                            Modifier
+                        {% else %}
+                            Ajouter
+                        {% endif %}
+                    </button>
                     <a href="{{ path('app_batiment_liste') }}" class="btn btn-secondary">Annuler</a>
                 </div>
                 {{ form_end(form) }}
