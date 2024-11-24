@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\ActionLog;
 use App\Entity\SA;
 use App\Entity\Capteur;
 use App\Entity\Plan;
+use App\Entity\SALog;
 use App\Entity\TypeCapteur;
 use App\Form\AjoutSAType;
 use App\Form\RechercheSaType;
@@ -19,21 +21,43 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SAController extends AbstractController
 {
-    #[Route('/sa/ajout', name: 'app_sa_ajout')]
-    public function ajouter(Request $request, SARepository $SARepository, EntityManagerInterface $entityManager): Response
+    #[Route('/sa/modifier/{id}', name: 'app_sa_modifier', requirements: ['id' => '\d+'])]
+    public function modifier(int $id, SARepository $SARepository, EntityManagerInterface $entityManager,Request $request): Response
     {
-        $req=$request->get('sa');
-        $SA=null;
-
-
-        if ($req) {
-            $SA = $SARepository->find($request->get('sa'));
+        $SA=$SARepository->find($id);
+        if ($SA==null) {
+            return new Response('Page Not Found', 404);
         }
-        if (!$SA) {
-            // Création du nouvel objet SA
-            $SA = new SA();
+        $form = $this->createForm(AjoutSAType::class, $SA);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+
+            if (count($SARepository->findBy(["nom" => $SA->getNom()], ["nom" => "ASC"]))>1){
+                $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
+            }
+            else{
+                $LogCrea=new SALog();
+                $LogCrea->setSA($SA);
+
+                $LogCrea->setDate(new \DateTime());
+                $LogCrea->setAction(ActionLog::MODIFIER);
+                $entityManager->persist($LogCrea);
+                    $entityManager->flush();
+
+                return $this->redirectToRoute('app_sa_liste');
+            }
         }
-        // Création du formulaire
+        // Affichage du formulaire
+        return $this->render('sa/ajout.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/sa/ajout', name: 'app_sa_ajout')]
+    public function ajouter(SARepository $SARepository, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        // Création du nouvel objet SA
+        $SA = new SA();
 
         $form = $this->createForm(AjoutSAType::class, $SA);
         $form->handleRequest($request);
@@ -41,25 +65,26 @@ class SAController extends AbstractController
         // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
             $SA->setDateAjout(new \DateTime());
+
             // Vérifier si le nom est unique
             $existingSA = $entityManager->getRepository(SA::class)->findOneBy(['nom' => $SA->getNom()]);
             if ($existingSA) {
                 $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
-            } else {
-                // Persister l'entité SA
+            }
+            else {
+                // Persister l'entité SA avant d'ajouter les capteurs
                 $entityManager->persist($SA);
                 if ($SA->getCapteurs()->isEmpty()) {
-                    // Créer et associer 3 capteurs à cet SA
-                    for ($i = 1; $i <= 3; $i++) {
-                        $type = TypeCapteur::cases()[$i - 1];
-                        $capteur = new Capteur();
-                        $capteur->setNom('Capteur ' . $i)
-                            ->setType($type)
-                            ->setSA($SA);
-
-                        $entityManager->persist($capteur);
-                    }
+                    $SA->generateCapteurs();
                 }
+
+                // Ajouter un log de création
+                $LogCrea = new SALog();
+                $LogCrea->setSA($SA);
+                $LogCrea->setDate(new \DateTime());
+                $LogCrea->setAction(ActionLog::AJOUTER);
+                $entityManager->persist($LogCrea);
+
                 // Sauvegarder dans la base de données
                 $entityManager->flush();
 
@@ -137,7 +162,7 @@ class SAController extends AbstractController
         if (!$SA) {
             throw $this->createNotFoundException('SA introuvable.');
         }
-        $histo=$SA->getPlans();
+        $histo=$SA->getSALogs();
         // trouver la salle d'un Sa
         $plan = $entityManager->getRepository(Plan::class)->findOneBy(['sa' => $SA]);
         $salle = $plan ? $plan->getSalle() : null;

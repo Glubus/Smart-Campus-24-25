@@ -15,7 +15,7 @@ class Plan
     private ?int $id = null;
 
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
     #[ORM\ManyToOne(inversedBy: 'plans')]
@@ -23,8 +23,7 @@ class Plan
 
     #[ORM\ManyToOne(inversedBy: 'plans')]
     private ?SA $sa = null;
-    #[ORM\Column(enumType: EtatAssignation::class)]
-    private ?EtatAssignation  $etat = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,14 +65,4 @@ class Plan
         return $this;
     }
 
-    public function getEtat(): ?EtatAssignation
-    {
-        return $this->etat;
-    }
-
-    public function setEtat(?EtatAssignation $etat): static
-    {
-        $this->etat = $etat;
-        return $this;
-    }
 }

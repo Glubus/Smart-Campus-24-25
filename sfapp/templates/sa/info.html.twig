@@ -65,13 +65,13 @@
                     <tbody>
                     {% for historique in histo %}
                         <tr>
-                            <td>{{ historique.dateAjout|date('d/m/Y H:i') }}</td>
+                            <td>{{ historique.date|date('d/m/Y H:i') }}</td>
                             <td>
-                                {% if historique.etat == 'actif' %}
-                                    Actif
-                                {% elseif historique.etat == 'inactif' %}
-                                    Inactif
-                                {% elseif historique.etat == 'supprimer' %}
+                                {% if historique.action.value == 'AJOUTER' %}
+                                    Ajouter
+                                {% elseif historique.action.value == 'MODIFIER' %}
+                                    Modifier
+                                {% elseif historique.action.value == 'SUPPRIMER' %}
                                     Supprimé
                                 {% else %}
                                     Inconnu

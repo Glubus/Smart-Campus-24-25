@@ -33,7 +33,7 @@
             {% for SA in liste_SA %}
                 <tr>
                     <td class="nom">
-                        {{ SA.nom }}
+                        {{ SA.nom }} Systèmes d'acquisition
                     </td>
                     <td class="detail">
                         <a href="{{ path("app_sa_infos", {id:SA.id })}}">
@@ -41,7 +41,7 @@
                         </a>
                     </td>
                     <td style="width: 10%">
-                        <a class="btn btn-outline-success" href="{{ path('app_sa_ajout') }}?sa={{ SA.id }}" role="button">Modifier</a>
+                    <a class="btn btn-outline-success" href="{{ path('app_sa_modifier', {id:SA.id}) }}" role="button">Modifier</a>
                     </td>
                     <td style="width: 10%">
                         <a href="{{ path("app_sa_suppression", { id : SA.id }) }}" class="btn btn-outline-danger">

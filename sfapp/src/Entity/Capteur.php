@@ -18,10 +18,6 @@ class Capteur
     #[ORM\Column(type: 'string', length: 255, enumType: TypeCapteur::class)]
     private ?TypeCapteur $type = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?SA $SA = null;
-
     #[ORM\ManyToOne(inversedBy: 'capteurs')]
     private ?SA $sa = null;
 
@@ -60,12 +56,12 @@ class Capteur
 
     public function getSA(): ?SA
     {
-        return $this->SA;
+        return $this->sa;
     }
 
     public function setSA(?SA $SA): static
     {
-        $this->SA = $SA;
+        $this->sa = $SA;
         return $this;
     }
 
