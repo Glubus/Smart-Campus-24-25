@@ -33,6 +33,8 @@ class Salle
         return $this->id;
     }
 
+
+
     public function setId(int $id): static
     {
         $this->id = $id;
@@ -42,14 +44,21 @@ class Salle
 
     public function getSalleNom(): string
     {
-        $nom = $this->batiment->getNom() . $this->etage->value . str_pad($this->numero, 2, "0", STR_PAD_LEFT);
-        return $nom;
+        $batimentNom = $this->batiment?->getNom() ?? 'Inconnu';
+        $etageValue = $this->etage?->value ?? 'X';
+        $numeroFormatted = str_pad($this->numero ?? '', 2, "0", STR_PAD_LEFT);
+        return $batimentNom . $etageValue . $numeroFormatted;
     }
 
     public function getEtage(): ?EtageSalle
     {
         return $this->etage;
     }
+    public function getEtageString(): string
+    {
+        return $this->etage?->value ?? 'N/A';
+    }
+
 
     public function setEtage(?EtageSalle $etage): static
     {

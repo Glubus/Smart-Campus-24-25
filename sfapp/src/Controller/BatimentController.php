@@ -86,7 +86,8 @@ class BatimentController extends AbstractController
         $sallesAssociees = $salleRepo->findBy(['batiment' => $batiment]);
         if (!empty($sallesAssociees)) {
             // Ajouter un message d'erreur et rediriger
-            $this->addFlash('error', 'Impossible de supprimer ce bâtiment car des salles y sont associées.');
+            $this->addFlash('error', [  'message' => 'Impossible de supprimer ce bâtiment car des salles y sont associées.',
+                'batimentId' => $batiment->getId(),]);
             return $this->redirectToRoute('app_batiment_liste');
         }
 

@@ -5,58 +5,93 @@
 {% block body %}
     <div class="container my-5">
         <h1 class="text-center mb-4">Salles</h1>
-        <br class="center mb-4" style="max-width: 100%;">
-        <div class="d-flex justify-content-between align-items-center">
-            {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-            <div class="form-group mr-2">
-                {{ form_row(form.salleNom) }}
-            </div>
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-            {{ form_end(form) }}
 
-            <a class="btn btn-primary ml-3" href="{{ path('app_salle_ajout') }}" role="button">Ajouter une salle</a>
+        <!-- Panneau flottant pour les actions -->
+        <div id="selectionPanel" class="position-fixed bottom-0 end-0 m-4 bg-light shadow p-3 rounded d-none" style="z-index: 1050;">
+            <h5>Salles sélectionnées</h5>
+            <p id="selectedCount">Aucune salle sélectionnée</p>
+            <button id="deleteSelected" class="btn btn-danger w-100">Supprimer</button>
         </div>
-    <br/>
-            <table class="salle table table-striped table-bordered text-center align-middle">
-                <thead>
-                <tr class="table-dark">
+
+        <!-- Formulaire global pour la suppression -->
+        <form id="bulkActionForm" method="post" action="{{ path('app_salle_supprimer_selection') }}">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
                     <th class="nom">Nom</th>
-                    <th class="col">Batiment</th>
-                    <th class="col">Etage</th>
+                    <th class="col">Bâtiment</th>
+                    <th class="col">Étage</th>
                     <th class="col">Numéro de salle</th>
                     <th class="col">Informations</th>
-                    <th></th>
-                    <th></th>
+                    <th scope="col">Modifier</th>
+                    <th scope="col">Supprimer</th>
+                    <th scope="col">Sélectionner</th>
+                </tr>
                 </thead>
                 <tbody>
                 {% for salle in salles %}
-                        <tr class="text-center align-middle">
-                            <td class="nom">
-                                {{ salle.getSalleNom }}
-                            </td>
-                            <td  class="bat">
-                                Batiment {{ salle.batiment.nom }}
-                            </td>
-                            <td  class="etage">
-                                {{ salle.etage.value }}
-                            </td>
-                            <td class="numSalle">
-                                {{ salle.numero }}
-                            </td>
-                            <td class="info" style="width: 10%">
-                                <a class="btn btn-outline-info" href="{{ path('app_salle_infos', { id: salle.id }) }}" role="button">Détails</a>
-                            </td>
-                            <td class="maj" style="width: 10%">
-                                <a class="btn btn-outline-success" href="{{ path('app_salle_update') }}?salle={{ salle.id }}" role="button">Modifier</a>
-                            </td>
-                            <td class="supprimer" style="width: 10%">
-                                <a class="btn btn-outline-danger" href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" role="button">Supprimer</a>
-                            </td>
-                        </tr>
+                    <tr class="text-center align-middle">
+                        <td>{{ salle.getSalleNom }}</td>
+                        <td>Bâtiment {{ salle.batiment.nom }}</td>
+                        <td>{{ salle.getEtageString }}</td>
+                        <td>{{ salle.numero }}</td>
+                        <td>
+                            <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_salle_update') }}?salle={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" class="btn btn-outline-danger">Supprimer</a>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="selected_salles[]" value="{{ salle.id }}" class="select-salle">
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">Aucune salle trouvée.</td>
+                    </tr>
                 {% endfor %}
+
                 </tbody>
             </table>
-
-        </div>
+        </form>
     </div>
+
+    {% block javascripts %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('Script chargé');
+
+                const checkboxes = document.querySelectorAll('.select-salle');
+                const selectionPanel = document.getElementById('selectionPanel');
+                const selectedCount = document.getElementById('selectedCount');
+                const deleteButton = document.getElementById('deleteSelected');
+                const bulkForm = document.getElementById('bulkActionForm');
+
+                function updateSelectionPanel() {
+                    const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+                    const count = selectedCheckboxes.length;
+
+                    if (count > 0) {
+                        selectedCount.textContent = `${count} salle(s) sélectionnée(s)`;
+                        selectionPanel.classList.remove('d-none');
+                    } else {
+                        selectionPanel.classList.add('d-none');
+                    }
+                }
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectionPanel);
+                });
+
+                deleteButton.addEventListener('click', function () {
+ {
+                        bulkForm.submit();
+                    }
+                });
+            });
+        </script>
+    {% endblock %}
 {% endblock %}
