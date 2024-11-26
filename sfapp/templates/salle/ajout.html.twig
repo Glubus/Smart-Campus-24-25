@@ -3,20 +3,25 @@
 {% block title %}Ajouter une salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5" style="width: 40%">
-        <h1 class="text-center mb-4">Ajouter une salle</h1>
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger" style="margin-top: 10px">
-                {{ message }}
+    <link rel="stylesheet" href="/css/pageAjoutSalle.css">
+    <div class="container my-5 card-body" style="width: 40%">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="text-center mb-4">Ajouter une salle</h1>
+                    <a href="{{ path('app_batiment_ajouter')}}" class="btn btn-secondary" style="margin-right: 10px; margin-top: 10px" role="button">Ajouter un batiment</a>
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger" style="margin-top: 10px">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Créer la salle</button>
+                    <a href="{{ path('app_salle')}}" class="btn btn-secondary" style="margin-right: 10px; margin-top: 10px" role="button">Annuler</a>
+                </div>
+                {{ form_end(form) }}
             </div>
-        {% endfor %}
-        <div class="form-group text-center">
-            <button type="submit" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Créer la salle</button>
-            <a href="{{ path('app_salle')}}" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Annuler</a>
         </div>
-        {{ form_end(form) }}
     </div>
 {% endblock %}
-

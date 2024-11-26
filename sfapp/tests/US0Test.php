@@ -65,9 +65,6 @@ class US0Test extends WebTestCase
 
         $selecteur = "ul li.dropdown a[href='/plan']";
         $this->assertSelectorExists($selecteur);
-
-        $selecteur = "ul li.dropdown a[href='/plan/ajout']";
-        $this->assertSelectorTextSame($selecteur, "Ajouter un plan");
     }
 
     public function testLienBatimentDispo(): void
@@ -79,6 +76,6 @@ class US0Test extends WebTestCase
         $this->assertSelectorExists($selecteur);
 
         $selecteur = "ul li.dropdown a[href='/batiment/ajout']";
-        $this->assertSelectorTextSame($selecteur, "Ajouter un batiment");
+        $this->assertSelectorTextSame($selecteur, "Ajouter un bâtiment");
     }
 }

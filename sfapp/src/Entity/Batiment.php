@@ -19,6 +19,9 @@ class Batiment
     #[ORM\Column(length: 255)]
     private ?string $adresse = null;
 
+    #[ORM\Column]
+    private ?int $nbEtages = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Batiment
     public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getNbEtages(): ?int
+    {
+        return $this->nbEtages;
+    }
+
+    public function setNbEtages(int $nbEtages): static
+    {
+        $this->nbEtages = $nbEtages;
 
         return $this;
     }

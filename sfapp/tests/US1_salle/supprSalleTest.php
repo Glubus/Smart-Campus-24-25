@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\US1;
+namespace App\Tests\US1_salle;
 
 use App\Entity\EtageSalle;
 use App\Entity\Salle;
@@ -14,7 +14,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
 
@@ -25,7 +25,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $selecteur = "a.btn[href='/salle']";
@@ -37,7 +37,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $this->assertSelectorTextSame('form label', "Entrez la phrase : D001");
@@ -48,7 +48,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $form = $crawler->selectButton("Supprimer")->form();
@@ -57,34 +57,24 @@ class supprSalleTest extends WebTestCase
         $this->assertResponseRedirects('/salle');
 
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
         $this->assertNull($D001);
 
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorNotExists('table.salle td.nom');
-
-        $container = $client->getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D']);
-        $D001 = new Salle();
-        $D001->setNumero("1");
-        $D001->setEtage(EtageSalle::REZDECHAUSSEE);
-        $D001->setBatiment($D);
-        $entityManager->persist($D001);
-        $entityManager->flush();
+        $this->assertSelectorTextNotContains('table.salle td.nom', 'D001');
     }
 
     public function test_suppression_invalide_pour_D001(): void
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $form = $crawler->selectButton("Supprimer")->form();
         $form["suppression[inputString]"] = 'Hello World' ;
         $client->submit($form);
 
-        $this->assertSelectorTextContains('.alert', 'Mauvaise phrase saisie');
+        $this->assertSelectorTextContains('.alert', 'La saisie est incorrect.');
     }
 }

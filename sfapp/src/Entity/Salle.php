@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use App\Entity\Batiment;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\EtageSalle;
 
@@ -15,18 +17,23 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(enumType: EtageSalle::class)]
-    private ?EtageSalle $etage = null;
-
-    #[ORM\Column(length: 2, nullable: true)]
-    private ?string $numero = null;
+    #[ORM\Column(length: 1)]
+    private ?int $etage = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist','remove'])]
-    private ?Plan $plan = null;
+    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'salle')]
+    private Collection $plans;
+
+    public function __construct()
+    {
+        $this->plans = new ArrayCollection();
+    }
+
+    #[ORM\Column(length: 20)]
+    private ?string $nom = null;
 
     public function getId(): ?int
     {
@@ -60,21 +67,9 @@ class Salle
     }
 
 
-    public function setEtage(?EtageSalle $etage): static
+    public function setEtage(int $etage): static
     {
         $this->etage = $etage;
-
-        return $this;
-    }
-
-    public function getNumero(): ?string
-    {
-        return $this->numero;
-    }
-
-    public function setNumero(?string $numero): static
-    {
-        $this->numero = $numero;
 
         return $this;
     }
@@ -104,6 +99,47 @@ class Salle
         }
 
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Plan>
+     */
+    public function getPlans(): Collection
+    {
+        return $this->plans;
+    }
+
+    public function addPlan(Plan $plan): static
+    {
+        if (!$this->plans->contains($plan)) {
+            $this->plans->add($plan);
+            $plan->setSalle($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlan(Plan $plan): static
+    {
+        if ($this->plans->removeElement($plan)) {
+            // set the owning side to null (unless already changed)
+            if ($plan->getSalle() === $this) {
+                $plan->setSalle(null);
+            }
+        }
 
         return $this;
     }
