@@ -3,41 +3,45 @@
 {% block title %}Détails de la salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <div class="card shadow-lg">
-            <div class="card-header text-center bg-secondary text-white">
-                <h2 class="mb-0">Détails de la salle : {{ salle.nom }}</h2>
+    <link rel="stylesheet" href="/css/infosSalle.css">
+    <div class="all">
+        <h1>{{ salle.nom }}</h1>
+        {% if sa is not null %}
+            <h2>{{ sa.nom }}</h2>
+        {% endif %}
+        <h2>Métriques de la salle</h2>
+        <div class="metriques">
+            <div class="dataBlock temp">
+                <h4 class="textData">Température</h4>
+                <h3 class="data">Donnée</h3>
             </div>
-            <div class="card-body">
-                <h4 class="card-title text-primary">Informations générales</h4>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Nom :</strong> {{ salle.nom }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Bâtiment :</strong> {{ salle.batiment.nom }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Adresse :</strong> {{ salle.batiment.adresse }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Étage :</strong> {{ salle.etage }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>SA attribué : </strong>
-                        {% if sa is not null %}
-                            <a href="{{ path('app_sa_infos', {id : sa.id}) }}" class="btn btn-outline-primary">{{ sa.nom }}</a>
-                        {% else %}
-                            <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
-                        {% endif %}
-                    </li>
-                </ul>
+            <div class="dataBlock co2">
+                <h4 class="textData">CO2</h4>
+                <h3 class="data">Donnée</h3>
             </div>
-            <div class="card-footer text-center">
-                <a href="{{ path('app_salle') }}" class="btn btn-outline-secondary">
-                    Retour à la liste des salles
-                </a>
+            <div class="dataBlock humidite">
+                <h4 class="textData">Humidité</h4>
+                <h3 class="data">Donnée</h3>
             </div>
         </div>
+
+        <aside class="infosSalle">
+            <h3 class="el titreInfo">Informations</h3>
+            <p class="el nom"><strong>Nom : </strong>{{ salle.nom }}</p>
+            <p class="el bat"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
+            <p class="el adr"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
+            <p class="el etage"><strong>Etage : </strong>{{ salle.etage }}</p>
+        </aside>
+
+        <aside class="listeCapteurs">
+            <h3 class="el titreListeCapteurs">Capteurs</h3>
+            <a href="#" class="boutton">Température</a><br/>
+            <a href="#" class="boutton">CO2</a><br/>
+            <a href="#" class="boutton">Humidité</a><br/>
+        </aside>
+
+        <main class="graphs">
+            ICI LES GRAPHIQUES
+        </main>
     </div>
 {% endblock %}
