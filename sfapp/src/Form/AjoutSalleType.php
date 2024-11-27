@@ -30,14 +30,6 @@ class AjoutSalleType extends AbstractType
                 ],
                 'required' => true,
             ])
-            /*->add('etage', ChoiceType::class, [
-                'label' => 'Étage',
-                'label_attr' => ['class' => 'form-label text-primary'],
-                'attr' => [
-                    'class' => 'form-control',
-                ],
-                'required' => true,
-            ]) Je l'ai mis en commentaire et je mets une solution temporaire pour mes tests*/
             ->add('etage', TextType::class, [
                 'label' => 'Étage',
                 'label_attr' => ['class' => 'form-label text-primary'],
