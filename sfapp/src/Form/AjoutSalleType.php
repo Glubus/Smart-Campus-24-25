@@ -30,13 +30,12 @@ class AjoutSalleType extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('etage', ChoiceType::class, [
+            ->add('etage', TextType::class, [
                 'label' => 'Étage',
                 'label_attr' => ['class' => 'form-label text-primary'],
                 'attr' => [
                     'class' => 'form-control',
                 ],
-                'choices' => [], // Vide par défaut
                 'required' => true,
             ])
             // Champ Numero (TextType)
