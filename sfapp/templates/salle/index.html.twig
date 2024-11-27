@@ -21,7 +21,6 @@
                     <th class="nom">Nom</th>
                     <th class="col">Bâtiment</th>
                     <th class="col">Étage</th>
-                    <th class="col">Numéro de salle</th>
                     <th class="col">Informations</th>
                     <th scope="col">Modifier</th>
                     <th scope="col">Supprimer</th>
@@ -34,7 +33,6 @@
                         <td>{{ salle.getSalleNom }}</td>
                         <td>Bâtiment {{ salle.batiment.nom }}</td>
                         <td>{{ salle.getEtageString }}</td>
-                        <td>{{ salle.numero }}</td>
                         <td>
                             <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
                         </td>

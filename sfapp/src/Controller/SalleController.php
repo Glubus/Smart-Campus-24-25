@@ -230,36 +230,32 @@ class SalleController extends AbstractController
         SalleRepository $salleRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        // Retrieve selected room IDs
-        $selectedSalles = $request->request->all('selected_salles');
-
         if ($request->isMethod('POST')) {
+            $selectedSalles = $request->request->all()['selected_salles'];
             // If no rooms are selected, show an error and redirect
+            var_dump($selectedSalles);
             if (empty($selectedSalles)) {
                 $this->addFlash('error', 'Aucune salle sélectionnée.');
                 return $this->redirectToRoute('app_salle');
             }
 
             // Confirmation phrase
-            $phraseConfirmation = 'CONFIRMER LA SUPPRESSION';
+            $phraseConfirmation = "CONFIRMER";
 
             // Create the form with the confirmation phrase
             $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $phraseConfirmation,
+                'phrase' => $phraseConfirmation
             ]);
             $form->handleRequest($request);
-
             // If the form is submitted and valid
             if ($form->isSubmitted() && $form->isValid()) {
                 $inputString = $form->get('inputString')->getData();
 
                 // Verify the confirmation phrase
-                if (strtoupper(trim($inputString)) === strtoupper($phraseConfirmation)) {
-                    // Fetch the selected rooms
-                    $salles = $salleRepository->findBy(['id' => $selectedSalles]);
-                    dump($salles);
-                    // Delete the selected rooms
-                    foreach ($salles as $salle) {
+                if ($inputString === $phraseConfirmation) {
+
+                    foreach ($selectedSalles as $selectedSalle) {
+                        $salle = $salleRepository->find($selectedSalle);
                         $entityManager->remove($salle);
                     }
                     $entityManager->flush();
