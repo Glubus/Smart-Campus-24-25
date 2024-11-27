@@ -14,7 +14,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
 
@@ -25,7 +25,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $selecteur = "a.btn[href='/salle']";
@@ -37,7 +37,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $this->assertSelectorTextSame('form label', "Entrez la phrase : D001");
@@ -48,7 +48,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $form = $crawler->selectButton("Supprimer")->form();
@@ -57,7 +57,7 @@ class supprSalleTest extends WebTestCase
         $this->assertResponseRedirects('/salle');
 
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
         $this->assertNull($D001);
 
         $crawler = $client->request('GET', '/salle');
@@ -68,7 +68,7 @@ class supprSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/supprSalle?salle='.$D001->getId());
         $form = $crawler->selectButton("Supprimer")->form();

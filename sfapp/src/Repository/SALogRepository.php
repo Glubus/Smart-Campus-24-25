@@ -2,28 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\EtageSalle;
-use App\Entity\Salle;
+use App\Entity\SALog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Salle>
+ * @extends ServiceEntityRepository<SALog>
  *
- * @method Salle|null find($id, $lockMode = null, $lockVersion = null)
- * @method Salle|null findOneBy(array $criteria, array $orderBy = null)
- * @method Salle[]    findAll()
- * @method Salle[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SALog|null find($id, $lockMode = null, $lockVersion = null)
+ * @method SALog|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SALog[]    findAll()
+ * @method SALog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SalleRepository extends ServiceEntityRepository
+class SALogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Salle::class);
+        parent::__construct($registry, SALog::class);
     }
 
 //    /**
-//     * @return Salle[] Returns an array of Salle objects
+//     * @return SALog[] Returns an array of SALog objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -37,7 +36,7 @@ class SalleRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Salle
+//    public function findOneBySomeField($value): ?SALog
 //    {
 //        return $this->createQueryBuilder('s')
 //            ->andWhere('s.exampleField = :val')

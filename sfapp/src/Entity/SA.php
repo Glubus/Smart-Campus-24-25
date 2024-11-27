@@ -20,10 +20,17 @@ class SA
     #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'sa')]
     private Collection $plans;
 
+    #[ORM\OneToMany(targetEntity: Capteur::class, mappedBy: 'sa', cascade: ['persist'])]
+    private Collection $capteurs;
+
+    #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
+    private Collection $sALogs;
+
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
         $this->plans = new ArrayCollection();
+        $this->sALogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,7 +64,18 @@ class SA
     {
         return $this->capteurs;
     }
+    public function generateCapteurs() {
+        // Créer et associer 3 capteurs à cet SA
+        for ($i = 1; $i <= 3; $i++) {
+            $type = TypeCapteur::cases()[$i - 1];
+            $capteur = new Capteur();
+            $capteur->setNom('Capteur ' . $i)
+                ->setType($type)
+                ->setSA($this);
+            $this->addCapteur($capteur);
 
+        }
+    }
     public function addCapteur(Capteur $capteur): static
     {
         if (!$this->capteurs->contains($capteur)) {
@@ -79,22 +97,6 @@ class SA
         return $this;
     }
 
-    public function getPlan(): ?Plan
-    {
-        return $this->plan;
-    }
-
-    public function setPlan(Plan $plan): static
-    {
-        // set the owning side of the relation if necessary
-        if ($plan->getSa() !== $this) {
-            $plan->setSa($this);
-        }
-
-        $this->plan = $plan;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Plan>
@@ -120,6 +122,36 @@ class SA
             // set the owning side to null (unless already changed)
             if ($plan->getSa() === $this) {
                 $plan->setSa(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SALog>
+     */
+    public function getSALogs(): Collection
+    {
+        return $this->sALogs;
+    }
+
+    public function addSALog(SALog $sALog): static
+    {
+        if (!$this->sALogs->contains($sALog)) {
+            $this->sALogs->add($sALog);
+            $sALog->setSA($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSALog(SALog $sALog): static
+    {
+        if ($this->sALogs->removeElement($sALog)) {
+            // set the owning side to null (unless already changed)
+            if ($sALog->getSA() === $this) {
+                $sALog->setSA(null);
             }
         }
 

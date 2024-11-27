@@ -32,6 +32,7 @@ class ajoutBatimentTest extends WebTestCase
         $crawler = $client->request('GET', 'batiment/ajout');
 
         $this->assertSelectorExists("form input#ajout_batiment_nom");
+        $this->assertSelectorExists("form input#ajout_batiment_nbEtages");
         $this->assertSelectorExists("form input#ajout_batiment_adresse");
     }
 
@@ -42,6 +43,7 @@ class ajoutBatimentTest extends WebTestCase
 
         $form = $crawler->selectButton("Ajouter")->form();
         $form["ajout_batiment[nom]"] = 'A';
+        $form["ajout_batiment[nbEtages]"] = '5';
         $form["ajout_batiment[adresse]"] = '123 rue janisse';
         $client->submit($form);
         $this->assertResponseRedirects('/batiment');
@@ -61,6 +63,7 @@ class ajoutBatimentTest extends WebTestCase
 
         $form = $crawler->selectButton("Ajouter")->form();
         $form["ajout_batiment[nom]"] = 'D';
+        $form["ajout_batiment[nbEtages]"] = '5';
         $form["ajout_batiment[adresse]"] = '123 rue janisse';
         $client->submit($form);
 

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation Suppression des Salles{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center">Confirmer la suppression des salles</h1>
+        <p class="text-center">
+            Vous êtes sur le point de supprimer toutes les salles associées au bâtiment <strong>{{ batiment.nom }}</strong>.
+        </p>
+
+        <div class="alert alert-warning text-center">
+            Attention : Cette action est irréversible.
+        </div>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-danger w-100 mt-3">Confirmer la suppression</button>
+        {{ form_end(form) }}
+
+        <div class="mt-4 text-center">
+            <a href="{{ path('app_batiment_liste') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </div>
+{% endblock %}

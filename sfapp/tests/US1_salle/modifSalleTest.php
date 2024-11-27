@@ -11,7 +11,7 @@ class modifSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/modifierSalle?salle='.$D001->getId());
 
@@ -22,7 +22,7 @@ class modifSalleTest extends WebTestCase
     {
         $client = static::createClient();
         $container = $client->getContainer();
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
+        $D001 = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001']);
 
         $crawler = $client->request('GET', '/modifierSalle?salle=' . $D001->getId());
 
@@ -34,14 +34,13 @@ class modifSalleTest extends WebTestCase
 
         // Modification fait dans la base donnees
         $container = $client->getContainer();
-        $D101 = $container->get(SalleRepository::class)->findByName('D101');
-        $this->assertNotNull($D101);
-        $D001 = $container->get(SalleRepository::class)->findByName('D001');
-        $this->assertNull($D001);
+        $after = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001', 'etage' => 1]);
+        $this->assertNotNull($after);
+        $before = $container->get(SalleRepository::class)->findOneBy(['nom' => 'D001', 'etage' => 0]);
+        $this->assertNull($before);
 
         // Modification salle affiche correctement dans la liste
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorTextSame('table.salle td.nom', 'D101');
         $this->assertSelectorTextSame('table.salle td.etage', '1');
     }
 }

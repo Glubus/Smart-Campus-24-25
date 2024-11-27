@@ -21,6 +21,10 @@
             <a class="navbar-brand" href="{{ path('app_page_acceuil') }}">Smart Campus</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ path('app_guide') }}">guide</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ path('app_page_acceuil') }}">Accueil</a>
                     </li>
@@ -32,6 +36,16 @@
                             <li><a class="dropdown-item" href="{{ path('app_salle') }}">Liste</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ path('app_salle_ajout') }}">Ajouter une salle</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Bâtiments
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('app_batiment_liste') }}">Liste</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_batiment_ajouter') }}">Ajouter un bâtiment</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -54,16 +68,7 @@
                             <li><a class="dropdown-item" href="{{ path('app_plan_ajout') }}">Ajouter un plan</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Bâtiments
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ path('app_batiment_liste') }}">Liste</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ path('app_batiment_ajouter') }}">Ajouter un bâtiment</a></li>
-                        </ul>
-                    </li>
+
                 </ul>
             </div>
         </div>

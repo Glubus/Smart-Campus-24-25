@@ -15,7 +15,7 @@ class Plan
     private ?int $id = null;
 
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
     #[ORM\ManyToOne(inversedBy: 'plans')]
@@ -64,4 +64,5 @@ class Plan
 
         return $this;
     }
+
 }
