@@ -94,6 +94,9 @@ class SalleController extends AbstractController
             if($salleExistante) {
                 $this->addFlash('error', 'Cette salle existe déjà');
             }
+            elseif($salle->getEtage() > $salle->getBatiment()->getNbEtages()) {
+                $this->addFlash('error', 'Il n y a que '.$salle->getBatiment()->getNbEtages().' etages dans ce batiment');
+            }
             else {
                 $entityManager->persist($salle);
                 $entityManager->flush();
