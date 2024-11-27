@@ -15,14 +15,15 @@
                 <h3>Détails de SA</h3>
                 <ul class="list-group">
                     <li class="list-group-item"><strong>Nom:</strong> {{ SA.nom }}</li>
-                        {% if SA.plan is not null %}
-                            <li class="list-group-item"><strong>Salle assignée:</strong> {{ SA.plan.Salle.getSalleNom }} (ID: {{ SA.plan.Salle.id }})</li>
-                        {% else %}
-                            <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
-                        {% endif %}
+                  {#  {% if histo is not null %}
+                        <li class="list-group-item"><strong>Salle assignée:</strong> {{ histo }} (ID: {{ SA.plan.Salle.id }})</li>
+                    {% else %}
+                        <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
+                    {% endif %}
+                    #}
                 </ul>
 
-                {% if SA.plan is null %}
+                {% if histo is null %}
                     <a href="{{ path('app_plan', {'sa_id': SA.id}) }}" class="btn btn-primary mt-3">Assigner une salle</a>
                 {% endif %}
             </div>
@@ -49,5 +50,41 @@
                 </table>
             </div>
         </div>
+
+        <!-- Section historique des modifications -->
+        <div class="mt-5">
+            <h3>Historique des modifications de l'état</h3>
+            {% if histo is not empty %}
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Date de modification</th>
+                        <th>État</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for historique in histo %}
+                        <tr>
+                            <td>{{ historique.date|date('d/m/Y H:i') }}</td>
+                            <td>
+                                {% if historique.action.value == 'AJOUTER' %}
+                                    Ajouter
+                                {% elseif historique.action.value == 'MODIFIER' %}
+                                    Modifier
+                                {% elseif historique.action.value == 'SUPPRIMER' %}
+                                    Supprimé
+                                {% else %}
+                                    Inconnu
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucune modification d'état enregistrée pour ce SA.</p>
+            {% endif %}
+        </div>
+
     </div>
 {% endblock %}
