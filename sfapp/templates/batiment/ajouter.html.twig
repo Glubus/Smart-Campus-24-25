@@ -22,8 +22,8 @@
                     un bâtiment
                 </h2>
 
-                {{ form_start(form, {attr: {class: 'needs-validation'}}) }}
-                {{ form_widget(form, {attr: {class: 'form-control mb-3'}}) }}
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
                 {% for message in app.flashes('error') %}
                     <div class="alert alert-danger" style="margin-top: 10px">
                         {{ message }}

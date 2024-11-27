@@ -57,15 +57,15 @@ class Salle
         return $batimentNom . $etageValue . $numeroFormatted;
     }
 
-    public function getEtage(): ?EtageSalle
+    public function getEtage(): int
     {
         return $this->etage;
     }
+
     public function getEtageString(): string
     {
         return $this->etage?->value ?? 'N/A';
     }
-
 
     public function setEtage(int $etage): static
     {
