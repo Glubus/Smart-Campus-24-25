@@ -36,7 +36,6 @@ class AjoutSalleType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                 ],
-                'choices' => [], // Vide par défaut
                 'required' => true,
             ]) Je l'ai mis en commentaire et je mets une solution temporaire pour mes tests*/
             ->add('etage', TextType::class, [
