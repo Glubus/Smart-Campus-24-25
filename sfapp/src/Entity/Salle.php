@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use App\Entity\Batiment;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\EtageSalle;
 
@@ -22,8 +24,13 @@ class Salle
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist','remove'])]
-    private ?Plan $plan = null;
+    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'salle')]
+    private Collection $plans;
+
+    public function __construct()
+    {
+        $this->plans = new ArrayCollection();
+    }
 
     #[ORM\Column(length: 20)]
     private ?string $nom = null;
@@ -89,6 +96,35 @@ class Salle
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Plan>
+     */
+    public function getPlans(): Collection
+    {
+        return $this->plans;
+    }
+
+    public function addPlan(Plan $plan): static
+    {
+        if (!$this->plans->contains($plan)) {
+            $this->plans->add($plan);
+            $plan->setSalle($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlan(Plan $plan): static
+    {
+        if ($this->plans->removeElement($plan)) {
+            // set the owning side to null (unless already changed)
+            if ($plan->getSalle() === $this) {
+                $plan->setSalle(null);
+            }
+        }
 
         return $this;
     }

@@ -10,7 +10,7 @@ ENV APP_ENV=dev
 COPY ./build/sfapp/conf/default.ini /usr/local/etc/php/conf.d/default.ini
 
 # Set working directory
-WORKDIR /app 
+WORKDIR /app/sfapp
 
 # Arguments defined in compose.yml
 ARG USER_NAME

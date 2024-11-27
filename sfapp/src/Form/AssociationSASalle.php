@@ -28,7 +28,7 @@ class AssociationSASalle extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('sa')
-                        ->leftJoin('sa.plan', 'plan')
+                        ->leftJoin('sa.plans', 'plan')
                         ->where('plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de Plan associé
                         ->orderBy('sa.nom', 'ASC'); // Trie les SA par nom, par exemple
                 },
@@ -46,10 +46,7 @@ class AssociationSASalle extends AbstractType
             'label' => 'Salle',
             'required' => true,
             'query_builder' => function (EntityRepository $er) {
-                return $er->createQueryBuilder('s')
-                    ->leftJoin('s.plan', 'plan')
-                    ->where('plan.id IS NULL')
-                    ->orderBy('s.batiment', 'ASC');  // Trie les salles par nom
+                return $er->createQueryBuilder('s');  // Trie les salles par nom
             },
             'attr' => [
                 'class' => 'form-control salle-searchable', // Applique les classes Bootstrap et Select2
