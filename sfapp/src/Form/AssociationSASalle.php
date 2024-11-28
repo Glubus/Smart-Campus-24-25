@@ -41,7 +41,7 @@ class AssociationSASalle extends AbstractType
         ->add('Salle', EntityType::class, [
             'class' => Salle::class,
             'choice_label' => function (Salle $salle) {
-                return $salle->getSalleNom();  // Appel à la méthode getSalleNom() de l'entité Salle
+                return $salle->getNom();  // Appel à la méthode getNom() de l'entité Salle
             },
             'label' => 'Salle',
             'required' => true,
