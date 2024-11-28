@@ -18,13 +18,10 @@
     <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
+            <img src="image/logo-iut.png" style="width: 40px; margin-right: 10px">
             <a class="navbar-brand" href="{{ path('app_page_acceuil') }}">Smart Campus</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ path('app_guide') }}">guide</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ path('app_page_acceuil') }}">Accueil</a>
                     </li>
@@ -68,7 +65,9 @@
                             <li><a class="dropdown-item" href="{{ path('app_plan_ajout') }}">Ajouter un plan</a></li>
                         </ul>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ path('app_guide') }}">Guide</a>
+                    </li>
                 </ul>
             </div>
         </div>

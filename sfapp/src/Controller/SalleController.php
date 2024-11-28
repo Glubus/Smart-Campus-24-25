@@ -73,9 +73,40 @@ class SalleController extends AbstractController
             $sa = $plan->getSA();
         }
 
+        // Données des capteurs
+        $dataCapteurs = [
+            'temp' => [['date' => "27/10/2005", 'valeur' => 20], ['date' => "28/10/2005", 'valeur' => 21]],
+            'co2' => [['date' => "27/10/2005", 'valeur' => 400], ['date' => "28/10/2005", 'valeur' => 410]],
+            'humidite' => [['date' => "27/10/2005", 'valeur' => 60], ['date' => "28/10/2005", 'valeur' => 65]]
+        ];
+
+        // Préparer les données pour le graphique
+        $labels = [];
+        $tempData = [];
+        $co2Data = [];
+        $humiData = [];
+
+        // Remplir les tableaux pour chaque type de donnée
+        foreach ($dataCapteurs['temp'] as $data) {
+            $labels[] = $data['date']; // Extrait les dates
+            $tempData[] = $data['valeur']; // Extrait les valeurs de température
+        }
+
+        foreach ($dataCapteurs['co2'] as $data) {
+            $co2Data[] = $data['valeur']; // Extrait les valeurs de CO2
+        }
+
+        foreach ($dataCapteurs['humidite'] as $data) {
+            $humiData[] = $data['valeur']; // Extrait les valeurs d'humidité
+        }
+
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
             'sa' => $sa,
+            'labels' => $labels,
+            'tempData' => $tempData,
+            'co2Data' => $co2Data,
+            'humiData' => $humiData,
         ]);
     }
 

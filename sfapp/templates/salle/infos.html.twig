@@ -4,44 +4,164 @@
 
 {% block body %}
     <link rel="stylesheet" href="/css/infosSalle.css">
-    <div class="all">
-        <h1>{{ salle.nom }}</h1>
-        {% if sa is not null %}
-            <h2>{{ sa.nom }}</h2>
-        {% endif %}
-        <h2>Métriques de la salle</h2>
-        <div class="metriques">
-            <div class="dataBlock temp">
-                <h4 class="textData">Température</h4>
-                <h3 class="data">Donnée</h3>
+    {% if sa is not null %}
+        <div class="all">
+            <h1>{{ salle.nom }}</h1>
+                <h2>{{ sa.nom }}</h2>
+                <h2>Métriques de la salle</h2>
+                <div class="metriques">
+                    <div class="dataBlock temp">
+                        <h4 class="textData">Température</h4>
+                        <h3 class="data">Donnée</h3>
+                    </div>
+
+                    <div class="dataBlock co2">
+                        <h4 class="textData">CO2</h4>
+                        <h3 class="data">Donnée</h3>
+                    </div>
+
+                    <div class="dataBlock humidite">
+                        <h4 class="textData">Humidité</h4>
+                        <h3 class="data">Donnée</h3>
+                    </div>
             </div>
-            <div class="dataBlock co2">
-                <h4 class="textData">CO2</h4>
-                <h3 class="data">Donnée</h3>
-            </div>
-            <div class="dataBlock humidite">
-                <h4 class="textData">Humidité</h4>
-                <h3 class="data">Donnée</h3>
+            <div class="below">
+                <aside class="infosSalle">
+                    <h3 class="titreInfo">Informations</h3>
+                    <p class="el"><strong>Nom : </strong>{{ salle.nom }}</p>
+                    <p class="el"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
+                    <p class="el"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
+                    <p class="el"><strong>Etage : </strong>{{ salle.etage }}</p>
+                </aside>
+
+                <aside class="listeCapteurs">
+                    <h3 class="titreListeCapteurs">Capteurs</h3>
+                    <button class="btnCap">Température</button><br/>
+                    <button class="btnCap">CO2</button><br/>
+                    <button class="btnCap">Humidité</button><br/>
+                </aside>
+
+                <main class="graphs">
+                    <div class="echelle">
+                        <button class="gr">Une semaine</button>
+                        <button class="gr">Un mois</button>
+                        <button class="gr">6 mois</button>
+                    </div>
+
+                    <div class="graphique">
+                        <canvas id="salleGraph"></canvas>
+
+                    </div>
+
+                    <div class="dataGraph">
+                        <article class="dataCap">
+                            <div class="color colorTemp"></div>
+                            <p class="text">Température</p>
+                        </article>
+                        <article class="dataCap">
+                            <div class="color colorCO2"></div>
+                            <p class="text">CO2</p>
+                        </article>
+                        <article class="dataCap">
+                            <div class="color colorHumi"></div>
+                            <p class="text">Humidité</p>
+                        </article>
+                        <article class="dataCap">
+                            <div class="color colorTout"></div>
+                            <p class="text">Tout</p>
+                        </article>
+                    </div>
+                </main>
             </div>
         </div>
+    {% else %}
+        <div class="container my-5">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-secondary text-white">
+                    <h2 class="mb-0">Détails de la salle : {{ salle.nom }}</h2>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title text-primary">Informations générales</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Nom :</strong> {{ salle.nom }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Bâtiment :</strong> {{ salle.batiment.nom }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Adresse :</strong> {{ salle.batiment.adresse }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Étage :</strong> {{ salle.etage }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>SA attribué : </strong>
+                            {% if sa is not null %}
+                                <a href="{{ path('app_sa_infos', {id : sa.id}) }}" class="btn btn-outline-primary">{{ sa.nom }}</a>
+                            {% else %}
+                                <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_salle') }}" class="btn btn-outline-secondary">
+                        Retour à la liste des salles
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
 
-        <aside class="infosSalle">
-            <h3 class="el titreInfo">Informations</h3>
-            <p class="el nom"><strong>Nom : </strong>{{ salle.nom }}</p>
-            <p class="el bat"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
-            <p class="el adr"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
-            <p class="el etage"><strong>Etage : </strong>{{ salle.etage }}</p>
-        </aside>
+{% block javascripts %}
+    {#
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('salleGraph').getContext('2d');
 
-        <aside class="listeCapteurs">
-            <h3 class="el titreListeCapteurs">Capteurs</h3>
-            <a href="#" class="boutton">Température</a><br/>
-            <a href="#" class="boutton">CO2</a><br/>
-            <a href="#" class="boutton">Humidité</a><br/>
-        </aside>
-
-        <main class="graphs">
-            ICI LES GRAPHIQUES
-        </main>
-    </div>
+        const salleGraph = new Chart(ctx, {
+            type: 'line', // Type de graphique
+            data: {
+                labels: {{ labels|json_encode|raw }}, // Les dates
+                datasets: [
+                    {
+                        label: 'Température',
+                        data: {{ tempData|json_encode|raw }},
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'CO2',
+                        data: {{ co2Data|json_encode|raw }},
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Humidité',
+                        data: {{ humiData|json_encode|raw }},
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    #}
 {% endblock %}
