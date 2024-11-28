@@ -115,7 +115,7 @@ class SalleController extends AbstractController
     #[Route('/supprSalle', name: 'app_salle_delete')]
     public function retirer(EntityManagerInterface $entityManager, Request $request, SalleRepository $salleRepository): Response
     {
-        $salle = $salleRepository->find($request->get('salle'));
+        $salle = $salleRepository->find($request->get('salles'));
         if($salle) {
             $form = $this->createForm(SuppressionType::class, null, [
                 'phrase' => $salle->getNom(), // Passer la variable au formulaire
@@ -138,7 +138,7 @@ class SalleController extends AbstractController
         return $this->render('salle/suppression.html.twig', [
             'controller_name' => 'SalleController',
             'form' => $form->createView(),
-            'salle' => $salle,
+            'salles' => $salle,
         ]);
     }
 
@@ -231,23 +231,23 @@ class SalleController extends AbstractController
     public function supprimerSelection(
         Request $request,
         SalleRepository $salleRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         if ($request->isMethod('POST')) {
-            $selectedSalles = $request->request->all()['selected_salles'];
+            $selectedSalles = $request->request->all('selected_salles');
             // If no rooms are selected, show an error and redirect
-            var_dump($selectedSalles);
+            /*var_dump($selectedSalles);
             if (empty($selectedSalles)) {
                 $this->addFlash('error', 'Aucune salle sélectionnée.');
                 return $this->redirectToRoute('app_salle');
-            }
+            }*/
 
             // Confirmation phrase
             $phraseConfirmation = "CONFIRMER";
 
             // Create the form with the confirmation phrase
             $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $phraseConfirmation
+                'phrase' => $phraseConfirmation,
             ]);
             $form->handleRequest($request);
             // If the form is submitted and valid
@@ -255,13 +255,16 @@ class SalleController extends AbstractController
                 $inputString = $form->get('inputString')->getData();
 
                 // Verify the confirmation phrase
-                if ($inputString === $phraseConfirmation) {
+                if ($inputString == $phraseConfirmation) {
 
-                    foreach ($selectedSalles as $selectedSalle) {
-                        $salle = $salleRepository->find($selectedSalle);
-                        $entityManager->remove($salle);
+                    if(!empty($selectedSalles)) {
+                        foreach ($selectedSalles as $selectedSalle) {
+                            $salle = $salleRepository->find($selectedSalle);
+                            $entityManager->remove($salle);
+                        }
+
+                        $entityManager->flush();
                     }
-                    $entityManager->flush();
 
 
 
@@ -273,18 +276,16 @@ class SalleController extends AbstractController
             }
 
             // Render the form with room details
-            $salleNames = array_map(fn($id) => $salleRepository->find($id)?->getSalleNom(), $selectedSalles);
+            $salleNames = array_map(fn($id) => $salleRepository->find($id)?->getNom(), $selectedSalles);
 
             return $this->render('salle/suppression.html.twig', [
                 'form' => $form->createView(),
-                'salles' => $selectedSalles,
+                'salles' => $salleNames,
             ]);
         }
 
         // Redirect for GET requests
         return $this->redirectToRoute('app_salle');
     }
-
-
 
 }

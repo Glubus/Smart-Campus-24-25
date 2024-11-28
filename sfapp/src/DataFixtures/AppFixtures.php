@@ -48,14 +48,13 @@ class AppFixtures extends Fixture
         $plan->setSA($SA);
         $plan->setSalle($D002);
         $plan->setDateAjout(new DateTime());
-        $plan->setEtat(EtatAssignation::Actif);
+        //$plan->setEtat(EtatAssignation::Actif);
         $manager->persist($plan);
 
         $plan=new Plan();
         $plan->setSA($SA);
         $plan->setSalle($D001);
         $plan->setDateAjout(new DateTime());
-        $plan->setEtat(EtatAssignation::Inactif);
         $manager->flush();
     }
 }

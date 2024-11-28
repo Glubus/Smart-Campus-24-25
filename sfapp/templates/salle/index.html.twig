@@ -24,24 +24,20 @@
                     <th class="col">Étage</th>
                     <th class="col">Informations</th>
                     <th scope="col">Modifier</th>
-                    <th scope="col">Supprimer</th>
                     <th scope="col">Sélectionner</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for salle in salles %}
                     <tr class="text-center align-middle">
-                        <td>{{ salle.getSalleNom }}</td>
+                        <td>{{ salle.getNom }}</td>
                         <td>Bâtiment {{ salle.batiment.nom }}</td>
-                        <td>{{ salle.getEtageString }}</td>
+                        <td>{{ salle.getEtage }}</td>
                         <td>
                             <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
                         </td>
                         <td>
-                            <a href="{{ path('app_salle_update') }}?salle={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
-                        </td>
-                        <td>
-                            <a href="{{ path('app_salle_delete') }}?salle={{ salle.id }}" class="btn btn-outline-danger">Supprimer</a>
+                            <a href="{{ path('app_salle_update') }}?salles={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
                         </td>
                         <td>
                             <input type="checkbox" name="selected_salles[]" value="{{ salle.id }}" class="select-salle">
@@ -86,11 +82,12 @@
                 });
 
                 deleteButton.addEventListener('click', function () {
- {
+                    {
                         bulkForm.submit();
                     }
                 });
             });
         </script>
+
     {% endblock %}
 {% endblock %}
