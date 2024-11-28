@@ -5,6 +5,18 @@
 {% block body %}
     <div class="container my-5">
         <h1 class="text-center mb-4">Salles</h1>
+        <br class="center mb-4" style="max-width: 100%;">
+        <div class="d-flex justify-content-between align-items-center">
+            {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+            <div class="form-group mr-2">
+                {{ form_row(form.salleNom) }}
+            </div>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+            {{ form_end(form) }}
+
+            <a class="btn btn-primary ml-3" href="{{ path('app_salle_ajout') }}" role="button">Ajouter une salle</a>
+        </div>
+        <br/>
 
         <!-- Panneau flottant pour les actions -->
         <div id="selectionPanel" class="position-fixed bottom-0 end-0 m-4 bg-light shadow p-3 rounded d-none" style="z-index: 1050;">
@@ -15,8 +27,7 @@
 
         <!-- Formulaire global pour la suppression -->
         <form id="bulkActionForm" method="post" action="{{ path('app_salle_supprimer_selection') }}">
-            <a href="{{ path('app_salle_ajout') }}" class="btn btn-primary" style="margin-bottom: 10px">Ajouter</a>
-            <table class="table table-hover align-middle">
+           <table class="table table-hover align-middle">
                 <thead class="table-dark">
                 <tr>
                     <th class="nom">Nom</th>
@@ -24,22 +35,22 @@
                     <th class="col">Étage</th>
                     <th class="col">Informations</th>
                     <th scope="col">Modifier</th>
-                    <th scope="col">Sélectionner</th>
+                    <th scope="col">Supprimer</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for salle in salles %}
                     <tr class="text-center align-middle">
-                        <td>{{ salle.getNom }}</td>
-                        <td>Bâtiment {{ salle.batiment.nom }}</td>
-                        <td>{{ salle.getEtage }}</td>
-                        <td>
+                        <td class="nom">{{ salle.getNom }}</td>
+                        <td class="bat">Bâtiment {{ salle.batiment.nom }}</td>
+                        <td class="etage">{{ salle.getEtage }}</td>
+                        <td class="info">
                             <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
                         </td>
-                        <td>
-                            <a href="{{ path('app_salle_update') }}?salles={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
+                        <td class="maj">
+                            <a href="{{ path('app_salle_update') }}?salle={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
                         </td>
-                        <td>
+                        <td class="supprimer">
                             <input type="checkbox" name="selected_salles[]" value="{{ salle.id }}" class="select-salle">
                         </td>
                     </tr>
@@ -54,7 +65,7 @@
         </form>
     </div>
 
-    {% block javascripts %}
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 console.log('Script chargé');
@@ -88,6 +99,4 @@
                 });
             });
         </script>
-
-    {% endblock %}
 {% endblock %}
