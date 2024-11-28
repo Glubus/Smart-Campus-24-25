@@ -148,9 +148,6 @@ class SalleController extends AbstractController
         // Récupérer le bâtiment
         $batiment = $batimentRepository->find($id);
 
-        $selectedSalles = $request->request->get('selected_salles', []);
-
-
         // Vérifier si le bâtiment existe
         if (!$batiment) {
             $this->addFlash('error', 'Le bâtiment spécifié n\'existe pas.');
