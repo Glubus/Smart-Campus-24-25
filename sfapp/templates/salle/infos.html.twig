@@ -17,7 +17,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap1</p>
                             </div>
-                            <h3 class="data">{{ temp[0].valeur }}°C</h3>
+                            <h3 class="data">{{ tempData[0] }}°C</h3>
                         </div>
                     </div>
 
@@ -28,7 +28,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap2</p>
                             </div>
-                            <h3 class="data">{{ co2[0].valeur }}ppm</h3>
+                            <h3 class="data">{{ co2Data[0] }}ppm</h3>
                         </div>
                     </div>
 
@@ -39,7 +39,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap3</p>
                             </div>
-                            <h3 class="data">{{ humi[0].valeur }}%</h3>
+                            <h3 class="data">{{ humiData[0] }}%</h3>
                         </div>
                     </div>
             </div>
@@ -67,27 +67,7 @@
                     </div>
 
                     <div class="graphique">
-                        <canvas id="salleGraph"></canvas>
-
-                    </div>
-
-                    <div class="dataGraph">
-                        <article class="dataCap">
-                            <div class="color colorTemp"></div>
-                            <p class="text">Température</p>
-                        </article>
-                        <article class="dataCap">
-                            <div class="color colorCO2"></div>
-                            <p class="text">CO2</p>
-                        </article>
-                        <article class="dataCap">
-                            <div class="color colorHumi"></div>
-                            <p class="text">Humidité</p>
-                        </article>
-                        <article class="dataCap">
-                            <div class="color colorTout"></div>
-                            <p class="text">Tout</p>
-                        </article>
+                        <canvas id="salleGraph" style="width: 100%; height: 400px;"></canvas>
                     </div>
                 </main>
             </div>
@@ -134,52 +114,127 @@
 {% endblock %}
 
 {% block javascripts %}
-    {#
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('salleGraph').getContext('2d');
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM prêt");
+            const ctx = document.getElementById('salleGraph').getContext('2d');
 
-        const salleGraph = new Chart(ctx, {
-            type: 'line', // Type de graphique
-            data: {
-                labels: {{ labels|json_encode|raw }}, // Les dates
-                datasets: [
-                    {
-                        label: 'Température',
-                        data: {{ tempData|json_encode|raw }},
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.4
+            // Récupérer les données depuis Twig
+            const labels = {{ labels|json_encode|raw }};
+            const temp = {{ tempData|json_encode|raw }};
+            const co2 = {{ co2Data|json_encode|raw }};
+            const humi = {{ humiData|json_encode|raw }};
+
+            // Créer le graphique
+            const salleGraph = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Température',
+                            data: temp,
+                            borderColor: 'rgba(255, 217, 0, 1)',
+                            backgroundColor: 'rgba(255, 251, 120, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'CO2',
+                            data: co2,
+                            borderColor: 'rgba(255, 113, 113, 1)',
+                            backgroundColor: 'rgba(255, 186, 186, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Humidité',
+                            data: humi,
+                            borderColor: 'rgba(106, 223, 255, 1)',
+                            backgroundColor: 'rgba(185, 240, 255, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
                     },
-                    {
-                        label: 'CO2',
-                        data: {{ co2Data|json_encode|raw }},
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Humidité',
-                        data: {{ humiData|json_encode|raw }},
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
+                    scales: {
+                        y: {
+                            beginAtZero: false, // Ne commence pas forcément à 0
+                        }
                     }
                 }
-            }
+            });
         });
     </script>
-    #}
 {% endblock %}
+
+{#
+document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM prêt");
+            const ctx = document.getElementById('salleGraph').getContext('2d');
+
+            // Récupérer les données depuis Twig
+            const labels = {{ labels|json_encode|raw }};
+            const temp = {{ tempData|json_encode|raw }};
+            const co2 = {{ co2Data|json_encode|raw }};
+            const humi = {{ humiData|json_encode|raw }};
+
+            // Créer le graphique
+            const salleGraph = new Chart(ctx, {
+                type: 'line', // Type du graphique
+                data: {
+                    labels: labels, // Labels pour l'axe X
+                    datasets: [
+                        {
+                            label: 'Température',
+                            data: {{ tempData|json_encode|raw }}, // Données
+                            borderColor: 'rgba(255, 217, 0, 1)',
+                            backgroundColor: 'rgba(255, 251, 120, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'CO2',
+                            data: {{ co2Data|json_encode|raw }}, // Données
+                            borderColor: 'rgba(255, 113, 113, 1)',
+                            backgroundColor: 'rgba(255, 186, 186, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Humidité',
+                            data: {{ humiData|json_encode|raw }}, // Données
+                            borderColor: 'rgba(106, 223, 255, 1)',
+                            backgroundColor: 'rgba(185, 240, 255, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false, // L'axe Y commence à zéro
+                            min: Math.min(temp),            // Valeur minimale de l'axe Y
+                            max: Math.max(...temp),          // Valeur maximale de l'axe Y
+                            stepSize: 10,      // Intervalle des ticks
+                            ticks: {
+                                color: '#000000', // Couleur des ticks
+                            }
+                        }
+                    }
+                }
+            })
+        });
+#}
