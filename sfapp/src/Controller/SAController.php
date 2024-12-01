@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\SA;
 use App\Entity\Capteur;
+use App\Entity\Commentaires;
 use App\Entity\Plan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -171,6 +172,36 @@ class SAController extends AbstractController
             "SA" => $SA,
             "salle" => $salle,
             "histo" => $histo,
+            'commentaires' => $SA->getCommentaire(),
         ]);
     }
+
+
+    #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
+    public function ajouterCommentaire(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SARepository $SARepository
+    ): Response {
+        // Récupérer l'entité SA
+        $SA = $SARepository->find($id);
+
+        // Récupérer la description du commentaire
+        $description = $request->request->get('description');
+
+        // Créer et associer le commentaire
+        $commentaire = new Commentaires();
+        $commentaire->setDescription($description);
+        $commentaire->setSA($SA);
+
+        // Persist le commentaire
+        $entityManager->persist($commentaire);
+        $entityManager->flush();
+
+        // Rediriger vers la page du SA
+        return $this->redirectToRoute('app_sa_infos  ', ['id' => $id]);
+    }
+
+
 }

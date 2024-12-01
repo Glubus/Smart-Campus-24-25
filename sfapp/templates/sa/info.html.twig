@@ -83,7 +83,33 @@
                 </table>
             {% else %}
                 <p>Aucune modification d'état enregistrée pour ce SA.</p>
+
             {% endif %}
+            <div>
+
+                <h3>Commentaires</h3>
+                {% if SA.getCommentaire|length > 0 %}
+                    <ul class="list-group">
+                        {% for commentaire in SA.getCommentaire %}
+                            <li class="list-group-item">
+                                <strong>Description :</strong> {{ commentaire.description }} <small>Ajouté le : {{ commentaire.dateAjout|date('d/m/Y') }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Aucun commentaire pour ce SA.</p>
+                {% endif %}
+
+                <h3>Ajouter un commentaire</h3>
+                <form method="post" action="{{ path('app_sa_commentaire', {'id': SA.id}) }}">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+
+            </div>
         </div>
 
     </div>
