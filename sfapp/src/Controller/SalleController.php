@@ -80,33 +80,16 @@ class SalleController extends AbstractController
             'humidite' => [['date' => "27/10/2005", 'valeur' => 60], ['date' => "28/10/2005", 'valeur' => 65]]
         ];
 
-        // Préparer les données pour le graphique
-        $labels = [];
-        $tempData = [];
-        $co2Data = [];
-        $humiData = [];
-
-        // Remplir les tableaux pour chaque type de donnée
-        foreach ($dataCapteurs['temp'] as $data) {
-            $labels[] = $data['date']; // Extrait les dates
-            $tempData[] = $data['valeur']; // Extrait les valeurs de température
-        }
-
-        foreach ($dataCapteurs['co2'] as $data) {
-            $co2Data[] = $data['valeur']; // Extrait les valeurs de CO2
-        }
-
-        foreach ($dataCapteurs['humidite'] as $data) {
-            $humiData[] = $data['valeur']; // Extrait les valeurs d'humidité
-        }
+        $tempData = $dataCapteurs['temp'];
+        $co2Data = $dataCapteurs['co2'];
+        $humiData = $dataCapteurs['humidite'];
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
             'sa' => $sa,
-            'labels' => $labels,
-            'tempData' => $tempData,
-            'co2Data' => $co2Data,
-            'humiData' => $humiData,
+            'temp' => $tempData,
+            'co2' => $co2Data,
+            'humi' => $humiData
         ]);
     }
 

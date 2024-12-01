@@ -12,17 +12,35 @@
                 <div class="metriques">
                     <div class="dataBlock temp">
                         <h4 class="textData">Température</h4>
-                        <h3 class="data">Donnée</h3>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap1</p>
+                            </div>
+                            <h3 class="data">{{ temp[0].valeur }}°C</h3>
+                        </div>
                     </div>
 
                     <div class="dataBlock co2">
                         <h4 class="textData">CO2</h4>
-                        <h3 class="data">Donnée</h3>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap2</p>
+                            </div>
+                            <h3 class="data">{{ co2[0].valeur }}ppm</h3>
+                        </div>
                     </div>
 
                     <div class="dataBlock humidite">
                         <h4 class="textData">Humidité</h4>
-                        <h3 class="data">Donnée</h3>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap3</p>
+                            </div>
+                            <h3 class="data">{{ humi[0].valeur }}%</h3>
+                        </div>
                     </div>
             </div>
             <div class="below">
