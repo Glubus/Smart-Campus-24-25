@@ -71,9 +71,25 @@ class SalleController extends AbstractController
             $sa = $plan->getSA();
         }
 
+        // Données des capteurs
+        $dataCapteurs = [
+            'temp' => [['date' => "27/10/2005", 'valeur' => 20], ['date' => "28/10/2005", 'valeur' => 40]],
+            'co2' => [['date' => "27/10/2005", 'valeur' => 400], ['date' => "28/10/2005", 'valeur' => 410]],
+            'humidite' => [['date' => "27/10/2005", 'valeur' => 60], ['date' => "28/10/2005", 'valeur' => 65]]
+        ];
+
+        $labels = array_column($dataCapteurs['temp'], 'date'); // Les dates
+        $tempData = array_column($dataCapteurs['temp'], 'valeur');
+        $co2Data = array_column($dataCapteurs['co2'], 'valeur');
+        $humiData = array_column($dataCapteurs['humidite'], 'valeur');
+
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
             'sa' => $sa,
+            'labels' => $labels,
+            'tempData' => $tempData,
+            'co2Data' => $co2Data,
+            'humiData' => $humiData
         ]);
     }
 
