@@ -3,18 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
-use App\Entity\Batiment;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Expr\Cast\Bool_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AjoutSalleType;
 
@@ -128,36 +126,6 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/supprSalle', name: 'app_salle_delete')]
-    public function retirer(EntityManagerInterface $entityManager, Request $request, SalleRepository $salleRepository): Response
-    {
-        $salle = $salleRepository->find($request->get('salle'));
-        if($salle) {
-            $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $salle->getNom(), // Passer la variable au formulaire
-            ]);
-            $form->handleRequest($request);
-        }
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $submittedString = $form->get('inputString')->getData();
-            if ($submittedString==$salle->getNom()){
-                $entityManager->remove($salle);
-                $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
-            }
-            else {
-                $this->addFlash('error', 'La saisie est incorrect.');
-            }
-        }
-
-        return $this->render('salle/suppression.html.twig', [
-            'controller_name' => 'SalleController',
-            'form' => $form->createView(),
-            'salle' => $salle,
-        ]);
-    }
-
     #[Route('/modifierSalle', name: 'app_salle_update')]
     public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
@@ -195,9 +163,6 @@ class SalleController extends AbstractController
     ): Response {
         // Récupérer le bâtiment
         $batiment = $batimentRepository->find($id);
-
-        $selectedSalles = $request->request->get('selected_salles', []);
-
 
         // Vérifier si le bâtiment existe
         if (!$batiment) {
@@ -247,60 +212,41 @@ class SalleController extends AbstractController
     public function supprimerSelection(
         Request $request,
         SalleRepository $salleRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        if ($request->isMethod('POST')) {
-            $selectedSalles = $request->request->all()['selected_salles'];
-            // If no rooms are selected, show an error and redirect
-            var_dump($selectedSalles);
-            if (empty($selectedSalles)) {
-                $this->addFlash('error', 'Aucune salle sélectionnée.');
+        EntityManagerInterface $entityManager,
+        SessionInterface $session
+    ): Response
+    {
+        $ids = $request->request->all('selected_salles');
+        if(empty($ids)) {
+            $ids = $session->get('selected_salles', []);
+        }
+        else
+            $session->set('selected_salles', $ids);
+
+        $salles = array_map(fn($id) => $salleRepository->find($id), $ids);
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => 'CONFIRMER' // Passer la variable au formulaire
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $submittedString = $form->get('inputString')->getData();
+            if ($submittedString=='CONFIRMER'){
+                foreach ($salles as $salle ) {
+                    $entityManager->remove($salle);
+                }
+                $entityManager->flush();
                 return $this->redirectToRoute('app_salle');
             }
-
-            // Confirmation phrase
-            $phraseConfirmation = "CONFIRMER";
-
-            // Create the form with the confirmation phrase
-            $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $phraseConfirmation
-            ]);
-            $form->handleRequest($request);
-            // If the form is submitted and valid
-            if ($form->isSubmitted() && $form->isValid()) {
-                $inputString = $form->get('inputString')->getData();
-
-                // Verify the confirmation phrase
-                if ($inputString === $phraseConfirmation) {
-
-                    foreach ($selectedSalles as $selectedSalle) {
-                        $salle = $salleRepository->find($selectedSalle);
-                        $entityManager->remove($salle);
-                    }
-                    $entityManager->flush();
-
-
-
-                    return $this->redirectToRoute('app_salle');
-                }
-
-                // Error message for incorrect confirmation phrase
-                $this->addFlash('error', 'La phrase saisie est incorrecte.');
+            else {
+                $this->addFlash('error', 'La saisie est incorrect.');
             }
-
-            // Render the form with room details
-            $salleNames = array_map(fn($id) => $salleRepository->find($id)?->getSalleNom(), $selectedSalles);
-
-            return $this->render('salle/suppression.html.twig', [
-                'form' => $form->createView(),
-                'salles' => $selectedSalles,
-            ]);
         }
 
-        // Redirect for GET requests
-        return $this->redirectToRoute('app_salle');
+        return $this->render('salle/suppression.html.twig', [
+            'form' => $form->createView(),
+            'salles' => $salles,
+        ]);
     }
-
-
 
 }

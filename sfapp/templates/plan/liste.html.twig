@@ -14,7 +14,6 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>#</th>
                     <th>Système d'acquisition</th>
                     <th>Salle</th>
                     <th>Date d'ajout</th>
@@ -23,9 +22,8 @@
                 <tbody>
                 {% for plan in plans %}
                     <tr>
-                        <td>{{ plan.id }}</td>
                         <td>{{ plan.sa.nom }}</td> {# Affiche le nom du système d'acquisition #}
-                        <td>{{ plan.Salle.getSalleNom }}</td> {# Affiche le nom de la salle #}
+                        <td>{{ plan.Salle.getNom }}</td> {# Affiche le nom de la salle #}
                         <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
                         <td style="width: 10%">
                             <a href="{{ path("app_plan_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">

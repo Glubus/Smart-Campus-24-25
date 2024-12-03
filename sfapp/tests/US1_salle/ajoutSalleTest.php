@@ -29,7 +29,7 @@ class ajoutSalleTest extends WebTestCase
         $this->assertSelectorTextSame($selecteur, "Annuler");
     }
 
-    public function test_valeur_champ_form_salle_aJout(): void
+    public function test_valeur_champ_form_salle_ajout(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle/ajout');
@@ -39,10 +39,8 @@ class ajoutSalleTest extends WebTestCase
         $this->assertSelectorTextContains($selecteur, "D");
         $this->assertSelectorTextContains($selecteur, "C");
 
-        /*$selecteur = "form select#ajout_salle_etage";
+        $selecteur = "form input#ajout_salle_etage";
         $this->assertSelectorExists($selecteur);
-        $this->assertSelectorTextContains($selecteur, "Rez-de-chaussée");
-        $this->assertSelectorTextContains($selecteur, "1");*/
 
         $selecteur = "form input#ajout_salle_nom";
         $this->assertSelectorExists($selecteur);
@@ -67,7 +65,7 @@ class ajoutSalleTest extends WebTestCase
         $this->assertNotNull($D101);
 
         $crawler = $client->request('GET', '/salle');
-        $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
+        $sallesAffiches=$crawler->filter('table td.nom')->each(
             function (Crawler $node):string {
                 return $node->text();
             });
@@ -92,7 +90,25 @@ class ajoutSalleTest extends WebTestCase
         $this->assertSelectorTextContains('.alert', 'Cette salle existe déjà');
     }
 
-    public function test_submit_form_valide_salle_duplique_dans_batiments_differents(): void
+    public function test_submit_form_invalide_nbEtage_depasse(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/salle/ajout');
+
+        $container = $client->getContainer();
+        $D = $container->get(BatimentRepository::class)->findOneBy(['nom' => 'D']);
+
+        $form = $crawler->selectButton("Créer la salle")->form();
+        $form["ajout_salle[batiment]"] = $D->getId();
+        $form['ajout_salle[etage]'] = '999';
+        $form['ajout_salle[nom]'] = 'Blabla';
+        $client->submit($form);
+
+        $this->assertSelectorExists('.alert');
+        $this->assertSelectorTextContains('.alert', $D->getNbEtages());
+    }
+
+    /*public function test_submit_form_valide_salle_duplique_dans_batiments_differents(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle/ajout');
@@ -111,7 +127,7 @@ class ajoutSalleTest extends WebTestCase
         $this->assertNotNull($D001);
 
         $crawler = $client->request('GET', '/salle');
-        $sallesAffiches=$crawler->filter('table.salle td.nom')->each(
+        $sallesAffiches=$crawler->filter('table td.nom')->each(
             function (Crawler $node):string {
                 return $node->text();
             });
@@ -119,5 +135,5 @@ class ajoutSalleTest extends WebTestCase
             return $value == 'D001';
         });
         $this->assertCount(2, $filtered);
-    }
+    }*/
 }

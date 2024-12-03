@@ -41,6 +41,6 @@ class modifSalleTest extends WebTestCase
 
         // Modification salle affiche correctement dans la liste
         $crawler = $client->request('GET', '/salle');
-        $this->assertSelectorTextSame('table.salle td.etage', '1');
+        $this->assertSelectorTextSame('table td.etage', '1');
     }
 }

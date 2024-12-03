@@ -11,6 +11,7 @@
 
         {% for message in app.flashes('error') %}
             <div class="alert alert-danger">
+                {{ message.message }}
                 {% if message.batimentId is defined %}
                     <a href="{{ path('app_salle_supprimer_liees', { id: message.batimentId }) }}" class="btn btn-danger btn-sm">
                         Supprimer les salles liées

@@ -59,7 +59,7 @@ class BatimentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $batimentExistante = $batimentRepository->findBy(
                 ['nom' => $batiment->getNom()]);
-            if(count($batimentExistante)>1) {
+            if($batimentExistanteœ) {
                 $this->addFlash('error', 'Ce batiment existe déjà');
             }
             else{
