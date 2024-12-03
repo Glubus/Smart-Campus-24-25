@@ -6,6 +6,7 @@ use App\Entity\ActionLog;
 use App\Entity\SA;
 use App\Entity\Capteur;
 use App\Entity\Commentaires;
+use App\Repository\CommentairesRepository;
 use App\Entity\Plan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -200,7 +201,42 @@ class SAController extends AbstractController
         $entityManager->flush();
 
         // Rediriger vers la page du SA
-        return $this->redirectToRoute('app_sa_infos  ', ['id' => $id]);
+        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
+    }
+    #[Route('/sa/{id}/commentaire/{commentaireId}/supprimer', name: 'app_sa_commentaire_supprimer')]
+    public function supprimerCommentaire(
+        int $id,
+        int $commentaireId,
+        EntityManagerInterface $entityManager,
+        SARepository $SARepository,
+        CommentairesRepository $commentairesRepository
+    ): Response {
+        // Récupérer l'entité SA
+        $SA = $SARepository->find($id);
+        if (!$SA) {
+            throw $this->createNotFoundException("L'entité SA n'a pas été trouvée.");
+        }
+
+        // Récupérer le commentaire à supprimer
+        $commentaire = $commentairesRepository->find($commentaireId);
+        if (!$commentaire) {
+            throw $this->createNotFoundException("Le commentaire n'a pas été trouvé.");
+        }
+
+        // Vérifier si le commentaire appartient bien à l'entité SA
+        if ($commentaire->getSA() !== $SA) {
+            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à supprimer ce commentaire.");
+        }
+
+        // Supprimer le commentaire
+        $entityManager->remove($commentaire);
+        $entityManager->flush();
+
+        // Ajouter un message flash pour informer l'utilisateur
+        $this->addFlash('success', "Le commentaire a été supprimé avec succès.");
+
+        // Rediriger vers la page de l'entité SA après suppression
+        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
     }
 
 

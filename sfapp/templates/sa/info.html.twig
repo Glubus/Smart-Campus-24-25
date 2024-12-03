@@ -93,7 +93,14 @@
                         {% for commentaire in SA.getCommentaire %}
                             <li class="list-group-item">
                                 <strong>Description :</strong> {{ commentaire.description }} <small>Ajouté le : {{ commentaire.dateAjout|date('d/m/Y') }}</small>
+                                <form method="post" action="{{ path('app_sa_commentaire_supprimer', { id: SA.id, commentaireId: commentaire.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                                    <input type="hidden" name="_token" value="{{ commentaire.id}}">
+                                    <button type="submit" class="btn btn-danger">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </li>
+
                         {% endfor %}
                     </ul>
                 {% else %}
@@ -105,6 +112,7 @@
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+
                     </div>
                     <button type="submit" class="btn btn-primary">Ajouter</button>
                 </form>
