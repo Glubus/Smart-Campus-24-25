@@ -71,7 +71,7 @@ class PlanController extends AbstractController
     {
         $plan = $repo->find($id);
         if ($plan) {
-            $phrase=$plan->getSalle()->getSalleNom().' vers '.$plan->getSA()->getNom();
+            $phrase=$plan->getSalle()->getNom().' vers '.$plan->getSA()->getNom();
             $form = $this->createForm(SuppressionType::class, null, [
                 'phrase' => $phrase, // Passer la variable au formulaire
             ]);

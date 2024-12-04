@@ -2,6 +2,8 @@
 namespace App\Entity;
 
 use App\Entity\TypeCapteur;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CapteurRepository::class)]
@@ -20,6 +22,14 @@ class Capteur
 
     #[ORM\ManyToOne(inversedBy: 'capteurs')]
     private ?SA $sa = null;
+
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'capteur')]
+    private Collection $valeurCapteurs;
+
+    public function __construct()
+    {
+        $this->valeurCapteurs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,5 +78,35 @@ class Capteur
     public function getTypeString(): ?string
     {
         return $this->type?->value;
+    }
+
+    /**
+     * @return Collection<int, ValeurCapteur>
+     */
+    public function getValeurCapteurs(): Collection
+    {
+        return $this->valeurCapteurs;
+    }
+
+    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
+            $this->valeurCapteurs->add($valeurCapteur);
+            $valeurCapteur->setCapteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+            // set the owning side to null (unless already changed)
+            if ($valeurCapteur->getCapteur() === $this) {
+                $valeurCapteur->setCapteur(null);
+            }
+        }
+
+        return $this;
     }
 }

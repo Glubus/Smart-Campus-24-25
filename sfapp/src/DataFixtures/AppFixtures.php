@@ -40,6 +40,12 @@ class AppFixtures extends Fixture
         $D002->setNom("D002");
         $manager->persist($D002);
 
+        $D003 = new Salle();
+        $D003->setBatiment($batimentD);
+        $D003->setEtage(0);
+        $D003->setNom("D003");
+        $manager->persist($D003);
+
         $SA = new SA();
         $SA->setNom('SATest');
         $manager->persist($SA);
@@ -48,14 +54,13 @@ class AppFixtures extends Fixture
         $plan->setSA($SA);
         $plan->setSalle($D002);
         $plan->setDateAjout(new DateTime());
-        $plan->setEtat(EtatAssignation::Actif);
+        //$plan->setEtat(EtatAssignation::Actif);
         $manager->persist($plan);
 
         $plan=new Plan();
         $plan->setSA($SA);
         $plan->setSalle($D001);
         $plan->setDateAjout(new DateTime());
-        $plan->setEtat(EtatAssignation::Inactif);
         $manager->flush();
     }
 }

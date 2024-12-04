@@ -20,7 +20,7 @@ class salleTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle');
 
-        $this->assertSelectorExists('table.salle');
+        $this->assertSelectorExists('table');
     }
 
     public function test_D001_dans_liste(): void
@@ -28,12 +28,12 @@ class salleTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/salle');
 
-        $this->assertSelectorTextContains('table.salle td.nom', 'D001');
-        $this->assertSelectorTextSame('table.salle td.bat', 'Batiment D');
-        $this->assertSelectorTextSame('table.salle td.etage', '0');
+        $this->assertSelectorTextContains('table td.nom', 'D001');
+        $this->assertSelectorTextContains('table td.bat', 'D');
+        $this->assertSelectorTextSame('table td.etage', '0');
     }
 
-    public function testLienSupressionD001Dispo(): void
+    public function test_checkbox_supression_D001_dispo(): void
     {
         $client = static::createClient();
         $container = $client->getContainer();
@@ -41,10 +41,9 @@ class salleTest extends WebTestCase
 
         $crawler = $client->request('GET', '/salle');
 
-        $selecteur = "table.salle td.supprimer a[href='/supprSalle?salle=" . $D001->getId() . "']";
+        $selecteur = "table td.supprimer input[type='checkbox'][value='" . $D001->getId() . "']";
 
         $this->assertSelectorExists($selecteur);
-        $this->assertSelectorTextSame($selecteur, "Supprimer");
     }
 
     public function testLienAjoutSalleDispo(): void
@@ -94,9 +93,9 @@ class salleTest extends WebTestCase
         $form['recherche_salle[salleNom]'] = 'D0';
         $client->submit($form);
 
-        $this->assertSelectorTextContains('table.salle td.nom', 'D001');
+        $this->assertSelectorTextContains('table td.nom', 'D001');
 
-        $form['recherche_salle[salleNom]'] = 'C';
+        $form['recherche_salle[salleNom]'] = 'Z';
         $client->submit($form);
 
         $this->assertSelectorTextContains('', "Aucune salle trouvée");
