@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} historique{% endblock %}
+
+{% block body %}
+    <table class="table table-bordered">
+        <tbody>
+        {% for historique in histo %}
+            <tr>
+                <td>{{ historique.date|date('d/m/Y') }}</td>
+                <td>{{ historique.action.value }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">Aucun historique disponible.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\ActionLog;
 use App\Entity\SA;
+use App\Entity\SALog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\ValeurCapteur;
@@ -24,6 +26,34 @@ class ValeurCapteurFixtures extends Fixture
         $manager->persist($sa);
         // Créer un tableau pour stocker les capteurs
         $capteurs = [];
+
+        $salog = new SAlog();
+        $salog->setSA($sa);
+        $salog->setDate(new \DateTime());
+        $salog->setAction(ActionLog::AJOUTER);
+
+        $manager->persist($salog);
+
+        $salog = new SAlog();
+        $salog->setSA($sa);
+        $salog->setDate(new \DateTime());
+        $salog->setAction(ActionLog::MODIFIER);
+        $manager->persist($salog);
+
+        $salog1 = new SAlog();
+        $salog1->setSA($sa);
+        $salog1->setDate(new \DateTime());
+        $salog1->setAction(ActionLog::MODIFIER);
+        $manager->persist($salog);
+
+        $salog2 = new SAlog();
+        $salog2->setSA($sa);
+        $salog2->setDate(new \DateTime());
+        $salog2->setAction(ActionLog::MODIFIER);
+        $manager->persist($salog);
+
+
+
 
         // Création des capteurs de type température, humidité, CO2
         $types = [TypeCapteur::temperature, TypeCapteur::humidite, TypeCapteur::co2];

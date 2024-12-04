@@ -3,7 +3,7 @@
 {% block title %}SA {{ SA.nom }}{% endblock %}
 {% block body %}
     <div class="container my-5" >
-        <h1 class="text-center mb-4">SA TESTSA</h1>
+        <h1 class="text-center mb-4">{{ SA.nom }}</h1>
 
         <div class="row" style="border-top:2px solid #ddd; padding: 15px;">
             <!-- Left Sidebar -->
@@ -39,7 +39,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <a href="#" class="btn btn-primary">Voir tout l'historique</a>
+                    <a href="{{ path('app_sa_log', {'id': SA.id}) }}" class="btn btn-primary">Voir tout l'historique</a>
                 </div>
             </div>
 

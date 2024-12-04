@@ -238,4 +238,19 @@ class SAController extends AbstractController
         // Rediriger vers la page de l'entité SA après suppression
         return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
     }
+
+
+    #[Route('/sa/log/{id}', name: 'app_sa_log')]
+    public function affichage_log_sa(Request $request, int $id, SARepository $repo,): Response
+    {
+        $SA = $repo->find($id);
+        if (!$SA) {
+            throw $this->createNotFoundException('SA introuvable.');
+        }
+        $histo=$SA->getSALogs();
+
+        return $this->render('sa/historique.html.twig', [
+            "histo" => $histo,
+        ]);
+    }
 }
