@@ -1,13 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}SA {{ SA.nom }}{% endblock %}
+
 {% block body %}
-    <div class="container my-5" >
+    <div class="container my-5">
         <h1 class="text-center mb-4">{{ SA.nom }}</h1>
 
-        <div class="row" style="border-top:2px solid #ddd; padding: 15px;">
+        <div class="row" style="border-top: 2px solid #ddd; padding: 15px;">
             <!-- Left Sidebar -->
-            <div class="col-md-3" style="background-color: #C0C0C0 ; border-right: 2px solid #ddd; padding: 15px;">
+            <div class="col-md-3" style="background-color: #C0C0C0; border-right: 2px solid #ddd; padding: 15px;">
                 <!-- Capteurs -->
                 <div class="mb-4">
                     <h3>Capteurs</h3>
@@ -64,11 +65,7 @@
                 <!-- Liste des commentaires -->
                 <div>
                     <h3>Commentaires</h3>
-                    <div class="d-flex mb-2">
-                        <input type="text" class="form-control me-2" placeholder="Rechercher">
-                        <button class="btn btn-secondary">Trier</button>
-                    </div>
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="commentairesTable">
                         <thead class="table-dark">
                         <tr>
                             <th>Tech</th>
@@ -77,10 +74,10 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {% for commentaire in SA.getCommentaire %}
+                        <tbody id="commentairesBody">
+                        {% for commentaire in commentaires[:5] %}
                             <tr>
-                                <td>nom</td>
+                                <td>{{commentaire.nomCom}}</td>
                                 <td>{{ commentaire.dateAjout|date('d/m/Y') }}</td>
                                 <td>{{ commentaire.description }}</td>
                                 <td>
@@ -88,18 +85,73 @@
                                         <input type="hidden" name="_token" value="{{ commentaire.id }}">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
+
                                 </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="4">Aucun commentaire disponible.</td>
+
                             </tr>
                         {% endfor %}
+                        <tr id="comments-container">
+                            <!-- Les commentaires chargés s'afficheront ici -->
+                        </tr>
                         </tbody>
                     </table>
-                    <a href="#" class="btn btn-primary">Voir plus</a>
+                    <button id="voir-plus" class="btn btn-primary" data-id="{{ SA.id }}" data-offset="0">Voir plus</button>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('voir-plus').addEventListener('click', function () {
+            const btn = this;
+            const id = btn.getAttribute('data-id'); // Retrieve ID
+            const offset = parseInt(btn.getAttribute('data-offset')); // Retrieve offset
+
+            console.log(`Fetching comments for ID: ${id} with offset: ${offset}`);
+
+            fetch(`/sa/${id}/commentaires-ajax?offset=${offset+5}`)
+                .then(response => {
+                    console.log('Raw response:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Server response:', data);
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        alert('Aucun commentaire à afficher.');
+                        return;
+                    }
+
+                    const commentsContainer = document.getElementById('comments-container');
+                    data.forEach(comment => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${comment.nom}</td>
+                    <td>${comment.dateAjout}</td>
+                    <td>${comment.description}</td>
+                    <td>
+                        <form method="post" action="/sa/${id}/commentaire-supprimer/${comment.id}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                            <input type="hidden" name="_token" value="${comment.id}">
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                `;
+                        commentairesBody.appendChild(row);
+                    });
+
+                    // Mise à jour de l'offset
+                    btn.setAttribute('data-offset', offset + data.length);
+                })
+                .catch(error => {
+                    console.error('Erreur AJAX :', error);
+                    alert('Une erreur est survenue lors du chargement des commentaires.');
+                });
+        });
+
+    </script>
+
 {% endblock %}

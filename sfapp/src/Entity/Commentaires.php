@@ -23,6 +23,9 @@ class Commentaires
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
+    #[ORM\Column(length: 25)]
+    private ?string $nomCom = null;
+
     public function __construct()
     {
         // Définit la date de création à la date actuelle
@@ -66,6 +69,18 @@ class Commentaires
     public function setDateAjout(\DateTimeInterface $dateAjout): static
     {
         $this->dateAjout = $dateAjout;
+
+        return $this;
+    }
+
+    public function getNomCom(): ?string
+    {
+        return $this->nomCom;
+    }
+
+    public function setNomCom(string $nomCom): static
+    {
+        $this->nomCom = $nomCom;
 
         return $this;
     }

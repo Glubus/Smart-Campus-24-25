@@ -17,9 +17,11 @@ use App\Repository\SARepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\VarDumper\VarDumper;
 
 class SAController extends AbstractController
 {
@@ -253,4 +255,29 @@ class SAController extends AbstractController
             "histo" => $histo,
         ]);
     }
+
+
+    #[Route("/sa/{id}/commentaires-ajax", name:'app_sa_commentaires_ajax')]
+    public function commentairesAjax(Sa $SA, Request $request): JsonResponse
+    {
+        $offset = (int) $request->query->get('offset', 5);
+
+        // Récupérer les commentaires
+        $commentaires = $SA->getCommentaire()->slice($offset, 5);
+
+        // Préparer les données de réponse
+        $data = [];
+        foreach ($commentaires as $commentaire) {
+            $data[] = [
+                'id' => $commentaire->getId(),
+                'nom' => $commentaire->getNomCom(), // Assurez-vous que 'getNomCom()' existe
+                'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
+                'description' => $commentaire->getDescription(),
+            ];
+        }
+
+        // Retourner une réponse JSON
+        return new JsonResponse($data);
+    }
+
 }
