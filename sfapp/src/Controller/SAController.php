@@ -238,6 +238,4 @@ class SAController extends AbstractController
         // Rediriger vers la page de l'entité SA après suppression
         return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
     }
-
-
 }
