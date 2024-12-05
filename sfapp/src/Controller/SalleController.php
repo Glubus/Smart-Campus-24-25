@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Capteur;
 use App\Entity\Salle;
+use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
@@ -19,10 +21,11 @@ use App\Form\AjoutSalleType;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle')]
-    public function index(Request $request, SalleRepository $salleRepository): Response
+    public function index(Request $request, SalleRepository $salleRepository, PlanRepository $planRepository): Response
     {
         // Création du formulaire de recherche
         $form = $this->createForm(RechercheSalleType::class);
+        $plans = $planRepository->findAll();
 
         // Traitement du formulaire de recherche
         $form->handleRequest($request);
@@ -50,6 +53,7 @@ class SalleController extends AbstractController
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
+                'plans' => $plans,
                 'form' => $form->createView(), // Passer le formulaire à la vue
             ]);
         } else {
@@ -66,12 +70,37 @@ class SalleController extends AbstractController
         $batiment = $salle->getBatiment();
         $plan = $planRepository->findOneBy(['salle' => $id]);
 
+        $labels = [];
+        $tempData = [];
+        $co2Data = [];
+        $humiData = [];
+
         $sa = null;
         if($plan) {
             $sa = $plan->getSA();
+            $capteurs = $sa->getCapteurs()->toArray();
+
+            foreach($capteurs as $capteur) {
+                switch ($capteur->getType()) {
+                    case TypeCapteur::temperature :
+                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
+                            array_push($tempData, $valeurCapteur->getValeur());
+                            array_push($labels, $valeurCapteur->getDate());
+                    }
+                    case TypeCapteur::co2 :
+                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
+                            array_push($co2Data,$valeurCapteur->getValeur());
+                    }
+                    case TypeCapteur::humidite :
+                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
+                            array_push($humiData,$valeurCapteur->getValeur());
+                    }
+                }
+            }
         }
 
         // Données des capteurs
+        /*
         $dataCapteurs = [
             'temp' => [['date' => "27/10/2005", 'valeur' => 20], ['date' => "28/10/2005", 'valeur' => 40]],
             'co2' => [['date' => "27/10/2005", 'valeur' => 400], ['date' => "28/10/2005", 'valeur' => 410]],
@@ -81,7 +110,7 @@ class SalleController extends AbstractController
         $labels = array_column($dataCapteurs['temp'], 'date'); // Les dates
         $tempData = array_column($dataCapteurs['temp'], 'valeur');
         $co2Data = array_column($dataCapteurs['co2'], 'valeur');
-        $humiData = array_column($dataCapteurs['humidite'], 'valeur');
+        $humiData = array_column($dataCapteurs['humidite'], 'valeur');*/
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,

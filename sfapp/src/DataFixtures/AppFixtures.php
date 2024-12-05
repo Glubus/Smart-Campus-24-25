@@ -50,11 +50,14 @@ class AppFixtures extends Fixture
         $SA->setNom('SATest');
         $manager->persist($SA);
 
+        $SA1 = new SA();
+        $SA1->setNom('SATest1');
+        $manager->persist($SA1);
+
         $plan=new Plan();
         $plan->setSA($SA);
         $plan->setSalle($D002);
         $plan->setDateAjout(new DateTime());
-        //$plan->setEtat(EtatAssignation::Actif);
         $manager->persist($plan);
 
         $plan=new Plan();

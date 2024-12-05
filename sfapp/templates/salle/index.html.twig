@@ -3,8 +3,95 @@
 {% block title %}Lister Salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <h1 class="text-center mb-4">Salles</h1>
+    <link rel="stylesheet" href="/css/listeSalles.css">
+    <h1 class="mainTitle">Liste des salles</h1>
+    <div class="all">
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+            <article class="filtresRecherche">
+                <div class="barreRech">
+                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                    <div class="form-group mr-2">
+                        {{ form_row(form.salleNom) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                    {{ form_end(form) }}
+                </div>
+                <h3 class="trier">Trier</h3>
+                <button class="btnTri">Date de création</button>
+                <button class="btnTri">Ordre alphabétique</button>
+            </article>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+            <button href="/salle/ajout" class="btnAjout">Ajouter</button>
+            <button class="btnSuppr">Supprimer</button>
+            {% for salle in salles %}
+                <article class="salleBlock">
+                    <input type="checkbox" style="margin-left: 15px; margin-top: 15px"/>
+                    <div class="SalleSaNom">
+                        <h3>{{ salle.nom }}</h3>
+                        {% if salle.plans is not null %}
+                            {% for plan in salle.plans %}
+                                <h3>{{ plan.sa.nom }}</h3>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="BatimentEtage">
+                        <p>Batiment {{ salle.batiment.nom }}</p>
+                        <p>Etage {{ salle.etage }}</p>
+                    </div>
+                    <div class="DetailsModif">
+                        <button class="btnDetailSA">Détails SA</button>
+                        <button class="btnModif">Modifier</button>
+                    </div>
+                </article>
+            {% endfor %}
+            <button class="btnAffPl">Afficher plus</button>
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Script chargé');
+
+        const checkboxes = document.querySelectorAll('.select-salle');
+        const selectionPanel = document.getElementById('selectionPanel');
+        const selectedCount = document.getElementById('selectedCount');
+        const deleteButton = document.getElementById('deleteSelected');
+        const bulkForm = document.getElementById('bulkActionForm');
+
+        function updateSelectionPanel() {
+            const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+            const count = selectedCheckboxes.length;
+
+            if (count > 0) {
+                selectedCount.textContent = `${count} salle(s) sélectionnée(s)`;
+                selectionPanel.classList.remove('d-none');
+            } else {
+                selectionPanel.classList.add('d-none');
+            }
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectionPanel);
+        });
+
+        deleteButton.addEventListener('click', function () {
+            {
+                bulkForm.submit();
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{#
+<div class="container my-5">
+        <h1 class="text-center mb-4">Liste des salles</h1>
         <br class="center mb-4" style="max-width: 100%;">
         <div class="d-flex justify-content-between align-items-center">
             {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
@@ -30,12 +117,12 @@
            <table class="table table-hover align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th class="nom">Nom</th>
-                    <th class="col">Bâtiment</th>
-                    <th class="col">Étage</th>
-                    <th class="col">Informations</th>
-                    <th scope="col">Modifier</th>
-                    <th scope="col">Supprimer</th>
+                    <th class="col text-center">Nom</th>
+                    <th class="col text-center">Bâtiment</th>
+                    <th class="col text-center">Étage</th>
+                    <th class="col text-center">Informations</th>
+                    <th scope="col text-center">Modifier</th>
+                    <th scope="col text-center">Supprimer</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -64,39 +151,6 @@
             </table>
         </form>
     </div>
+#}
 
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                console.log('Script chargé');
-
-                const checkboxes = document.querySelectorAll('.select-salle');
-                const selectionPanel = document.getElementById('selectionPanel');
-                const selectedCount = document.getElementById('selectedCount');
-                const deleteButton = document.getElementById('deleteSelected');
-                const bulkForm = document.getElementById('bulkActionForm');
-
-                function updateSelectionPanel() {
-                    const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-                    const count = selectedCheckboxes.length;
-
-                    if (count > 0) {
-                        selectedCount.textContent = `${count} salle(s) sélectionnée(s)`;
-                        selectionPanel.classList.remove('d-none');
-                    } else {
-                        selectionPanel.classList.add('d-none');
-                    }
-                }
-
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateSelectionPanel);
-                });
-
-                deleteButton.addEventListener('click', function () {
-                    {
-                        bulkForm.submit();
-                    }
-                });
-            });
-        </script>
-{% endblock %}

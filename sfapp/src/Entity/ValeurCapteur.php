@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ValeurCapteurRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ValeurCapteurRepository::class)]
@@ -19,6 +20,9 @@ class ValeurCapteur
     #[ORM\ManyToOne(inversedBy: 'valeurCapteurs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Capteur $capteur = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
     public function getId(): ?int
     {
@@ -45,6 +49,18 @@ class ValeurCapteur
     public function setCapteur(?Capteur $capteur): static
     {
         $this->capteur = $capteur;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
 
         return $this;
     }
