@@ -25,22 +25,28 @@
 
         <main class="liste">
             <h2 class="titreListe">Résultats</h2>
-            <button href="/salle/ajout" class="btnAjout">Ajouter</button>
-            <button class="btnSuppr">Supprimer</button>
+
+            <div class="btns">
+                <button href="/salle/ajout" class="btnAjout">Ajouter</button>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+            </div>
+
             {% for salle in salles %}
                 <article class="salleBlock">
-                    <input type="checkbox" style="margin-left: 15px; margin-top: 15px"/>
-                    <div class="SalleSaNom">
-                        <h3>{{ salle.nom }}</h3>
-                        {% if salle.plans is not null %}
-                            {% for plan in salle.plans %}
-                                <h3>{{ plan.sa.nom }}</h3>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    <div class="BatimentEtage">
-                        <p>Batiment {{ salle.batiment.nom }}</p>
-                        <p>Etage {{ salle.etage }}</p>
+                    <div class="infosSalle">
+                        <input type="checkbox" class="checkbox"/>
+                        <div class="SalleSaNom">
+                            <h3>{{ salle.nom }}</h3>
+                            {% if salle.plans is not null %}
+                                {% for plan in salle.plans %}
+                                    <h3>{{ plan.sa.nom }}</h3>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="BatimentEtage">
+                            <p>Batiment {{ salle.batiment.nom }}</p>
+                            <p>Etage {{ salle.etage }}</p>
+                        </div>
                     </div>
                     <div class="DetailsModif">
                         <button class="btnDetailSA">Détails SA</button>
@@ -55,16 +61,38 @@
 
 {% block javascripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log('Script chargé');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Ciblez les checkboxes et le bouton
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const deleteButton = document.getElementById('btnSuppr');
 
-        const checkboxes = document.querySelectorAll('.select-salle');
-        const selectionPanel = document.getElementById('selectionPanel');
-        const selectedCount = document.getElementById('selectedCount');
-        const deleteButton = document.getElementById('deleteSelected');
-        const bulkForm = document.getElementById('bulkActionForm');
+        // Fonction pour vérifier si une checkbox est cochée
+        function toggleDeleteButton() {
+            const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            if (isAnyChecked) {
+                deleteButton.classList.remove('hidden'); // Affiche le bouton
+            } else {
+                deleteButton.classList.add('hidden'); // Masque le bouton
+            }
+        }
 
-        function updateSelectionPanel() {
+        // Ajoutez un écouteur d'événement à chaque checkbox
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', toggleDeleteButton);
+        });
+
+        deleteButton.addEventListener('click', function () {
+            {
+                bulkForm.submit();
+            }
+        });
+
+        // Vérifiez initialement (au cas où une checkbox est pré-cochée)
+        toggleDeleteButton();
+    });
+
+
+    {#function updateSelectionPanel() {
             const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
             const count = selectedCheckboxes.length;
 
@@ -74,18 +102,7 @@
             } else {
                 selectionPanel.classList.add('d-none');
             }
-        }
-
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateSelectionPanel);
-        });
-
-        deleteButton.addEventListener('click', function () {
-            {
-                bulkForm.submit();
-            }
-        });
-    });
+        }  #}
 </script>
 {% endblock %}
 
