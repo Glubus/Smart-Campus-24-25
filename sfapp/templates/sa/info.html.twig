@@ -51,8 +51,8 @@
                     <h3>Ajouter un commentaire</h3>
                     <form method="post" action="{{ path('app_sa_commentaire', {'id': SA.id}) }}">
                         <div class="mb-3">
-                            <label for="nom_tech" class="form-label">Nom Tech</label>
-                            <input type="text" id="nom_tech" name="nom_tech" class="form-control" required>
+                            <label for="nomTech" class="form-label">Nom Tech</label>
+                            <input type="text" id="nomTech" name="nomTech" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
@@ -65,36 +65,24 @@
                 <!-- Liste des commentaires -->
                 <div>
                     <h3>Commentaires</h3>
-                    <table class="table table-bordered" id="commentairesTable">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>Tech</th>
-                            <th>Date</th>
-                            <th>Contenu</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tbody id="commentairesBody">
                         {% for commentaire in commentaires[:5] %}
-                            <tr>
-                                <td>{{commentaire.nomCom}}</td>
-                                <td>{{ commentaire.dateAjout|date('d/m/Y') }}</td>
-                                <td>{{ commentaire.description }}</td>
-                                <td>
-                                    <form method="post" action="{{ path('app_sa_commentaire_supprimer', {'id': SA.id, 'commentaireId': commentaire.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
-                                        <input type="hidden" name="_token" value="{{ commentaire.id }}">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
-
-                                </td>
-
-                            </tr>
+                            <div style="border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
+                                <div >
+                                    {{ commentaire.nomTech }}, {{ commentaire.dateAjout|date('d/m/Y') }}<div style=" padding: 10px">
+                                    {{ commentaire.description }}
+                                    </div>
+                                </div>
+                                <form method="post" action="{{ path('app_sa_commentaire_supprimer', {'id': SA.id, 'commentaireId': commentaire.id}) }}"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                      style="margin-left: 15px;">
+                                    <input type="hidden" name="_token" value="{{ commentaire.id }}">
+                                    <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                                </form>
+                            </div>
                         {% endfor %}
-                        <tr id="comments-container">
+                        <div  id="comments-container">
                             <!-- Les commentaires chargés s'afficheront ici -->
-                        </tr>
-                        </tbody>
-                    </table>
+                        </div>
                     <button id="voir-plus" class="btn btn-primary" data-id="{{ SA.id }}" data-offset="0">Voir plus</button>
 
                 </div>
@@ -128,20 +116,24 @@
 
                     const commentsContainer = document.getElementById('comments-container');
                     data.forEach(comment => {
-                        const row = document.createElement('tr');
+                        const row = document.createElement('div');
+                        row.setAttribute('style', ' border-bottom: 1px solid #ddd   ; padding: 5px; display: flex; justify-content: space-between; align-items: center;');
                         row.innerHTML = `
-                    <td>${comment.nom}</td>
-                    <td>${comment.dateAjout}</td>
-                    <td>${comment.description}</td>
-                    <td>
-                        <form method="post" action="/sa/${id}/commentaire-supprimer/${comment.id}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
-                            <input type="hidden" name="_token" value="${comment.id}">
-                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                        </form>
-                    </td>
-                `;
-                        commentairesBody.appendChild(row);
+        <div >
+            ${comment.nomTech}, ${new Date(comment.dateAjout).toLocaleDateString()}<div style=" padding: 10px">
+            ${comment.description}
+            </div>
+        </div>
+        <form method="post" action="/sa/${id}/commentaire-supprimer/${comment.id}"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                      style="margin-left: 15px;">
+                                    <input type="hidden" name="_token" value="{ comment.id }">
+                                    <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                                </form>
+    `;
+                        commentsContainer.appendChild(row);
                     });
+
 
                     // Mise à jour de l'offset
                     btn.setAttribute('data-offset', offset + data.length);

@@ -192,9 +192,11 @@ class SAController extends AbstractController
 
         // Récupérer la description du commentaire
         $description = $request->request->get('description');
+        $nomTech = $request->request->get('nomTech');
 
         // Créer et associer le commentaire
         $commentaire = new Commentaires();
+        $commentaire->setNomTech($nomTech);
         $commentaire->setDescription($description);
         $commentaire->setSA($SA);
 
@@ -270,7 +272,7 @@ class SAController extends AbstractController
         foreach ($commentaires as $commentaire) {
             $data[] = [
                 'id' => $commentaire->getId(),
-                'nom' => $commentaire->getNomCom(), // Assurez-vous que 'getNomCom()' existe
+                'nomTech' => $commentaire->getNomTech(), // Assurez-vous que 'getNomCom()' existe
                 'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
                 'description' => $commentaire->getDescription(),
             ];

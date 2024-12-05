@@ -24,7 +24,7 @@ class Commentaires
     private ?\DateTimeInterface $dateAjout = null;
 
     #[ORM\Column(length: 25)]
-    private ?string $nomCom = null;
+    private ?string $nomTech = null;
 
     public function __construct()
     {
@@ -73,14 +73,14 @@ class Commentaires
         return $this;
     }
 
-    public function getNomCom(): ?string
+    public function getNomTech(): ?string
     {
-        return $this->nomCom;
+        return $this->nomTech;
     }
 
-    public function setNomCom(string $nomCom): static
+    public function setNomTech(string $nomTech): static
     {
-        $this->nomCom = $nomCom;
+        $this->nomTech = $nomTech;
 
         return $this;
     }
