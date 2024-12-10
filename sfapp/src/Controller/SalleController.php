@@ -24,6 +24,7 @@ class SalleController extends AbstractController
     public function index(Request $request, SalleRepository $salleRepository, PlanRepository $planRepository): Response
     {
         // Création du formulaire de recherche
+        $nbSalles = $salleRepository->count();
         $form = $this->createForm(RechercheSalleType::class);
         $plans = $planRepository->findAll();
 
@@ -54,6 +55,7 @@ class SalleController extends AbstractController
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
                 'plans' => $plans,
+                'nbSalles' => $nbSalles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
             ]);
         } else {
@@ -156,9 +158,9 @@ class SalleController extends AbstractController
     }
 
     #[Route('/modifierSalle', name: 'app_salle_update')]
-    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
+    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository): Response
     {
-        $salle = $salleRepository->find($request->get('salle'));
+        $salle = $salleRepository->find($request->get('id'));
         $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
