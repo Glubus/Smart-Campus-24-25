@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Salle;
+use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
-use App\Repository\PlanRepository;
+use App\Repository\DetailPlanRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -60,36 +61,48 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
-    public function infos(int $id, SalleRepository $aRepo, PlanRepository $planRepository): Response
+    public function infos(int $id, SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
         $batiment = $salle->getBatiment();
-        $plan = $planRepository->findOneBy(['salle' => $id]);
+        $end = new \DateTime();
+        $start = (clone $end)->modify('-7 days'); // 7 jours avant
 
+        $plan = $planRepository->findWeeklyData($id, $start, $end);
+        $planGetSA=$planRepository->findOneBy(['salle'=>$id]);
         $sa = null;
-        if($plan) {
-            $sa = $plan->getSA();
+        if($planGetSA) {
+            $sa = $planGetSA->getSA();
+        }
+        if (!$sa){
+            return $this->render('salle/infos-SansCapteur.html.twig', [
+                'salle' => $salle,
+            ]);
+        }
+        // Données des capteurs
+        foreach($sa->getValeurCapteurs() as $valeur) {;
+            $date=$valeur->getDate()->format('Y-m-d H:i');
+            switch ($valeur->getNom()) {
+                case TypeCapteur::TEMPERATURE:
+                    $arr[$date][TypeCapteur::TEMPERATURE->value] = $valeur;
+                    break;
+                case TypeCapteur::HUMIDITE:
+                    $arr[$date][TypeCapteur::HUMIDITE->value] = $valeur;
+                    break;
+                case TypeCapteur::LUMINOSITY:
+                    $arr[$date][TypeCapteur::LUMINOSITY->value] = $valeur;
+                    break;
+                case TypeCapteur::CO2:
+                    $arr[$date][TypeCapteur::CO2->value] = $valeur;
+                    break;
+            }
         }
 
-        // Données des capteurs
-        $dataCapteurs = [
-            'temp' => [['date' => "27/10/2005", 'valeur' => 20], ['date' => "28/10/2005", 'valeur' => 40]],
-            'co2' => [['date' => "27/10/2005", 'valeur' => 400], ['date' => "28/10/2005", 'valeur' => 410]],
-            'humidite' => [['date' => "27/10/2005", 'valeur' => 60], ['date' => "28/10/2005", 'valeur' => 65]]
-        ];
-
-        $labels = array_column($dataCapteurs['temp'], 'date'); // Les dates
-        $tempData = array_column($dataCapteurs['temp'], 'valeur');
-        $co2Data = array_column($dataCapteurs['co2'], 'valeur');
-        $humiData = array_column($dataCapteurs['humidite'], 'valeur');
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
             'sa' => $sa,
-            'labels' => $labels,
-            'tempData' => $tempData,
-            'co2Data' => $co2Data,
-            'humiData' => $humiData
+            'data'=>$arr,
         ]);
     }
 

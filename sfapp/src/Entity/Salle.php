@@ -24,7 +24,7 @@ class Salle
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'salle')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
     private Collection $plans;
 
     public function __construct()
@@ -73,12 +73,12 @@ class Salle
         return $this;
     }
 
-    public function getPlan(): ?Plan
+    public function getPlan(): ?DetailPlan
     {
         return $this->plan;
     }
 
-    public function setPlan(Plan $plan): static
+    public function setPlan(DetailPlan $plan): static
     {
         // set the owning side of the relation if necessary
         if ($plan->getSalle() !== $this) {
@@ -102,14 +102,14 @@ class Salle
     }
 
     /**
-     * @return Collection<int, Plan>
+     * @return Collection<int, DetailPlan>
      */
     public function getPlans(): Collection
     {
         return $this->plans;
     }
 
-    public function addPlan(Plan $plan): static
+    public function addPlan(DetailPlan $plan): static
     {
         if (!$this->plans->contains($plan)) {
             $this->plans->add($plan);
@@ -119,7 +119,7 @@ class Salle
         return $this;
     }
 
-    public function removePlan(Plan $plan): static
+    public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
             // set the owning side to null (unless already changed)

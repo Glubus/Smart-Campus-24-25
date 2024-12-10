@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use App\Entity\SA;
 use App\Form\AssociationSASalle;
 use App\Form\SuppressionType;
@@ -28,16 +28,16 @@ class PlanController extends AbstractController
             }
 
             // Utiliser findBy pour récupérer tous les plans associés à ce SA
-            $plan = $em->getRepository(Plan::class)->findOneBy([
+            $plan = $em->getRepository(DetailPlan::class)->findOneBy([
                 'sa' => $sa  // On filtre les plans par l'objet SA
             ]);
             if (!$plan)
             {
-                $plan = new Plan();
+                $plan = new DetailPlan();
                 $plan->setSa($sa);
             }
         }else{
-            $plan = new Plan(); // Créez un objet Plan
+            $plan = new DetailPlan(); // Créez un objet DetailPlan
         }
         $form = $this->createForm(AssociationSASalle::class, $plan); // Assurez-vous d'avoir un formulaire `PlanType`
 
