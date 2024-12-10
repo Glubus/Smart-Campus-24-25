@@ -34,6 +34,7 @@ class SA
         $this->capteurs = new ArrayCollection();
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
+        $this->commentaire = new ArrayCollection();
     }
 
     public function getId(): ?int

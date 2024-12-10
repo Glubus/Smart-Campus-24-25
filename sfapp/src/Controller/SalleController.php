@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Capteur;
 use App\Entity\Salle;
 use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
@@ -20,10 +21,12 @@ use App\Form\AjoutSalleType;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle')]
-    public function index(Request $request, SalleRepository $salleRepository): Response
+    public function index(Request $request, SalleRepository $salleRepository, PlanRepository $planRepository): Response
     {
         // Création du formulaire de recherche
+        $nbSalles = $salleRepository->count();
         $form = $this->createForm(RechercheSalleType::class);
+        $plans = $planRepository->findAll();
 
         // Traitement du formulaire de recherche
         $form->handleRequest($request);
@@ -51,6 +54,8 @@ class SalleController extends AbstractController
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
+                'plans' => $plans,
+                'nbSalles' => $nbSalles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
             ]);
         } else {
@@ -140,9 +145,9 @@ class SalleController extends AbstractController
     }
 
     #[Route('/modifierSalle', name: 'app_salle_update')]
-    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
+    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository): Response
     {
-        $salle = $salleRepository->find($request->get('salle'));
+        $salle = $salleRepository->find($request->get('id'));
         $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
