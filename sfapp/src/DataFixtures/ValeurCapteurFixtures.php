@@ -17,11 +17,9 @@ class ValeurCapteurFixtures extends Fixture
         // Initialisation de Faker pour générer des données réalistes
         $faker = Factory::create();
 
-
         $sa = new SA();
         $sa->setNom($faker->word);
         $sa->setDateAjout(new \DateTime());
-        $manager->persist($sa);
         // Créer un tableau pour stocker les capteurs
         $capteurs = [];
 
@@ -56,7 +54,7 @@ class ValeurCapteurFixtures extends Fixture
                 switch ($capteur->getType()) {
                     case TypeCapteur::temperature:
                         // Température entre -10°C et 35°C
-                        $valeurCapteur->setValeur($faker->randomFloat(2, -10, 35));
+                        $valeurCapteur->setValeur($faker->randomFloat(2, 15, 23));
                         break;
                     case TypeCapteur::humidite:
                         // Humidité entre 30% et 90%
@@ -67,12 +65,12 @@ class ValeurCapteurFixtures extends Fixture
                         $valeurCapteur->setValeur($faker->randomFloat(2, 300, 2000));
                         break;
                 }
-
+                $valeurCapteur->setDate($date);
                 // Associer la valeur à la date et persister
                 $manager->persist($valeurCapteur);
             }
         }
-
+        $manager->persist($sa);
         // Enregistrer toutes les entités en base
         $manager->flush();
     }
