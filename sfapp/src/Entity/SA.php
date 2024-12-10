@@ -26,11 +26,15 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
+    #[ORM\OneToMany(targetEntity: Commentaires::class, mappedBy: 'SA')]
+    private Collection $commentaire;
+
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
+        $this->commentaire = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -152,6 +156,36 @@ class SA
             // set the owning side to null (unless already changed)
             if ($sALog->getSA() === $this) {
                 $sALog->setSA(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentaires>
+     */
+    public function getCommentaire(): Collection
+    {
+        return $this->commentaire;
+    }
+
+    public function addCommentaire(Commentaires $commentaire): static
+    {
+        if (!$this->commentaire->contains($commentaire)) {
+            $this->commentaire->add($commentaire);
+            $commentaire->setSA($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Commentaires $commentaire): static
+    {
+        if ($this->commentaire->removeElement($commentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($commentaire->getSA() === $this) {
+                $commentaire->setSA(null);
             }
         }
 
