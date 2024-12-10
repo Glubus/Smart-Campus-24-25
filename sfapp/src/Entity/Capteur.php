@@ -23,9 +23,6 @@ class Capteur
     #[ORM\ManyToOne(inversedBy: 'capteurs')]
     private ?SA $sa = null;
 
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'capteur')]
-    private Collection $valeurCapteurs;
-
     public function __construct()
     {
         $this->valeurCapteurs = new ArrayCollection();
@@ -80,33 +77,5 @@ class Capteur
         return $this->type?->value;
     }
 
-    /**
-     * @return Collection<int, ValeurCapteur>
-     */
-    public function getValeurCapteurs(): Collection
-    {
-        return $this->valeurCapteurs;
-    }
 
-    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
-    {
-        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
-            $this->valeurCapteurs->add($valeurCapteur);
-            $valeurCapteur->setCapteur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
-    {
-        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
-            // set the owning side to null (unless already changed)
-            if ($valeurCapteur->getCapteur() === $this) {
-                $valeurCapteur->setCapteur(null);
-            }
-        }
-
-        return $this;
-    }
 }

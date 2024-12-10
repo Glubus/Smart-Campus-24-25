@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la salle{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="/css/infosSalle.css">
+        <div class="container my-5">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-secondary text-white">
+                    <h2 class="mb-0">Détails de la salle : {{ salle.nom }}</h2>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title text-primary">Informations générales</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Nom :</strong> {{ salle.nom }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Bâtiment :</strong> {{ salle.batiment.nom }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Adresse :</strong> {{ salle.batiment.adresse }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Étage :</strong> {{ salle.etage }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>SA attribué : </strong>
+                                <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
+
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_salle') }}" class="btn btn-outline-secondary">
+                        Retour à la liste des salles
+                    </a>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{#
+document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM prêt");
+            const ctx = document.getElementById('salleGraph').getContext('2d');
+
+            // Récupérer les données depuis Twig
+            const labels = {{ labels|json_encode|raw }};
+            const temp = {{ tempData|json_encode|raw }};
+            const co2 = {{ co2Data|json_encode|raw }};
+            const humi = {{ humiData|json_encode|raw }};
+
+            // Créer le graphique
+            const salleGraph = new Chart(ctx, {
+                type: 'line', // Type du graphique
+                data: {
+                    labels: labels, // Labels pour l'axe X
+                    datasets: [
+                        {
+                            label: 'Température',
+                            data: {{ tempData|json_encode|raw }}, // Données
+                            borderColor: 'rgba(255, 217, 0, 1)',
+                            backgroundColor: 'rgba(255, 251, 120, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'CO2',
+                            data: {{ co2Data|json_encode|raw }}, // Données
+                            borderColor: 'rgba(255, 113, 113, 1)',
+                            backgroundColor: 'rgba(255, 186, 186, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Humidité',
+                            data: {{ humiData|json_encode|raw }}, // Données
+                            borderColor: 'rgba(106, 223, 255, 1)',
+                            backgroundColor: 'rgba(185, 240, 255, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false, // L'axe Y commence à zéro
+                            min: Math.min(temp),            // Valeur minimale de l'axe Y
+                            max: Math.max(...temp),          // Valeur maximale de l'axe Y
+                            stepSize: 10,      // Intervalle des ticks
+                            ticks: {
+                                color: '#000000', // Couleur des ticks
+                            }
+                        }
+                    }
+                }
+            })
+        });
+#}

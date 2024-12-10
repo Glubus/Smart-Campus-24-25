@@ -17,7 +17,7 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'sa')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'sa')]
     private Collection $plans;
 
     #[ORM\OneToMany(targetEntity: Capteur::class, mappedBy: 'sa', cascade: ['persist'])]
@@ -26,8 +26,8 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: Commentaires::class, mappedBy: 'SA')]
-    private Collection $commentaire;
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'sa')]
+    private Collection $valeurCapteurs;
 
     public function __construct()
     {
@@ -103,14 +103,14 @@ class SA
 
 
     /**
-     * @return Collection<int, Plan>
+     * @return Collection<int, DetailPlan>
      */
     public function getPlans(): Collection
     {
         return $this->plans;
     }
 
-    public function addPlan(Plan $plan): static
+    public function addPlan(DetailPlan $plan): static
     {
         if (!$this->plans->contains($plan)) {
             $this->plans->add($plan);
@@ -120,7 +120,7 @@ class SA
         return $this;
     }
 
-    public function removePlan(Plan $plan): static
+    public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
             // set the owning side to null (unless already changed)
@@ -163,29 +163,29 @@ class SA
     }
 
     /**
-     * @return Collection<int, Commentaires>
+     * @return Collection<int, ValeurCapteur>
      */
-    public function getCommentaire(): Collection
+    public function getValeurCapteurs(): Collection
     {
-        return $this->commentaire;
+        return $this->valeurCapteurs;
     }
 
-    public function addCommentaire(Commentaires $commentaire): static
+    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
     {
-        if (!$this->commentaire->contains($commentaire)) {
-            $this->commentaire->add($commentaire);
-            $commentaire->setSA($this);
+        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
+            $this->valeurCapteurs->add($valeurCapteur);
+            $valeurCapteur->setCapteur($this);
         }
 
         return $this;
     }
 
-    public function removeCommentaire(Commentaires $commentaire): static
+    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
     {
-        if ($this->commentaire->removeElement($commentaire)) {
+        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
             // set the owning side to null (unless already changed)
-            if ($commentaire->getSA() === $this) {
-                $commentaire->setSA(null);
+            if ($valeurCapteur->getCapteur() === $this) {
+                $valeurCapteur->setCapteur(null);
             }
         }
 

@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 enum TypeCapteur:string{
-    case temperature = "temperature";
-    case humidite = "humidite";
-    case co2 = "co2";
+    case TEMPERATURE = "temperature";
+    case HUMIDITE = "humidite";
+    case CO2 = "co2";
+
+    case LUMINOSITY = "luminosite";
 }

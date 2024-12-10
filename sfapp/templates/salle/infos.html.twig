@@ -17,7 +17,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap1</p>
                             </div>
-                            <h3 class="data">{{ tempData[0] }}°C</h3>
+                            <h3 class="data">{{ data[0]["temperature"] }}°C</h3>
                         </div>
                     </div>
 
@@ -28,7 +28,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap2</p>
                             </div>
-                            <h3 class="data">{{ co2Data[0] }}ppm</h3>
+                            <h3 class="data">{{ data[0]["co2"] }}ppm</h3>
                         </div>
                     </div>
 
@@ -39,7 +39,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap3</p>
                             </div>
-                            <h3 class="data">{{ humiData[0] }}%</h3>
+                            <h3 class="data">{{ data[0]["humidite"] }}%</h3>
                         </div>
                     </div>
             </div>
@@ -112,19 +112,30 @@
         </div>
     {% endif %}
 {% endblock %}
-
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             console.log("DOM prêt");
+
             const ctx = document.getElementById('salleGraph').getContext('2d');
 
             // Récupérer les données depuis Twig
-            const labels = {{ labels|json_encode|raw }};
-            const temp = {{ tempData|json_encode|raw }};
-            const co2 = {{ co2Data|json_encode|raw }};
-            const humi = {{ humiData|json_encode|raw }};
+            const rawData = {{ data|json_encode|raw }};
+            const labels = Object.keys(rawData); // Dates en tant que labels
+
+            // Initialiser les tableaux pour les datasets
+            const temp = [];
+            const co2 = [];
+            const humi = [];
+
+            // Parcourir les données pour extraire les valeurs
+            labels.forEach(label => {
+                const dataPoint = rawData[label];
+                temp.push(dataPoint['temperature'] || null); // Ajouter null si absence de valeur
+                co2.push(dataPoint['co2'] || null);
+                humi.push(dataPoint['humidite'] || null);
+            });
 
             // Créer le graphique
             const salleGraph = new Chart(ctx, {
@@ -176,6 +187,7 @@
         });
     </script>
 {% endblock %}
+
 
 {#
 document.addEventListener('DOMContentLoaded', function() {

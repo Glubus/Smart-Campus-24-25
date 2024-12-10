@@ -16,40 +16,56 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BatimentController extends AbstractController
 {
-    /*#[Route('/batiment', name: 'app_batiment')]
-    public function index(EntityManagerInterface $em): Response
-    {
-        // Récupération de tous les bâtiments depuis la base de données
-        $batiments = $em->getRepository(Batiment::class)->findAll();
 
-        return $this->render('batiment/ajouter.html.twig', [
-            'batiments' => $batiments,
-        ]);
-    }*/
-
+    /*
+     * Relier a l'US15 : En tant que chargé de projet, je souhaite ajouter un batiment pour mettre des salles
+     * But : lister salle
+     * @param :  BatimentRepository pour fetchAll
+     * @return : renvois une page twig avec la liste des batiments afficher
+     * @route : "/batiment"
+     * @name : app_batiment_liste
+     */
     #[Route('/batiment', name: 'app_batiment_liste')]
-    public function liste(EntityManagerInterface $em): Response
+    public function liste(BatimentRepository $repo): Response
     {
         // Récupérer la liste des bâtiments
-        $batiments = $em->getRepository(Batiment::class)->findAll();
+        $batiments = $repo->findAll();
 
         return $this->render('batiment/liste.html.twig', [
             'batiments' => $batiments,
         ]);
     }
 
-    #[Route('/batiment/ajout', name: 'app_batiment_ajouter')]
+    /*
+     * Relier a l'US15 : En tant que chargé de projet, je souhaite ajouter un batiment pour mettre des salles
+     * But : ajouter une salle
+     * @param :  BatimentRepository pour find en cas de modif, Request pour le form et EntityManagerInterface pour persist et flush dans la DB
+     * @return : renvois une page twig pour ajouter un batimejnt
+     * @route : "/batiment/ajouter"
+     * @name : app_batiment_liste
+     */
+    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
+        // Definition des variables utiliser dans la fonction
+
+        $batiment=null; // Mettre l'entité batiment dedans
+        $form=null; // Mettre le form dedans
+        $req=null; // sert a recuperer le batiment de la requete si il existe
+
         $req=$request->get('batiment');
-        $batiment=null;
+
+        // si la requete existe alors find
         if ($req) {
             $batiment = $batimentRepository->find($req);
         }
+
+        // si le find est null alors c'est une nouvelle insertion
         if (!$batiment) {
             // Initialisation d'un nouveau bâtiment
             $batiment = new Batiment();
         }
+
         // Création du formulaire
         $form = $this->createForm(AjoutBatimentType::class, $batiment);
 
@@ -57,12 +73,14 @@ class BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // on regarde si il existe pas déjà
             $batimentExistante = $batimentRepository->findBy(
                 ['nom' => $batiment->getNom()]);
-            if($batimentExistanteœ) {
+            if($batimentExistante) {
                 $this->addFlash('error', 'Ce batiment existe déjà');
             }
             else{
+                // sinon on update la db
                 $em->persist($batiment);
                 $em->flush();
 
