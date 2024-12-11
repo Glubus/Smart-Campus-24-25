@@ -3,11 +3,12 @@
 {% block title %}Lister Salle{% endblock %}
 
 {% block body %}
-    <link rel="stylesheet" href="/css/listesas.css">
+    <link rel="stylesheet" href="/css/listeSalles.css">
     <h1 class="mainTitle">Liste des sas</h1>
     <div class="all">
         <aside class="rechercheBlock">
             <h2 class="titreRecherche">Rechercher</h2>
+
             <article class="filtresRecherche">
                 <div class="barreRech">
                     {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
@@ -21,6 +22,7 @@
                 <button class="btnTri">Date de création</button>
                 <button class="btnTri">Ordre alphabétique</button>
             </article>
+            </a>
         </aside>
 
         <main class="liste">
@@ -31,12 +33,13 @@
                 <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
             </div>
 
+
             {% for sa in liste_SA %}
                 <a href="/sa/{{ sa.id }}">
-                    <article class="saBlock">
+                    <article class="salleBlock">
                         <div class="infossa">
                             <input type="checkbox" class="checkbox" value="{{ sa.id }}"/>
-                            <div class="saSaNom">
+                            <div class="saSaNom" >
                                 <h3>{{ sa.nom }}</h3>
                                 {% if sa.plans is not null %}
                                     {% for plan in sa.plans %}
@@ -48,7 +51,9 @@
                                 <p>Nom {{ sa.nom }}</p>
 
                             </div>
+
                         </div>
+
                         <div class="DetailsModif">
                             <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails SA</button></a>
                             <a href="/modifiersa?id="{{ sa.id }}><button class="btnModif">Modifier</button></a>
