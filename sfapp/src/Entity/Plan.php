@@ -39,8 +39,9 @@ class Plan
         $arr=[];
         $i=0;
         foreach ( $this->detailPlans as $plan){
-                if (!in_array($plan->getNom(),$arr)) {
-                    $arr[] = $plan->getNom();
+
+                if (!in_array($plan->getSalle(),$arr)) {
+                    $arr[] = $plan->getSalle();
                     $i++;
                 }
         }

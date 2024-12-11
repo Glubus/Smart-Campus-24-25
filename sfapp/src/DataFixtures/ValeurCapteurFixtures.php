@@ -3,7 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\ActionLog;
+use App\Entity\Batiment;
 use App\Entity\SA;
+use App\Entity\Salle;
 use App\Entity\SALog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -56,14 +58,6 @@ class ValeurCapteurFixtures extends Fixture
         // Création des capteurs de type température, humidité, CO2
         $types = [TypeCapteur::TEMPERATURE, TypeCapteur::HUMIDITE, TypeCapteur::CO2];
 
-        foreach ($types as $type) {
-            $capteur = new Capteur();
-            $capteur->setNom("Capteur de " . ucfirst($type->value));
-            $capteur->setType($type);
-            $sa->addCapteur($capteur);
-            $manager->persist($capteur);
-        }
-
         // Générer des valeurs pour chaque capteur sur un mois avec une fréquence toutes les 10 minutes
         $startDate = new \DateTime('2024-09-01 00:00:00');
         $endDate = new \DateTime('2024-12-31 00:00:00');
@@ -71,16 +65,28 @@ class ValeurCapteurFixtures extends Fixture
 
         // On va générer des valeurs toutes les 10 minutes pendant un mois
         $period = new \DatePeriod($startDate, $interval, $endDate);
+        $batiment = new Batiment();
+        $batiment->setNom("Batiment C");
+        $batiment->setAdresse("15, rue pascal");
+        $batiment->setNbEtages(4);
+        $manager->persist($batiment);
 
+        $salle = new Salle();
+        $salle->setNom("C201");
+        $salle->setRadiateur(10);
+        $salle->setEtage(2);
+        $salle->setFenetre(10);
+        $salle->setBatiment($batiment);
+        $manager->persist($salle);
         // Pour chaque date et chaque capteur, générer une valeur
         foreach ($period as $date) {
             foreach ($types as $type) {
                 $valeurCapteur = new ValeurCapteur();
                 $valeurCapteur->setSa($sa);
-                $valeurCapteur->setNom($type);
-                $valeurCapteur->setDate($date);
-                $valeurCapteur->setDescription($faker->text);
-                $valeurCapteur->setLocalisation($faker->bothify("D###"));
+                $valeurCapteur->setType($type);
+                $valeurCapteur->setDateAjout($date);
+                $valeurCapteur->setSalle($salle);
+
                 // Générer une valeur aléatoire pour chaque type de capteur
                 switch ($type) {
                     case TypeCapteur::TEMPERATURE:
@@ -106,6 +112,7 @@ class ValeurCapteurFixtures extends Fixture
                 $manager->persist($valeurCapteur);
             }
         }
+
         $manager->persist($sa);
         // Enregistrer toutes les entités en base
         $manager->flush();
