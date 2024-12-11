@@ -40,6 +40,11 @@ class Salle
         $this->plans = new ArrayCollection();
     }
 
+    public function getCountSA(): int
+    {
+        return $this->plans->count();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

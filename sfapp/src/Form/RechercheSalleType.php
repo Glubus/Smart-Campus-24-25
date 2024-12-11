@@ -3,9 +3,11 @@
 namespace App\Form;
 use App\Entity\Salle;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function Sodium\add;
 
 class RechercheSalleType extends AbstractType
 {
@@ -18,6 +20,14 @@ class RechercheSalleType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Rechercher par nom...'
+                ],
+            ])
+            ->add('rechercher', ButtonType::class, [
+                'label' => 'Rechercher',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                    'type' => 'submit',
+                    'style' => 'margin-left:10px',
                 ],
             ]);
     }

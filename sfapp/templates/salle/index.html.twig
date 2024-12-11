@@ -3,100 +3,129 @@
 {% block title %}Lister Salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <h1 class="text-center mb-4">Salles</h1>
-        <br class="center mb-4" style="max-width: 100%;">
-        <div class="d-flex justify-content-between align-items-center">
-            {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-            <div class="form-group mr-2">
-                {{ form_row(form.salleNom) }}
+    <link rel="stylesheet" href="{{ asset('/styles/listeSalles.css') }}">
+    <h1 class="mainTitle">Liste des salles</h1>
+    <div class="all">
+
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+            <article class="filtresRecherche">
+                <div class="barreRech">
+                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                    <div class="form-group mr-2">
+                        {{ form_row(form.salleNom) }}
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                <h3 class="trier">Trier</h3>
+                <button class="btnTri">Date de création</button>
+                <button class="btnTri">Ordre alphabétique</button>
+            </article>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+
+            <div class="btns">
+                <a href="{{ path('app_salle_ajout') }}"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
             </div>
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-            {{ form_end(form) }}
 
-            <a class="btn btn-primary ml-3" href="{{ path('app_salle_ajout') }}" role="button">Ajouter une salle</a>
-        </div>
-        <br/>
-
-        <!-- Panneau flottant pour les actions -->
-        <div id="selectionPanel" class="position-fixed bottom-0 end-0 m-4 bg-light shadow p-3 rounded d-none" style="z-index: 1050;">
-            <h5>Salles sélectionnées</h5>
-            <p id="selectedCount">Aucune salle sélectionnée</p>
-            <button id="deleteSelected" class="btn btn-danger w-100">Supprimer</button>
-        </div>
-
-        <!-- Formulaire global pour la suppression -->
-        <form id="bulkActionForm" method="post" action="{{ path('app_salle_supprimer_selection') }}">
-           <table class="table table-hover align-middle">
-                <thead class="table-dark">
-                <tr>
-                    <th class="nom">Nom</th>
-                    <th class="col">Bâtiment</th>
-                    <th class="col">Étage</th>
-                    <th class="col">Informations</th>
-                    <th scope="col">Modifier</th>
-                    <th scope="col">Supprimer</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for salle in salles %}
-                    <tr class="text-center align-middle">
-                        <td class="nom">{{ salle.getNom }}</td>
-                        <td class="bat">Bâtiment {{ salle.batiment.nom }}</td>
-                        <td class="etage">{{ salle.getEtage }}</td>
-                        <td class="info">
-                            <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
-                        </td>
-                        <td class="maj">
-                            <a href="{{ path('app_salle_update', {id: salle.id}) }}" class="btn btn-outline-success">Modifier</a>
-                        </td>
-                        <td class="supprimer">
-                            <input type="checkbox" name="selected_salles[]" value="{{ salle.id }}" class="select-salle">
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center">Aucune salle trouvée.</td>
-                    </tr>
-                {% endfor %}
-
-                </tbody>
-            </table>
-        </form>
+            <article class="salles">
+                    {% for salle in salles %}
+                    <div class="salleBlock">
+                        <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
+                        <div class="infosSalle">
+                            <div class="SalleSaNom">
+                                <h3>{{ salle.nom }}</h3>
+                                {% if salle.plans is not null %}
+                                    {% for plan in salle.plans %}
+                                        <h3>{{ plan.sa.nom }}</h3>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="BatimentEtage">
+                                <p>Batiment {{ salle.batiment.nom }}</p>
+                                <p>Etage {{ salle.etage }}</p>
+                            </div>
+                        </div>
+                        <div class="DetailsModif">
+                            {% if {{ salle.getCountSA }} == 1 %}  // Si il n'y a qu'un seul SA attribué à la salle
+                                <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails SA</button></a>
+                            {% if {{ salle.getCountSA }} > 1 %}   // Si il y'a plus d'un SA attribué à la salle
+                                <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails des SA</button></a>
+                            {% else %}  // Si il n'y a aucun SA attribué à la salle
+                                <a><button class="btnDetailSA">Attribuer SA</button></a>
+                            {% endif %}
+                            <a href="/salle/modifier/{{ salle.id }}"><button class="btnModif">Modifier</button></a>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </article>
+            <button class="btnAffPl">Afficher plus</button>
+        </main>
     </div>
-
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                console.log('Script chargé');
-
-                const checkboxes = document.querySelectorAll('.select-salle');
-                const selectionPanel = document.getElementById('selectionPanel');
-                const selectedCount = document.getElementById('selectedCount');
-                const deleteButton = document.getElementById('deleteSelected');
-                const bulkForm = document.getElementById('bulkActionForm');
-
-                function updateSelectionPanel() {
-                    const selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-                    const count = selectedCheckboxes.length;
-
-                    if (count > 0) {
-                        selectedCount.textContent = `${count} salle(s) sélectionnée(s)`;
-                        selectionPanel.classList.remove('d-none');
-                    } else {
-                        selectionPanel.classList.add('d-none');
-                    }
-                }
-
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateSelectionPanel);
-                });
-
-                deleteButton.addEventListener('click', function () {
-                    {
-                        bulkForm.submit();
-                    }
-                });
-            });
-        </script>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM entièrement chargé");
+
+            // Ciblez les checkboxes et le bouton
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const deleteButton = document.getElementById('btnSuppr');
+
+            console.log("Checkboxes trouvées:", checkboxes);
+            console.log("Bouton Supprimer trouvé:", deleteButton);
+
+            if (!checkboxes || !deleteButton) {
+                console.error("Éléments manquants dans le DOM !");
+                return;
+            }
+
+            // Fonction pour vérifier si une checkbox est cochée
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                console.log("Checkboxes cochées :", isAnyChecked);
+
+                if (isAnyChecked) {
+                    deleteButton.classList.remove('hidden'); // Affiche le bouton
+                } else {
+                    deleteButton.classList.add('hidden'); // Masque le bouton
+                }
+            }
+
+            // Ajoutez un écouteur d'événement à chaque checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleDeleteButton);
+            });
+
+            deleteButton.addEventListener('click', function () {
+                // Crée un formulaire caché
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/salle/supprimer-selection'; // L'URL vers votre route Symfony
+
+                // Ajoutez les checkboxes cochées au formulaire
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected_salles[]';
+                        input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
+                        form.appendChild(input);
+                    }
+                });
+
+                // Ajoutez le formulaire à la page et soumettez-le
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Vérifiez initialement (au cas où une checkbox est pré-cochée)
+            toggleDeleteButton();
+        %});
+    </script>
+{% endblock %}
+
