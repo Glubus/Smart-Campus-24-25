@@ -14,24 +14,21 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Batiment</th>
-                    <th>Date d'ajout du Plan</th>
-                    <th>Nombre de SA Affecter</th>
-                    <th>Nombre de Salle Utiliser</th>
+                    <th>Système d'acquisition</th>
+                    <th>Salle</th>
+                    <th>Date d'ajout</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for plan in plans %}
                     <tr>
-                        <td>{{ plan.nom }}</td> {# Affiche le nom du système d'acquisition #}
-                        <td>{{ plan.Batiment.nom }}</td> {# Affiche le nom de la salle #}
-                        <td>{{ plan.date ? plan.date|date('d/m/Y') : 'Non défini' }}</td>
-                        <td>
-                            {{ plan.getCountSA() }}
-                        </td>
-                        <td>
-                            {{ plan.getCountSalle() ? plan.getCountSalle() : "0" }}
+                        <td>{{ plan.sa.nom }}</td> {# Affiche le nom du système d'acquisition #}
+                        <td>{{ plan.Salle.getNom }}</td> {# Affiche le nom de la salle #}
+                        <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
+                        <td style="width: 10%">
+                            <a href="{{ path("app_lier_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">
+                                Supprimer
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

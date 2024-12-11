@@ -27,6 +27,8 @@ class DetailPlan
     #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Plan $plan = null;
 
+
+
     public function getId(): ?int
     {
         return $this->id;
