@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des plans{% endblock %}
-
+{#
 {% block body %}
     <div class="container my-5">
         <h1>Liste des plans</h1>
@@ -24,8 +24,8 @@
                 <tbody>
                 {% for plan in plans %}
                     <tr>
-                        <td>{{ plan.nom }}</td> {# Affiche le nom du système d'acquisition #}
-                        <td>{{ plan.Batiment.nom }}</td> {# Affiche le nom de la salle #}
+                        <td>{{ plan.nom }}</td>
+                        <td>{{ plan.Batiment.nom }}</td>
                         <td>{{ plan.date ? plan.date|date('d/m/Y') : 'Non défini' }}</td>
                         <td>
                             {{ plan.getCountSA() }}
@@ -41,5 +41,55 @@
             <p>Aucun plan trouvé.</p>
             <a class="btn btn-primary" href="{{ path('app_lier_ajout')}}" role="button">Ajouter une assignation</a>
         {% endif %}
+    </div>
+{% endblock %}
+#}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset("styles/liste_plan.css") }}">
+    <h1 class="mainTitle">Liste des salles</h1>
+    <div class="all">
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+            <article class="filtresRecherche">
+                <div class="barreRech">
+                </div>
+                <h3 class="trier">Trier</h3>
+                <button class="btnTri">Date de création</button>
+                <button class="btnTri">Ordre alphabétique</button>
+            </article>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+
+            <div class="btns">
+                <a href="/salle/ajout"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+            </div>
+            <div class="container">
+            {% for plan in plans %}
+                    <div class="salleBlock">
+                        <div class="infosSalle">
+                            <input type="checkbox" class="checkbox" value="{{ plan.id }}"/>
+                            <div class="SalleSaNom">
+                                <h3>{{ plan.nom }}</h3>
+                                    {{ plan.Batiment.nom }}
+                            </div>
+                            <div class="BatimentEtage">
+                                <p>SA Utilisé : {{ plan.getCountSA()}}</p>
+                                <p>Salle Utilisé : {{ plan.getCountSalle()}}  </p>
+                            </div>
+                        </div>
+                        <div class="DetailsModif">
+                            <a href="{{ path('app_lier_liste') }}"><button class="btnDetailSA">Détails Plan</button></a>
+                            <a href=""><button class="btnModif">Modifier</button></a>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+            </div>
+            <button class="btnAffPl">Afficher plus</button>
+        </main>
     </div>
 {% endblock %}
