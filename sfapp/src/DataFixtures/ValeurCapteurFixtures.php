@@ -8,52 +8,23 @@ use App\Entity\SA;
 use App\Entity\Salle;
 use App\Entity\SALog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\ValeurCapteur;
 use App\Entity\Capteur;
 use App\Entity\TypeCapteur;
 use Faker\Factory;
 
-class ValeurCapteurFixtures extends Fixture
+class ValeurCapteurFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
         // Initialisation de Faker pour générer des données réalistes
         $faker = Factory::create();
         $lastVal=array(20,50,400);
-        $sa = new SA();
-        $sa->setNom($faker->word);
-        $sa->setDateAjout(new \DateTime());
-        // Créer un tableau pour stocker les capteurs
-        $capteurs = [];
 
-        $salog = new SAlog();
-        $salog->setSA($sa);
-        $salog->setDate(new \DateTime());
-        $salog->setAction(ActionLog::AJOUTER);
-
-        $manager->persist($salog);
-
-        $salog = new SAlog();
-        $salog->setSA($sa);
-        $salog->setDate(new \DateTime());
-        $salog->setAction(ActionLog::MODIFIER);
-        $manager->persist($salog);
-
-        $salog1 = new SAlog();
-        $salog1->setSA($sa);
-        $salog1->setDate(new \DateTime());
-        $salog1->setAction(ActionLog::MODIFIER);
-        $manager->persist($salog);
-
-        $salog2 = new SAlog();
-        $salog2->setSA($sa);
-        $salog2->setDate(new \DateTime());
-        $salog2->setAction(ActionLog::MODIFIER);
-        $manager->persist($salog);
-
-
-
+        $sa=$this->getReference(SAFixtures::ESP_001, SA::class);
+        $salle=$this->getReference(SalleFixtures::D001, Salle::class);
 
         // Création des capteurs de type température, humidité, CO2
         $types = [TypeCapteur::TEMPERATURE, TypeCapteur::HUMIDITE, TypeCapteur::CO2];
@@ -65,19 +36,7 @@ class ValeurCapteurFixtures extends Fixture
 
         // On va générer des valeurs toutes les 10 minutes pendant un mois
         $period = new \DatePeriod($startDate, $interval, $endDate);
-        $batiment = new Batiment();
-        $batiment->setNom("Batiment C");
-        $batiment->setAdresse("15, rue pascal");
-        $batiment->setNbEtages(4);
-        $manager->persist($batiment);
 
-        $salle = new Salle();
-        $salle->setNom("C201");
-        $salle->setRadiateur(10);
-        $salle->setEtage(2);
-        $salle->setFenetre(10);
-        $salle->setBatiment($batiment);
-        $manager->persist($salle);
         // Pour chaque date et chaque capteur, générer une valeur
         foreach ($period as $date) {
             foreach ($types as $type) {
@@ -113,8 +72,14 @@ class ValeurCapteurFixtures extends Fixture
             }
         }
 
-        $manager->persist($sa);
         // Enregistrer toutes les entités en base
         $manager->flush();
+    }
+    public function getDependencies() : array
+    {
+        return array(
+            SAFixtures::class,
+            SalleFixtures::class
+        );
     }
 }
