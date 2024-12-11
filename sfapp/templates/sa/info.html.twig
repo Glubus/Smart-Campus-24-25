@@ -16,7 +16,7 @@
                 <ul class="list-group">
                     <li class="list-group-item"><strong>Nom:</strong> {{ SA.nom }}</li>
                   {#  {% if histo is not null %}
-                        <li class="list-group-item"><strong>Salle assignée:</strong> {{ histo }} (ID: {{ SA.plan.Salle.id }})</li>
+                        <li class="list-group-item"><strong>Salle assignée:</strong> {{ histo }} (ID: {{ SA.detail_plan.Salle.id }})</li>
                     {% else %}
                         <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
                     {% endif %}

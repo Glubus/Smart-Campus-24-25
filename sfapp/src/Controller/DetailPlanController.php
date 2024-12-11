@@ -51,7 +51,7 @@ class DetailPlanController extends AbstractController
             return $this->redirectToRoute('app_plan_liste'); // Redirection après soumission
         }
 
-        return $this->render('plan/ajouter.html.twig', [
+        return $this->render('detail_plan/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -62,7 +62,7 @@ class DetailPlanController extends AbstractController
         $plans = $em->findAll();
 
         // Afficher la liste des plans dans le template
-        return $this->render('plan/liste.html.twig', [
+        return $this->render('detail_plan/liste.html.twig', [
             'plans' => $plans,
         ]);
     }
@@ -88,9 +88,9 @@ class DetailPlanController extends AbstractController
                 }
             }
 
-            return $this->render('plan/suppression.html.twig', [
+            return $this->render('detail_plan/suppression.html.twig', [
                 "form" => $form->createView(),
-                "plan" => $plan,
+                "detail_plan" => $plan,
             ]);
         }
 

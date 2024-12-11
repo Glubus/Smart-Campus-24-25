@@ -25,9 +25,9 @@ final class Version20241204104609 extends AbstractMigration
         $this->addSql('ALTER TABLE salog ADD CONSTRAINT FK_8BB44CB362CAE146 FOREIGN KEY (sa_id) REFERENCES sa (id)');
         $this->addSql('ALTER TABLE valeur_capteur ADD CONSTRAINT FK_98BD14121708A229 FOREIGN KEY (capteur_id) REFERENCES capteur (id)');
         $this->addSql('ALTER TABLE capteur CHANGE sa_id sa_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE plan DROP INDEX UNIQ_DD5A5B7DDC304035, ADD INDEX IDX_DD5A5B7DDC304035 (salle_id)');
-        $this->addSql('ALTER TABLE plan DROP INDEX UNIQ_DD5A5B7D62CAE146, ADD INDEX IDX_DD5A5B7D62CAE146 (sa_id)');
-        $this->addSql('ALTER TABLE plan CHANGE date_ajout date_ajout DATETIME NOT NULL');
+        $this->addSql('ALTER TABLE detail_plan DROP INDEX UNIQ_DD5A5B7DDC304035, ADD INDEX IDX_DD5A5B7DDC304035 (salle_id)');
+        $this->addSql('ALTER TABLE detail_plan DROP INDEX UNIQ_DD5A5B7D62CAE146, ADD INDEX IDX_DD5A5B7D62CAE146 (sa_id)');
+        $this->addSql('ALTER TABLE detail_plan CHANGE date_ajout date_ajout DATETIME NOT NULL');
     }
 
     public function down(Schema $schema): void
@@ -38,8 +38,8 @@ final class Version20241204104609 extends AbstractMigration
         $this->addSql('DROP TABLE salog');
         $this->addSql('DROP TABLE valeur_capteur');
         $this->addSql('ALTER TABLE capteur CHANGE sa_id sa_id INT NOT NULL');
-        $this->addSql('ALTER TABLE plan DROP INDEX IDX_DD5A5B7DDC304035, ADD UNIQUE INDEX UNIQ_DD5A5B7DDC304035 (salle_id)');
-        $this->addSql('ALTER TABLE plan DROP INDEX IDX_DD5A5B7D62CAE146, ADD UNIQUE INDEX UNIQ_DD5A5B7D62CAE146 (sa_id)');
-        $this->addSql('ALTER TABLE plan CHANGE date_ajout date_ajout DATE NOT NULL');
+        $this->addSql('ALTER TABLE detail_plan DROP INDEX IDX_DD5A5B7DDC304035, ADD UNIQUE INDEX UNIQ_DD5A5B7DDC304035 (salle_id)');
+        $this->addSql('ALTER TABLE detail_plan DROP INDEX IDX_DD5A5B7D62CAE146, ADD UNIQUE INDEX UNIQ_DD5A5B7D62CAE146 (sa_id)');
+        $this->addSql('ALTER TABLE detail_plan CHANGE date_ajout date_ajout DATE NOT NULL');
     }
 }
