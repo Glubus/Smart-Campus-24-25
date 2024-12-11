@@ -14,7 +14,7 @@ doctrine:
         report_fields_where_declared: true
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: false
+        auto_mapping: true
         mappings:
             App:
                 type: attribute
@@ -27,10 +27,7 @@ when@test:
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest
-            connections:
-                default:
-                    use_savepoints: true
-
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
     doctrine:
@@ -48,6 +45,6 @@ when@prod:
         cache:
             pools:
                 doctrine.result_cache_pool:
-                    adapter: cache.assets
+                    adapter: cache.app
                 doctrine.system_cache_pool:
                     adapter: cache.system

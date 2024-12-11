@@ -8,7 +8,7 @@
     <div class="container my-5">
         <h1>Liste des plans</h1>
         <div class="d-flex justify-content-end align-items-center">
-            <a class="btn btn-primary ml-3" href="{{ path('app_plan_ajout') }}" role="button">Ajouter une salle</a>
+            <a class="btn btn-primary ml-3" href="{{ path('app_lier_ajout') }}" role="button">Ajouter une salle</a>
         </div>
         {% if plans is not empty %}
             <table class="table table-striped">
@@ -26,7 +26,7 @@
                         <td>{{ plan.Salle.getNom }}</td> {# Affiche le nom de la salle #}
                         <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
                         <td style="width: 10%">
-                            <a href="{{ path("app_plan_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">
+                            <a href="{{ path("app_lier_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">
                                 Supprimer
                             </a>
                         </td>
@@ -36,7 +36,7 @@
             </table>
         {% else %}
             <p>Aucun plan trouvé.</p>
-            <a class="btn btn-primary" href="{{ path('app_plan_ajout')}}" role="button">Ajouter une assignation</a>
+            <a class="btn btn-primary" href="{{ path('app_lier_ajout')}}" role="button">Ajouter une assignation</a>
         {% endif %}
     </div>
 {% endblock %}

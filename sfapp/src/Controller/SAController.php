@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\SA;
 use App\Entity\Capteur;
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
 use App\Form\AjoutSAType;
@@ -74,9 +74,6 @@ class SAController extends AbstractController
             else {
                 // Persister l'entité SA avant d'ajouter les capteurs
                 $entityManager->persist($SA);
-                if ($SA->getCapteurs()->isEmpty()) {
-                    $SA->generateCapteurs();
-                }
 
                 // Ajouter un log de création
                 $LogCrea = new SALog();
@@ -164,7 +161,7 @@ class SAController extends AbstractController
         }
         $histo=$SA->getSALogs();
         // trouver la salle d'un Sa
-        $plan = $entityManager->getRepository(Plan::class)->findOneBy(['sa' => $SA]);
+        $plan = $entityManager->getRepository(DetailPlan::class)->findOneBy(['sa' => $SA]);
         $salle = $plan ? $plan->getSalle() : null;
 
         return $this->render('sa/info.html.twig', [

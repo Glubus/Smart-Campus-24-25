@@ -59,7 +59,8 @@ class BatimentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $batimentExistante = $batimentRepository->findBy(
                 ['nom' => $batiment->getNom()]);
-            if($batimentExistanteœ) {
+            if($batimentExistante
+            ) {
                 $this->addFlash('error', 'Ce batiment existe déjà');
             }
             else{
@@ -124,7 +125,23 @@ class BatimentController extends AbstractController
             "batiment" => $batiment,
         ]);
     }
+    #[Route('/batiment/{id}/max-etages', name: 'batiment_max_etages', methods: ['GET'])]
+    public function getMaxEtages(int $id, BatimentRepository $batimentRepository): JsonResponse
+    {
+        // Récupérer le bâtiment par son ID
+        $batiment = $batimentRepository->find($id);
 
+        // Si le bâtiment n'existe pas, renvoyer une erreur 404
+        if (!$batiment) {
+            throw new NotFoundHttpException('Bâtiment non trouvé.');
+        }
+
+        // Supposons que l'entité Batiment a une méthode getNombreEtagesMax()
+        $maxEtages = $batiment->getNbEtages();
+
+        // Retourner les données en JSON
+        return new JsonResponse(['maxEtages' => $maxEtages]);
+    }
 
 
 }

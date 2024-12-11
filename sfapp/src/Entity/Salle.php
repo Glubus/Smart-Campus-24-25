@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use App\Entity\Batiment;
+use ContainerWYV09s8\getTranslation_ProviderFactory_NullService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,16 +25,20 @@ class Salle
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'salle')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
     private Collection $plans;
+    #[ORM\Column(length: 20)]
+    private ?string $nom = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $fenetre = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $radiateur = null;
     public function __construct()
     {
         $this->plans = new ArrayCollection();
     }
-
-    #[ORM\Column(length: 20)]
-    private ?string $nom = null;
 
     public function getId(): ?int
     {
@@ -73,12 +78,12 @@ class Salle
         return $this;
     }
 
-    public function getPlan(): ?Plan
+    public function getPlan(): ?DetailPlan
     {
         return $this->plan;
     }
 
-    public function setPlan(Plan $plan): static
+    public function setPlan(DetailPlan $plan): static
     {
         // set the owning side of the relation if necessary
         if ($plan->getSalle() !== $this) {
@@ -102,14 +107,14 @@ class Salle
     }
 
     /**
-     * @return Collection<int, Plan>
+     * @return Collection<int, DetailPlan>
      */
     public function getPlans(): Collection
     {
         return $this->plans;
     }
 
-    public function addPlan(Plan $plan): static
+    public function addPlan(DetailPlan $plan): static
     {
         if (!$this->plans->contains($plan)) {
             $this->plans->add($plan);
@@ -119,7 +124,7 @@ class Salle
         return $this;
     }
 
-    public function removePlan(Plan $plan): static
+    public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
             // set the owning side to null (unless already changed)
@@ -127,6 +132,30 @@ class Salle
                 $plan->setSalle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFenetre(): ?int
+    {
+        return $this->fenetre;
+    }
+
+    public function setFenetre(int $fenetre): static
+    {
+        $this->fenetre = $fenetre;
+
+        return $this;
+    }
+
+    public function getRadiateur(): ?int
+    {
+        return $this->radiateur;
+    }
+
+    public function setRadiateur(int $radiateur): static
+    {
+        $this->radiateur = $radiateur;
 
         return $this;
     }

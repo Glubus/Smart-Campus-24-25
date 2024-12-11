@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MissionController!{% endblock %}
+
+{% block body %}
+
+<style>
+    body{
+        background-color: #17203c;
+    }
+</style>
+
+<h1 style="position: absolute; top: 20px; left: 20px;font-size: 2rem; color: white">5M</h1>
+
+<div style="display: flex; width: 100%; justify-content: center;padding-top: 20px;">
+    <a  href="{{ path('app_accueil') }}" style="width: 40%"><img src="{{ asset('styles/logo.png') }}" style="width: 100%;" alt="Image"></a>
+</div>
+<img src="{{ asset('styles/VagueBlanc.png') }}" style="width: 100%;" alt="Image">
+
+<style>
+
+
+    @keyframes moveBackground {
+        0% {
+            transform: translate(0, 0);
+        }
+        100% {
+            transform: translate(20%, 20%);
+        }
+    }
+
+    .radio-container { display: flex; align-items: center; margin-bottom: 10px; }
+    .radio-container input[type="radio"] { display: none; }
+    .radio-container label { position: relative; padding-left: 35px; cursor: pointer; font-size: 18px; user-select: none; }
+    .radio-container label::before { content: ""; position: absolute; left: 0; top: 0; width: 25px; height: 25px; border: 2px solid #3498db; border-radius: 50%; background: white; transition: background 0.3s; }
+    .radio-container input[type="radio"]:checked + label::before { background: #3498db; }
+    .radio-container label::after { content: ""; position: absolute; left: 9px; top: 9px; width: 9px; height: 9px; border-radius: 50%; background: white; transition: background 0.3s; }
+    .radio-container input[type="radio"]:checked + label::after { background: white; }
+</style>
+
+<div class="container text-white text-xl">
+    <p class="text-center">Question : {{ question.description }}</p>
+    <div class="place-content-center">
+        {{ form_start(form) }}
+        <div class="radio-container place-content-center">
+            {{ form_widget(form) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+    {% endblock %}
+

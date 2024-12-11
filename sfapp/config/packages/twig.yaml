@@ -1,9 +1,6 @@
 twig:
-    default_path: '%kernel.project_dir%/templates'
+    file_name_pattern: '*.twig'
 
-    #globals:
-        #asset: '@asset_helper'
 when@test:
     twig:
         strict_variables: true
-

@@ -48,7 +48,7 @@
                             <a href="{{ path('app_salle_infos', { id: salle.id }) }}" class="btn btn-outline-info">Détails</a>
                         </td>
                         <td class="maj">
-                            <a href="{{ path('app_salle_update') }}?salle={{ salle.id }}" class="btn btn-outline-success">Modifier</a>
+                            <a href="{{ path('app_salle_update', {id: salle.id}) }}" class="btn btn-outline-success">Modifier</a>
                         </td>
                         <td class="supprimer">
                             <input type="checkbox" name="selected_salles[]" value="{{ salle.id }}" class="select-salle">

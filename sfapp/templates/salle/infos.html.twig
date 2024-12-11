@@ -94,17 +94,23 @@
                             <strong>Étage :</strong> {{ salle.etage }}
                         </li>
                         <li class="list-group-item">
+                            <strong>Radiateur :</strong> {{ salle.radiateur }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Fenetre :</strong> {{ salle.fenetre }}
+                        </li>
+                        <li class="list-group-item">
                             <strong>SA attribué : </strong>
                             {% if sa is not null %}
                                 <a href="{{ path('app_sa_infos', {id : sa.id}) }}" class="btn btn-outline-primary">{{ sa.nom }}</a>
                             {% else %}
-                                <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
+                                <a href="{{ path('app_lier_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
                             {% endif %}
                         </li>
                     </ul>
                 </div>
                 <div class="card-footer text-center">
-                    <a href="{{ path('app_salle') }}" class="btn btn-outline-secondary">
+                    <a href="{{ path('app_salle_liste') }}" class="btn btn-outline-secondary">
                         Retour à la liste des salles
                     </a>
                 </div>
@@ -236,5 +242,5 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             })
-        });
+        }});
 #}

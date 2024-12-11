@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Batiment;
 use App\Entity\Salle;
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use App\Entity\SA;
 use App\Form\ajoutBatimentType;
 use App\Form\ajoutSalleType;
@@ -24,7 +24,7 @@ class GestionController extends AbstractController
         // Créer les entités
         $batiment = new Batiment();
         $salle = new Salle();
-        $plan = new Plan();
+        $plan = new DetailPlan();
         $sa = new SA();
 
         // Créer les formulaires à partir des types existants
@@ -55,7 +55,7 @@ class GestionController extends AbstractController
         if ($planForm->isSubmitted() && $planForm->isValid()) {
             $entityManager->persist($plan);
             $entityManager->flush();
-            $this->addFlash('success', 'Plan ajouté avec succès !');
+            $this->addFlash('success', 'DetailPlan ajouté avec succès !');
         }
 
         if ($saForm->isSubmitted() && $saForm->isValid()) {

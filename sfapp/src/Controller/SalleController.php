@@ -6,7 +6,7 @@ use App\Entity\Salle;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
-use App\Repository\PlanRepository;
+use App\Repository\DetailPlanRepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +18,7 @@ use App\Form\AjoutSalleType;
 
 class SalleController extends AbstractController
 {
-    #[Route('/salle', name: 'app_salle')]
+    #[Route('/salle', name: 'app_salle_liste')]
     public function index(Request $request, SalleRepository $salleRepository): Response
     {
         // Création du formulaire de recherche
@@ -60,7 +60,7 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
-    public function infos(int $id, SalleRepository $aRepo, PlanRepository $planRepository): Response
+    public function infos(int $id, SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
         $batiment = $salle->getBatiment();
@@ -93,7 +93,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/salle/ajout', name: 'app_salle_ajout')]
+    #[Route('/salle/ajouter', name: 'app_salle_ajout')]
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
@@ -114,7 +114,7 @@ class SalleController extends AbstractController
             else {
                 $entityManager->persist($salle);
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
         }
 
@@ -126,10 +126,10 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/modifierSalle', name: 'app_salle_update')]
-    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
+    #[Route('/salle/modifier/{id}', name: 'app_salle_update')]
+    public function modifier(int $id,Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
-        $salle = $salleRepository->find($request->get('salle'));
+        $salle = $salleRepository->find($id);
         $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
@@ -143,7 +143,7 @@ class SalleController extends AbstractController
             else {
                 $entityManager->persist($salle);
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
         }
 
