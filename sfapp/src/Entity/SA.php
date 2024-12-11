@@ -23,11 +23,15 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'sa')]
+    private Collection $valeurCapteurs;
+
     public function __construct()
     {
         $this->capteurs = new ArrayCollection();
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
+        $this->commentaire = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,6 +141,36 @@ class SA
             // set the owning side to null (unless already changed)
             if ($sALog->getSA() === $this) {
                 $sALog->setSA(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ValeurCapteur>
+     */
+    public function getValeurCapteurs(): Collection
+    {
+        return $this->valeurCapteurs;
+    }
+
+    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
+            $this->valeurCapteurs->add($valeurCapteur);
+            $valeurCapteur->setCapteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+            // set the owning side to null (unless already changed)
+            if ($valeurCapteur->getCapteur() === $this) {
+                $valeurCapteur->setCapteur(null);
             }
         }
 

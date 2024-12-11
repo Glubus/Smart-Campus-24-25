@@ -15,9 +15,11 @@ use App\Repository\SARepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\VarDumper\VarDumper;
 
 class SAController extends AbstractController
 {
@@ -168,6 +170,111 @@ class SAController extends AbstractController
             "SA" => $SA,
             "salle" => $salle,
             "histo" => $histo,
+            'commentaires' => $SA->getCommentaire(),
         ]);
     }
+
+
+    #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
+    public function ajouterCommentaire(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SARepository $SARepository
+    ): Response {
+        // Récupérer l'entité SA
+        $SA = $SARepository->find($id);
+
+        // Récupérer la description du commentaire
+        $description = $request->request->get('description');
+        $nomTech = $request->request->get('nomTech');
+
+        // Créer et associer le commentaire
+        $commentaire = new Commentaires();
+        $commentaire->setNomTech($nomTech);
+        $commentaire->setDescription($description);
+        $commentaire->setSA($SA);
+
+        // Persist le commentaire
+        $entityManager->persist($commentaire);
+        $entityManager->flush();
+
+        // Rediriger vers la page du SA
+        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
+    }
+    #[Route('/sa/{id}/commentaire/{commentaireId}/supprimer', name: 'app_sa_commentaire_supprimer')]
+    public function supprimerCommentaire(
+        int $id,
+        int $commentaireId,
+        EntityManagerInterface $entityManager,
+        SARepository $SARepository,
+        CommentairesRepository $commentairesRepository
+    ): Response {
+        // Récupérer l'entité SA
+        $SA = $SARepository->find($id);
+        if (!$SA) {
+            throw $this->createNotFoundException("L'entité SA n'a pas été trouvée.");
+        }
+
+        // Récupérer le commentaire à supprimer
+        $commentaire = $commentairesRepository->find($commentaireId);
+        if (!$commentaire) {
+            throw $this->createNotFoundException("Le commentaire n'a pas été trouvé.");
+        }
+
+        // Vérifier si le commentaire appartient bien à l'entité SA
+        if ($commentaire->getSA() !== $SA) {
+            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à supprimer ce commentaire.");
+        }
+
+        // Supprimer le commentaire
+        $entityManager->remove($commentaire);
+        $entityManager->flush();
+
+        // Ajouter un message flash pour informer l'utilisateur
+        $this->addFlash('success', "Le commentaire a été supprimé avec succès.");
+
+        // Rediriger vers la page de l'entité SA après suppression
+        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
+    }
+
+
+    #[Route('/sa/log/{id}', name: 'app_sa_log')]
+    public function affichage_log_sa(Request $request, int $id, SARepository $repo,): Response
+    {
+        $SA = $repo->find($id);
+        if (!$SA) {
+            throw $this->createNotFoundException('SA introuvable.');
+        }
+        $histo=$SA->getSALogs();
+
+        return $this->render('sa/historique.html.twig', [
+            "histo" => $histo,
+        ]);
+    }
+
+
+    #[Route("/sa/{id}/commentaires-ajax", name:'app_sa_commentaires_ajax')]
+    public function commentairesAjax(Sa $SA, Request $request): JsonResponse
+    {
+        $offset = (int) $request->query->get('offset', 5);
+
+        // Récupérer les commentaires
+        $commentaires = $SA->getCommentaire()->slice($offset, 5);
+
+        // Préparer les données de réponse
+        $data = [];
+        foreach ($commentaires as $commentaire) {
+            $data[] = [
+                'id' => $commentaire->getId(),
+                'nomTech' => $commentaire->getNomTech(), // Assurez-vous que 'getNomCom()' existe
+                'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
+                'description' => $commentaire->getDescription(),
+            ];
+        }
+
+        // Retourner une réponse JSON
+        return new JsonResponse($data);
+    }
+
 }
