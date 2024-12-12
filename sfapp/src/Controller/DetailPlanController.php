@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\DetailPlan;
 use App\Entity\Plan;
 use App\Entity\SA;
+use App\Entity\Salle;
 use App\Form\AssociationSASalle;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
@@ -21,45 +22,57 @@ use function PHPUnit\Framework\isNull;
 
 class DetailPlanController extends AbstractController
 {
-    #[Route('/lier/ajouter', name: 'app_lier_ajout')]
-    public function ajouter(EntityManagerInterface $em, Request $request): Response
+    #[Route('/lier/{id}/ajout', name: 'app_lier_ajout')]
+    public function ajouter(EntityManagerInterface $em, Request $request, int $id): Response
     {
         $sa_id = $request->query->get('sa_id');
+        $salle_id = $request->query->get('salle');
+
+        $salle = $em->getRepository(Salle::class)->find($salle_id);
+        $plan = $em->getRepository(Plan::class)->find($id);
+        $detail_plan = new DetailPlan();
+        $detail_plan->setSalle($salle);
+        $detail_plan->setPlan($plan);
+
         if ($sa_id){
             $sa = $em->getRepository(SA::class)->find($sa_id);
 
             if (!$sa) {
                 throw $this->createNotFoundException('Système d\'acquisition non trouvé.');
             }
-
+            /*
             // Utiliser findBy pour récupérer tous les plans associés à ce SA
-            $plan = $em->getRepository(DetailPlan::class)->findOneBy([
+            $planExist = $em->getRepository(DetailPlan::class)->findOneBy([
                 'sa' => $sa  // On filtre les plans par l'objet SA
             ]);
+
             if (!$plan)
             {
-                $plan = new DetailPlan();
                 $plan->setSa($sa);
-            }
-        }else{
-            $plan = new DetailPlan(); // Créez un objet DetailPlan
+            }*/
+
+            $detail_plan->setSA($sa);
         }
-        $form = $this->createForm(AssociationSASalle::class, $plan); // Assurez-vous d'avoir un formulaire `PlanType`
+
+        $form = $this->createForm(AssociationSASalle::class,  $detail_plan); // Assurez-vous d'avoir un formulaire `PlanType`
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plan->setDateAjout(new DateTime());
-            $em->persist($plan);
+            $detail_plan->setDateAjout(new DateTime());
+            $em->persist( $detail_plan);
             $em->flush();
 
-            return $this->redirectToRoute('app_plan_liste'); // Redirection après soumission
+            return $this->redirectToRoute('app_lier_liste', [
+                'plan' =>  $id
+            ]);// Redirection après soumission
         }
 
         return $this->render('detail_plan/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
     #[Route('/lier', name: 'app_lier_liste')]
     public function list(SalleRepository $salleRepo, PlanRepository $planRepo, Request $request): Response
     {
@@ -99,31 +112,19 @@ class DetailPlanController extends AbstractController
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
-        $plan = $repo->find($id);
-        if ($plan) {
-            $phrase=$plan->getSalle()->getNom().' vers '.$plan->getSA()->getNom();
-            $form = $this->createForm(SuppressionType::class, null, [
-                'phrase' => $phrase, // Passer la variable au formulaire
-            ]);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $submittedString = $form->get('inputString')->getData();
-                if ($submittedString == $phrase) {
-                    $em->remove($plan);
-                    $em->flush();
-                    $this->addFlash('success', 'Attribution supprimé avec succès.');
-                    return $this->redirectToRoute('app_plan_liste');
-                } else {
-                    $this->addFlash('error', 'La saisie est incorrecte.');
-                }
+        $detail_plan = $repo->find($id);
+
+        if ($request->isMethod('POST')) {
+            if ($detail_plan) {
+                $em->remove($detail_plan);
+                $em->flush();
+                return $this->redirectToRoute('app_lier_liste', [
+                    'plan' => $detail_plan->getPlan()->getId()
+                ]);
             }
-
-            return $this->render('detail_plan/suppression.html.twig', [
-                "form" => $form->createView(),
-                "detail_plan" => $plan,
-            ]);
         }
-
-        return $this->render('sa/notfound.html.twig', []);
+            return $this->render('detail_plan/suppression.html.twig', [
+                "detail_plan" => $detail_plan,
+            ]);
     }
 }

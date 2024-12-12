@@ -47,7 +47,7 @@
                         <td class="salleDiv">{{ salle.nom }}</td>
                         <td class="tdAttribuer">
                             <div class="horizontal-line"></div>
-                            <a href="{{ path('app_lier_ajout') }}?salle={{ salle.id }}" class="caseBleu fa fa-plus-square" role="button"></a>
+                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, id:selected_plan}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
                             <div class="flex">
                                 {% if salle.detailPlans|length == 0 %}
                                     <div class="line-stop"><i class="fa fa-close"></i></div>
@@ -119,7 +119,7 @@
                 link.href = `?plan=${selectedId}`;  // Set the href attribute
                 link.textContent = "Afficher toutes";  // Set the link text
                 link.classList.add('etage-affiche-toutes');  // Add a CSS class for styling (optional)
-                {%if selected_etage is null %} {% if selected_plan is not null %}link.classList.add('darken'); {% endif %}
+                {%if selected_etage is null %} {% if selected_plan is not null %} if({{selected_plan}} == selectedId) link.classList.add('darken');{% endif %}
                 {% else %} selectedEtage = {{ selected_etage }};
                 {% endif %}
 

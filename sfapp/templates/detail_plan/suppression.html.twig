@@ -4,12 +4,11 @@
 
 {% block body %}
     <div class="container my-5" style="width: 40%">
-        <h1 class="text-center mb-4">{{ plan.SA.getNom ~ ' ' ~ plan.Salle.getNom}}</h1>
+        <h1 class="text-center mb-4">{{ detail_plan.SA.getNom ~ ' dans ' ~ detail_plan.Salle.getNom}}</h1>
         <p>Êtes vous sur de vouloir supprimer cette attribution ?</p>
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
-        <a class="btn btn-primary" href="/sa" style="margin-right: 10px; margin-top: 10px">Annuler</a>
-        {{ form_end(form) }}
+        <form method="post">
+            <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
+            <a class="btn btn-primary" href="{{ path('app_lier_liste', {'plan':detail_plan.plan.id}) }}" style="margin-right: 10px; margin-top: 10px">Annuler</a>
+        </form>
     </div>
 {% endblock %}
