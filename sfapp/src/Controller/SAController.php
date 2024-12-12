@@ -276,5 +276,4 @@ class SAController extends AbstractController
         // Retourner une réponse JSON
         return new JsonResponse($data);
     }
-
 }

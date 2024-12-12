@@ -32,10 +32,11 @@
             </div>
 
             <article class="salles">
-                    {% for salle in salles %}
+                {% for salle in salles %}
+                <a href="{{ path('app_salle_infos', {'id': salle.id}) }}">
                     <div class="salleBlock">
-                        <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
                         <div class="infosSalle">
+                            <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
                             <div class="SalleSaNom">
                                 {% set SAAffiche = 0 %}
                                 {% if salle.plans is not null %}
@@ -59,14 +60,15 @@
                             {% if salle.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
                                 <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails SA</button></a>
                             {% elseif salle.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
-                                <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails des SA</button></a>
+                                <a><button class="btnDetailSA">Détails des SA</button></a>
                             {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
                                 <a><button class="btnDetailSA">Attribuer SA</button></a>
                             {% endif %}
                             <a href="/salle/modifier/{{ salle.id }}"><button class="btnModif">Modifier</button></a>
                         </div>
                     </div>
-                    {% endfor %}
+                </a>
+                {% endfor %}
             </article>
             <button class="btnAffPl">Afficher plus</button>
         </main>

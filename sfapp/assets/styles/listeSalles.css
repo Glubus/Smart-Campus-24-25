@@ -45,9 +45,13 @@ a:hover {
 }
 
 .barreRech {
-    width: 100%;
-    margin-left: 15px;
+    width: 90%;
+    margin: auto;
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .trier {
@@ -106,6 +110,7 @@ a:hover {
 
 .btnSuppr {
     margin-top: 10px;
+    margin-right: 30px;
     width: 187px;
     height: 36px;
     background-color: #FF282C;
@@ -141,21 +146,20 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     flex-shrink: inherit;
-    gap: 30px;
 }
 
 .salleBlock {
     flex-grow: 1;
-    width: 525px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+
     background-color: #D9D9D9;
+    height: 135px;
     border-radius: 10px;
     border: 1px solid black;
-    height: 132px;
     margin-top: 30px;
+    margin-right: 30px;
 }
 
 .salleBlock:hover {
@@ -164,7 +168,6 @@ a:hover {
 
 .checkbox {
     margin-left: 15px;
-    margin-top: 15px;
     transform: scale(1.5);
 }
 
@@ -174,34 +177,28 @@ a:hover {
 }
 
 .infosSalle {
-    width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-}
+    justify-content: space-between;
+    align-items: center;
+    gap: 70px;
 
-.nomSalle {
-    font-size: 60px;
-    font-weight: bold;
-}
-
-.nomSA {
-    font-size: 45px;
-    font-weight: bold;
+    height: 100%;
 }
 
 .BatimentEtage {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     font-size: 20px;
 }
 
 .DetailsModif {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+
+    height: 100%;
     border-left: 1px solid black;
-    padding: 15px;
+    padding-right: 20px;
+    padding-left: 20px;
 }
 
 .btnDetailSA {

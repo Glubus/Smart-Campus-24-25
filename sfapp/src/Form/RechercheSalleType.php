@@ -25,9 +25,14 @@ class RechercheSalleType extends AbstractType
             ->add('rechercher', ButtonType::class, [
                 'label' => 'Rechercher',
                 'attr' => [
-                    'class' => 'btn btn-secondary',
                     'type' => 'submit',
-                    'style' => 'margin-left:10px',
+                    'style' => 'flex-grow: 1;
+                                margin-left: 17px;
+                                height: 100%;
+                                background-color: #A0A0A0;
+                                border-radius: 10px;
+                                color: white;
+                                border: none;',
                 ],
             ]);
     }
