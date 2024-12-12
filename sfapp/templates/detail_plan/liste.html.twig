@@ -21,15 +21,16 @@
                         Batiment {{ plan.batNom }} - {{ plan.nom }}</option>
                 {% endfor %}
             </select>
+                <div id="etagesDiv">
+                    <div class="vertical-line"></div>
+                    <span>
+                        <p id="etagesToutes"></p>
+                        <ul id="etagesList">
+                            <!-- Les elements de la liste seront genere ici par le script-->
+                        </ul>
+                    </span>
+                </div>
 
-            <br>
-
-            <div>
-                <h3 id="etagesDiv"></h3>
-                <ul id="etagesList">
-                    <!-- Les elements de la liste seront genere ici par le script-->
-                </ul>
-            </div>
         </div>
 
         <table id="plan">
@@ -44,7 +45,17 @@
                 {% for salle in salles %}
                     <tr class="ligne-attribution">
                         <td class="salleDiv">{{ salle.nom }}</td>
-                        <td class="tdAttribuer"><a href="{{ path('app_lier_ajout') }}?salle={{ salle.id }}" class="caseBleu fa fa-plus-square" role="button"></a></td>
+                        <td class="tdAttribuer">
+                            <div class="horizontal-line"></div>
+                            <a href="{{ path('app_lier_ajout') }}?salle={{ salle.id }}" class="caseBleu fa fa-plus-square" role="button"></a>
+                            <div class="flex">
+                                {% if salle.plans|length == 0 %}
+                                    <div class="line-stop"><i class="fa fa-close"></i></div>
+                                {% else %}
+                                    <div class="horizontal-line"></div>
+                                {% endif %}
+                            </div>
+                        </td>
                         {% if salle.plans|length == 0 %}
                             <td class = "SAattribue AucunSA">Aucun SA attribue</td>
                     </tr>
@@ -67,7 +78,9 @@
                         {% for plan in salle.plans %}
                             <tr class="ligne-attribution hidden afficher-{{ salle.id }}">
                                 <td></td>
-                                <td></td>
+                                <td class="flex-2">
+                                    <div class="line-aggregate"></div>
+                                </td>
                                 <td class="SAattribue">
                                     <span class="infoSA">
                                         <div>{{ plan.sa.nom }}</div>
@@ -90,12 +103,12 @@
         function updateEtages() {
             const planSelect = document.getElementById("plan_selection");
             const etagesList = document.getElementById("etagesList");
-            const etagesDiv = document.getElementById("etagesDiv");
+            const etagesToutes = document.getElementById("etagesToutes");
             const selectedId = planSelect.value;
 
             // Clear previous étage buttons
+            etagesToutes.innerHTML = '';
             etagesList.innerHTML = '';
-            etagesDiv.innerHTML = '';
 
             // Get selected plan
             const selectedPlan = plans.find(p => p.id == selectedId);
@@ -106,14 +119,17 @@
                 link.href = `?plan=${selectedId}`;  // Set the href attribute
                 link.textContent = "Afficher toutes";  // Set the link text
                 link.classList.add('etage-affiche-toutes');  // Add a CSS class for styling (optional)
-                {%if selected_etage is null %} link.classList.add('darken');
+                {%if selected_etage is null %} {% if selected_plan is not null %}link.classList.add('darken'); {% endif %}
                 {% else %} selectedEtage = {{ selected_etage }};
                 {% endif %}
 
-                etagesDiv.appendChild(link);
+                etagesToutes.appendChild(link);
 
 
                 for (let i = 0; i < selectedPlan.nbEtages; i++) {
+                    const line = document.createElement('div');  // Create a new <a> element
+                    line.classList.add('horizontal-line');
+
                     const link = document.createElement('a');  // Create a new <a> element
                     link.href = `?plan=${selectedId}&etage=${i}`;  // Set the href attribute
                     link.textContent = `Étage ${i}`;  // Set the link text
@@ -121,6 +137,7 @@
                     if(selectedEtage == i) link.classList.add('darken');
 
                     const listItem = document.createElement('li');  // Create a <li> element
+                    listItem.appendChild(line);
                     listItem.appendChild(link);  // Append the <a> to the <li>
 
                     etagesList.appendChild(listItem);  // Append the <li> to the list
