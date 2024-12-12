@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des plans{% endblock %}
+{% block title %}Details des plans{% endblock %}
 
 {% block body %}
     {# Link to the CSS file#}
@@ -18,7 +18,7 @@
                             {% if plan.id == selected_plan %}
                     selected
                             {% endif %}>
-                        Batiment {{ plan.batNom }} - {{ plan.nom }}</option>
+                        {{ plan.batNom }} - {{ plan.nom }}</option>
                 {% endfor %}
             </select>
                 <div id="etagesDiv">
@@ -49,19 +49,19 @@
                             <div class="horizontal-line"></div>
                             <a href="{{ path('app_lier_ajout') }}?salle={{ salle.id }}" class="caseBleu fa fa-plus-square" role="button"></a>
                             <div class="flex">
-                                {% if salle.plans|length == 0 %}
+                                {% if salle.detailPlans|length == 0 %}
                                     <div class="line-stop"><i class="fa fa-close"></i></div>
                                 {% else %}
                                     <div class="horizontal-line"></div>
                                 {% endif %}
                             </div>
                         </td>
-                        {% if salle.plans|length == 0 %}
+                        {% if salle.detailPlans|length == 0 %}
                             <td class = "SAattribue AucunSA">Aucun SA attribue</td>
                     </tr>
-                        {% elseif salle.plans|length == 1%}
+                        {% elseif salle.detailPlans|length == 1%}
                             <td class = "SAattribue">
-                            {% set plan = salle.plans[0] %}
+                            {% set plan = salle.detailPlans[0] %}
                                 <span class="infoSA">
                                     <div>{{ plan.sa.nom }}</div>
                                     <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
@@ -71,11 +71,11 @@
                     </tr>
                     {% else %}
                         <td class="SAattribue">
-                                {{ salle.plans|length }} SA attribues
+                                {{ salle.detailPlans|length }} SA attribues
                                 <i class="toggle caseBleu fa fa-arrow-circle-down" data-salle-id="{{ salle.id }}"></i>
                             </td>
                         </tr>
-                        {% for plan in salle.plans %}
+                        {% for plan in salle.detailPlans %}
                             <tr class="ligne-attribution hidden afficher-{{ salle.id }}">
                                 <td></td>
                                 <td class="flex-2">

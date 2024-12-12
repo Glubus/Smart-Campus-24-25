@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container my-5" style="width: 40%">
-        <h1 class="text-center mb-4">{{ plan.SA.getNom ~ ' ' ~ plan.Salle.get   Nom}}</h1>
+        <h1 class="text-center mb-4">{{ plan.SA.getNom ~ ' ' ~ plan.Salle.getNom}}</h1>
         <p>Êtes vous sur de vouloir supprimer cette attribution ?</p>
         {{ form_start(form) }}
         {{ form_widget(form) }}

@@ -23,8 +23,11 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'sa')]
-    private Collection $valeurCapteurs;
+    /**
+     * @var Collection<int, ValeurCapteur>
+     */
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
+    private Collection $valCapteurs;
 
     public function __construct()
     {
@@ -32,6 +35,7 @@ class SA
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
         $this->commentaire = new ArrayCollection();
+        $this->valCapteurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,30 +154,32 @@ class SA
     /**
      * @return Collection<int, ValeurCapteur>
      */
-    public function getValeurCapteurs(): Collection
+    public function getValCapteurs(): Collection
     {
-        return $this->valeurCapteurs;
+        return $this->valCapteurs;
     }
 
-    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    public function addValCapteur(ValeurCapteur $valCapteur): static
     {
-        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
-            $this->valeurCapteurs->add($valeurCapteur);
-            $valeurCapteur->setCapteur($this);
+        if (!$this->valCapteurs->contains($valCapteur)) {
+            $this->valCapteurs->add($valCapteur);
+            $valCapteur->setSA($this);
         }
 
         return $this;
     }
 
-    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    public function removeValCapteur(ValeurCapteur $valCapteur): static
     {
-        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+        if ($this->valCapteurs->removeElement($valCapteur)) {
             // set the owning side to null (unless already changed)
-            if ($valeurCapteur->getCapteur() === $this) {
-                $valeurCapteur->setCapteur(null);
+            if ($valCapteur->getSA() === $this) {
+                $valCapteur->setSA(null);
             }
         }
 
         return $this;
     }
+
+
 }

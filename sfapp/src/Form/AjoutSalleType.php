@@ -25,10 +25,13 @@ class AjoutSalleType extends AbstractType
                 'class' => Batiment::class,
                 'choice_label' => 'nom',
                 'label' => 'Bâtiment',
-                'label_attr' => ['class' => 'form-label text-primary'],
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
                 'attr' => [
                     'class' => 'form-control',
-                    'style' => 'width: 80%; display: inline-block;', // Style en ligne pour ajuster la largeur
+                    'style' => 'width: 80%;', // Style en ligne pour ajuster la largeur
                     'data-action' => 'update-max-etages',
                 ],
                 'required' => true,
@@ -37,13 +40,16 @@ class AjoutSalleType extends AbstractType
                 'label' => 'Ajouter un bâtiment',
                 'attr' => [
                     'class' => 'btn btn-secondary',
-                    'style' => 'margin-left: 10px; display: inline-block;', // Style en ligne pour alignement
+                    'style' => 'margin-top: 10px;', // Style en ligne pour alignement
                     'onclick' => "window.location.href='/batiment/ajout'",
                 ],
             ])
             ->add('etage', TextType::class, [
                 'label' => 'Étage',
-                'label_attr' => ['class' => 'form-label text-primary'],
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
                 'attr' => [
                     'class' => 'form-control',
                     'style' => 'width: 100%;', // Largeur par défaut
@@ -53,7 +59,10 @@ class AjoutSalleType extends AbstractType
             ])
             ->add('nom', TextType::class, [
                 'label' => 'Nom de salle',
-                'label_attr' => ['class' => 'form-label text-primary'],
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
                 'attr' => [
                     'class' => 'form-control',
                     'style' => 'width: 100%;',
@@ -63,22 +72,28 @@ class AjoutSalleType extends AbstractType
                 'required' => true,
             ])
             ->add('fenetre', TextType::class, [
-                'label' => 'Nombre de fenêtre (Optionnelle)',
-                'label_attr' => ['class' => 'form-label text-primary'],
+                'label' => 'Nombre de fenêtre (optionnel)',
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
                 'attr' => [
                     'class' => 'form-control',
-                    'style' => 'width: 48%; display: inline-block; margin-right: 2%;', // Champs alignés côte à côte
+                    'style' => 'width: 48%; margin-right: 2%;', // Champs alignés côte à côte
                     'maxlength' => '20',
                     'placeholder' => '10',
                 ],
                 'required' => false,
             ])
             ->add('radiateur', TextType::class, [
-                'label' => 'Nombre de radiateur (Optionnelle)',
-                'label_attr' => ['class' => 'form-label text-primary'],
+                'label' => 'Nombre de radiateur (optionnel)',
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
                 'attr' => [
                     'class' => 'form-control',
-                    'style' => 'width: 48%; display: inline-block;', // Champs alignés côte à côte
+                    'style' => 'width: 48%;', // Champs alignés côte à côte
                     'maxlength' => '20',
                     'placeholder' => '10',
                 ],

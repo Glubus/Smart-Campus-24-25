@@ -69,10 +69,10 @@ class DetailPlanController extends AbstractController
         $salles = null;
         if($selected_plan) {
             $batiment = $planRepo->findOneBy(['id' => $selected_plan])->getBatiment();
-            if ($selected_etage) {
-                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
-            } else {
+            if ($selected_etage == null) {
                 $salles = $salleRepo->findBy(['batiment' => $batiment]);
+                } else {
+                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
             }
         }
 

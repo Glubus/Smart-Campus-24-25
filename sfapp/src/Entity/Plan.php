@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use function PHPUnit\Framework\isNull;
 
 #[ORM\Entity(repositoryClass: PlanRepository::class)]
 class Plan
@@ -32,15 +33,21 @@ class Plan
     private ?\DateTimeInterface $date = null;
 
     public function getCountSA(): ?int{
-        return $this->detailPlans->count();
+        if(is_null($this->detailPlans))
+            return 0;
+        else
+            return $this->detailPlans->count();
     }
 
     public function getCountSalle(): ?int{
         $arr=[];
         $i=0;
+        if(is_null($this->detailPlans))
+            return 0;
         foreach ( $this->detailPlans as $plan){
-                if (!in_array($plan->getNom(),$arr)) {
-                    $arr[] = $plan->getNom();
+
+                if (!in_array($plan->getSalle(),$arr)) {
+                    $arr[] = $plan->getSalle();
                     $i++;
                 }
         }

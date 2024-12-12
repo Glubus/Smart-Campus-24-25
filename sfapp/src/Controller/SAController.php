@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ActionLog;
+use App\Entity\Commentaires;
 use App\Entity\SA;
 use App\Entity\Capteur;
 use App\Entity\DetailPlan;
@@ -11,6 +12,7 @@ use App\Entity\TypeCapteur;
 use App\Form\AjoutSAType;
 use App\Form\RechercheSaType;
 use App\Form\SuppressionType;
+use App\Repository\CommentairesRepository;
 use App\Repository\SARepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -155,9 +157,10 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa/{id}', name: 'app_sa_infos')]
-    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager): Response
+    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
         $SA = $repo->find($id);
+        $commentaires = $commentairesRepository->find($SA);
         if (!$SA) {
             throw $this->createNotFoundException('SA introuvable.');
         }
@@ -170,7 +173,7 @@ class SAController extends AbstractController
             "SA" => $SA,
             "salle" => $salle,
             "histo" => $histo,
-            'commentaires' => $SA->getCommentaire(),
+            'commentaires' => $commentaires,
         ]);
     }
 
@@ -255,12 +258,12 @@ class SAController extends AbstractController
 
 
     #[Route("/sa/{id}/commentaires-ajax", name:'app_sa_commentaires_ajax')]
-    public function commentairesAjax(Sa $SA, Request $request): JsonResponse
+    public function commentairesAjax(Sa $SA, Request $request, CommentairesRepository $commentairesRepository): JsonResponse
     {
         $offset = (int) $request->query->get('offset', 5);
 
         // Récupérer les commentaires
-        $commentaires = $SA->getCommentaire()->slice($offset, 5);
+        $commentaires = $commentairesRepository->find($SA);
 
         // Préparer les données de réponse
         $data = [];
@@ -276,5 +279,4 @@ class SAController extends AbstractController
         // Retourner une réponse JSON
         return new JsonResponse($data);
     }
-
 }

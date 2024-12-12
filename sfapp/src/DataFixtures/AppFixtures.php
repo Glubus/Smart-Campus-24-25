@@ -17,6 +17,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        /*
         $batimentC = new Batiment();
         $batimentC->setNom('C');
         $batimentC->setNbEtages(4);
@@ -86,6 +87,6 @@ class AppFixtures extends Fixture
         $detailPlan->setPlan($plan);
         $manager->persist($detailPlan);
 
-        $manager->flush();
+        $manager->flush();*/
     }
 }

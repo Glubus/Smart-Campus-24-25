@@ -8,6 +8,7 @@ use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
 use App\Repository\SalleRepository;
+use App\Repository\SARepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,10 +20,11 @@ use App\Form\AjoutSalleType;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
-    public function index(Request $request, SalleRepository $salleRepository): Response
+    public function index(Request $request, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         // Création du formulaire de recherche
         $form = $this->createForm(RechercheSalleType::class);
+        $associations = $detailPlanRepository->findAll();
 
         // Traitement du formulaire de recherche
         $form->handleRequest($request);
@@ -51,6 +53,7 @@ class SalleController extends AbstractController
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
+                'associations' => $associations,
             ]);
         } else {
             return $this->render('salle/notfound.html.twig', [
@@ -248,5 +251,16 @@ class SalleController extends AbstractController
             'salles' => $salles,
         ]);
     }
+    #[Route('/salle/saAttribues/{id}', name: 'app_salle_sa')]
+    public function saAttribues(int $id, Salle $salle, SARepository $SARepository, DetailPlanRepository $detailPlanRepository, SalleRepository $salleRepository): Response
+    {
+        $salle = $salleRepository->find($id);
+        $SAs = $detailPlanRepository->findBy(['salle' => $id]);
 
+        return $this->render('salle/saAttribues.html.twig', [
+            'controller_name' => 'SalleController',
+            'salle' => $salle,
+            'SAs' => $SAs,
+        ]);
+    }
 }
