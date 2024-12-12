@@ -37,11 +37,17 @@
                         <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
                         <div class="infosSalle">
                             <div class="SalleSaNom">
-                                <h3>{{ salle.nom }}</h3>
+                                {% set SAAffiche = 0 %}
                                 {% if salle.plans is not null %}
+                                    <h3 class="nomSalle" style="font-size: 45px">{{ salle.nom }}</h3>
                                     {% for plan in salle.plans %}
-                                        <h3>{{ plan.sa.nom }}</h3>
+                                        {% if SAAffiche == 0 %}
+                                            <h3 class="nomSA">{{ plan.sa.nom }}</h3>
+                                            {% set SAAffiche = 1 %}
+                                        {% endif %}
                                     {% endfor %}
+                                {% else %}
+                                    <h3 class="nomSalle">{{ salle.nom }}</h3>
                                 {% endif %}
                             </div>
                             <div class="BatimentEtage">
@@ -50,11 +56,11 @@
                             </div>
                         </div>
                         <div class="DetailsModif">
-                            {% if {{ salle.getCountSA }} == 1 %}  // Si il n'y a qu'un seul SA attribué à la salle
+                            {% if salle.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
                                 <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails SA</button></a>
-                            {% if {{ salle.getCountSA }} > 1 %}   // Si il y'a plus d'un SA attribué à la salle
+                            {% elseif salle.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
                                 <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails des SA</button></a>
-                            {% else %}  // Si il n'y a aucun SA attribué à la salle
+                            {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
                                 <a><button class="btnDetailSA">Attribuer SA</button></a>
                             {% endif %}
                             <a href="/salle/modifier/{{ salle.id }}"><button class="btnModif">Modifier</button></a>
@@ -69,6 +75,7 @@
 
 {% block javascripts %}
     <script>
+        console.log("DOM entièrement chargé");
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM entièrement chargé");
 
@@ -125,7 +132,7 @@
 
             // Vérifiez initialement (au cas où une checkbox est pré-cochée)
             toggleDeleteButton();
-        %});
+        });
     </script>
 {% endblock %}
 
