@@ -18,14 +18,16 @@ class DetailPlan
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
 
-    #[ORM\ManyToOne(inversedBy: 'plans')]
+    #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Salle $salle = null;
 
-    #[ORM\ManyToOne(inversedBy: 'plans')]
+    #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?SA $sa = null;
 
     /*#[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Plan $plan = null;*/
+
+
 
     public function getId(): ?int
     {

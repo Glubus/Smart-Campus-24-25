@@ -26,7 +26,7 @@ class Salle
     private ?Batiment $batiment = null;
 
     #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
-    private Collection $plans;
+    private Collection $detailPlans;
     #[ORM\Column(length: 20)]
     private ?string $nom = null;
 
@@ -35,9 +35,16 @@ class Salle
 
     #[ORM\Column(nullable: true)]
     private ?int $radiateur = null;
+
+    /**
+     * @var Collection<int, ValeurCapteur>
+     */
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
+    private Collection $valeurCapteurs;
     public function __construct()
     {
         $this->plans = new ArrayCollection();
+        $this->valeurCapteurs = new ArrayCollection();
     }
 
     public function getCountSA(): int
@@ -83,22 +90,6 @@ class Salle
         return $this;
     }
 
-    public function getPlan(): ?DetailPlan
-    {
-        return $this->plan;
-    }
-
-    public function setPlan(DetailPlan $plan): static
-    {
-        // set the owning side of the relation if necessary
-        if ($plan->getSalle() !== $this) {
-            $plan->setSalle($this);
-        }
-
-        $this->plan = $plan;
-
-        return $this;
-    }
 
     public function getNom(): ?string
     {
@@ -114,27 +105,27 @@ class Salle
     /**
      * @return Collection<int, DetailPlan>
      */
-    public function getPlans(): Collection
+    public function getDetailPlans(): Collection
     {
-        return $this->plans;
+        return $this->detailPlans;
     }
 
-    public function addPlan(DetailPlan $plan): static
+    public function addDetailPlans(DetailPlan $detailPlans): static
     {
-        if (!$this->plans->contains($plan)) {
-            $this->plans->add($plan);
-            $plan->setSalle($this);
+        if (!$this->detailPlans->contains($detailPlans)) {
+            $this->detailPlans->add($detailPlans);
+            $detailPlans->setSalle($this);
         }
 
         return $this;
     }
 
-    public function removePlan(DetailPlan $plan): static
+    public function removeDetailPlans(DetailPlan $detailPlans): static
     {
-        if ($this->plans->removeElement($plan)) {
+        if ($this->plans->removeElement($detailPlans)) {
             // set the owning side to null (unless already changed)
-            if ($plan->getSalle() === $this) {
-                $plan->setSalle(null);
+            if ($detailPlans->getSalle() === $this) {
+                $detailPlans->setSalle(null);
             }
         }
 
@@ -161,6 +152,36 @@ class Salle
     public function setRadiateur(int $radiateur): static
     {
         $this->radiateur = $radiateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ValeurCapteur>
+     */
+    public function getValeurCapteurs(): Collection
+    {
+        return $this->valeurCapteurs;
+    }
+
+    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
+            $this->valeurCapteurs->add($valeurCapteur);
+            $valeurCapteur->setSalle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+            // set the owning side to null (unless already changed)
+            if ($valeurCapteur->getSalle() === $this) {
+                $valeurCapteur->setSalle(null);
+            }
+        }
 
         return $this;
     }

@@ -2,8 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\BatimentSalle;
-use App\Entity\EtageSalle;
+
 use App\Entity\SA;
 use App\Entity\Salle;
 use App\Entity\DetailPlan;
@@ -28,8 +27,8 @@ class AssociationSASalle extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('sa')
-                        ->leftJoin('sa.plans', 'plan')
-                        ->where('plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de DetailPlan associé
+                        ->leftJoin('sa.plans', 'detail_plan')
+                        ->where('detail_plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de DetailPlan associé
                         ->orderBy('sa.nom', 'ASC'); // Trie les SA par nom, par exemple
                 },
                 'attr' => [
