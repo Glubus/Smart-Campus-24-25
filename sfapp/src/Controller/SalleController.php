@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Capteur;
 use App\Entity\Salle;
-use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
-use App\Repository\PlanRepository;
+use App\Repository\DetailPlanRepository;
 use App\Repository\SalleRepository;
+use App\Repository\SARepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,13 +19,12 @@ use App\Form\AjoutSalleType;
 
 class SalleController extends AbstractController
 {
-    #[Route('/salle', name: 'app_salle')]
-    public function index(Request $request, SalleRepository $salleRepository, PlanRepository $planRepository): Response
+    #[Route('/salle', name: 'app_salle_liste')]
+    public function index(Request $request, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         // Création du formulaire de recherche
-        $nbSalles = $salleRepository->count();
         $form = $this->createForm(RechercheSalleType::class);
-        $plans = $planRepository->findAll();
+        $associations = $detailPlanRepository->findAll();
 
         // Traitement du formulaire de recherche
         $form->handleRequest($request);
@@ -49,14 +47,17 @@ class SalleController extends AbstractController
             // Si aucun nom n'est saisi, afficher toutes les salles
             $salles = $salleRepository->findAll();
         }
+        foreach ($salles as $salle) {
+            var_dump($salle.getOnlySa());
+        }
+        exit();
 
         if ($salles) {
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',
                 'salles' => $salles,
-                'plans' => $plans,
-                'nbSalles' => $nbSalles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
+                'associations' => $associations,
             ]);
         } else {
             return $this->render('salle/notfound.html.twig', [
@@ -66,43 +67,18 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
-    public function infos(int $id, SalleRepository $aRepo, PlanRepository $planRepository): Response
+    public function infos(int $id, SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
         $batiment = $salle->getBatiment();
         $plan = $planRepository->findOneBy(['salle' => $id]);
 
-        $labels = [];
-        $tempData = [];
-        $co2Data = [];
-        $humiData = [];
-
         $sa = null;
         if($plan) {
             $sa = $plan->getSA();
-            $capteurs = $sa->getCapteurs()->toArray();
-
-            foreach($capteurs as $capteur) {
-                switch ($capteur->getType()) {
-                    case TypeCapteur::temperature :
-                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
-                            array_push($tempData, $valeurCapteur->getValeur());
-                            array_push($labels, $valeurCapteur->getDate());
-                    }
-                    case TypeCapteur::co2 :
-                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
-                            array_push($co2Data,$valeurCapteur->getValeur());
-                    }
-                    case TypeCapteur::humidite :
-                        foreach($capteur->getValeurCapteurs() as $valeurCapteur) {
-                            array_push($humiData,$valeurCapteur->getValeur());
-                    }
-                }
-            }
         }
 
         // Données des capteurs
-        /*
         $dataCapteurs = [
             'temp' => [['date' => "27/10/2005", 'valeur' => 20], ['date' => "28/10/2005", 'valeur' => 40]],
             'co2' => [['date' => "27/10/2005", 'valeur' => 400], ['date' => "28/10/2005", 'valeur' => 410]],
@@ -112,7 +88,7 @@ class SalleController extends AbstractController
         $labels = array_column($dataCapteurs['temp'], 'date'); // Les dates
         $tempData = array_column($dataCapteurs['temp'], 'valeur');
         $co2Data = array_column($dataCapteurs['co2'], 'valeur');
-        $humiData = array_column($dataCapteurs['humidite'], 'valeur');*/
+        $humiData = array_column($dataCapteurs['humidite'], 'valeur');
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
@@ -124,7 +100,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/salle/ajout', name: 'app_salle_ajout')]
+    #[Route('/salle/ajouter', name: 'app_salle_ajout')]
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
@@ -145,7 +121,7 @@ class SalleController extends AbstractController
             else {
                 $entityManager->persist($salle);
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
         }
 
@@ -157,10 +133,10 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/modifierSalle', name: 'app_salle_update')]
-    public function modifier(Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository): Response
+    #[Route('/salle/modifier/{id}', name: 'app_salle_update')]
+    public function modifier(int $id,Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
-        $salle = $salleRepository->find($request->get('id'));
+        $salle = $salleRepository->find($id);
         $form = $this->createForm(AjoutSalleType::class, $salle);
 
         $form->handleRequest($request);
@@ -174,7 +150,7 @@ class SalleController extends AbstractController
             else {
                 $entityManager->persist($salle);
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
         }
 
@@ -279,5 +255,16 @@ class SalleController extends AbstractController
             'salles' => $salles,
         ]);
     }
+    #[Route('/salle/saAttribues/{id}', name: 'app_salle_sa')]
+    public function saAttribues(int $id, Salle $salle, SARepository $SARepository, DetailPlanRepository $detailPlanRepository, SalleRepository $salleRepository): Response
+    {
+        $salle = $salleRepository->find($id);
+        $SAs = $detailPlanRepository->findBy(['salle' => $id]);
 
+        return $this->render('salle/saAttribues.html.twig', [
+            'controller_name' => 'SalleController',
+            'salle' => $salle,
+            'SAs' => $SAs,
+        ]);
+    }
 }

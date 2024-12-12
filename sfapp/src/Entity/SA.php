@@ -17,17 +17,17 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'sa')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'sa')]
     private Collection $plans;
-
-    #[ORM\OneToMany(targetEntity: Capteur::class, mappedBy: 'sa', cascade: ['persist'])]
-    private Collection $capteurs;
 
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: Commentaires::class, mappedBy: 'SA')]
-    private Collection $commentaire;
+    /**
+     * @var Collection<int, ValeurCapteur>
+     */
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
+    private Collection $valCapteurs;
 
     public function __construct()
     {
@@ -35,6 +35,7 @@ class SA
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
         $this->commentaire = new ArrayCollection();
+        $this->valCapteurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,18 +58,6 @@ class SA
     public function getCapteurs(): Collection
     {
         return $this->capteurs;
-    }
-    public function generateCapteurs() {
-        // Créer et associer 3 capteurs à cet SA
-        for ($i = 1; $i <= 3; $i++) {
-            $type = TypeCapteur::cases()[$i - 1];
-            $capteur = new Capteur();
-            $capteur->setNom('Capteur ' . $i)
-                ->setType($type)
-                ->setSA($this);
-            $this->addCapteur($capteur);
-
-        }
     }
     public function addCapteur(Capteur $capteur): static
     {
@@ -93,14 +82,14 @@ class SA
 
 
     /**
-     * @return Collection<int, Plan>
+     * @return Collection<int, DetailPlan>
      */
     public function getPlans(): Collection
     {
         return $this->plans;
     }
 
-    public function addPlan(Plan $plan): static
+    public function addPlan(DetailPlan $plan): static
     {
         if (!$this->plans->contains($plan)) {
             $this->plans->add($plan);
@@ -110,7 +99,7 @@ class SA
         return $this;
     }
 
-    public function removePlan(Plan $plan): static
+    public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
             // set the owning side to null (unless already changed)
@@ -153,32 +142,34 @@ class SA
     }
 
     /**
-     * @return Collection<int, Commentaires>
+     * @return Collection<int, ValeurCapteur>
      */
-    public function getCommentaire(): Collection
+    public function getValCapteurs(): Collection
     {
-        return $this->commentaire;
+        return $this->valCapteurs;
     }
 
-    public function addCommentaire(Commentaires $commentaire): static
+    public function addValCapteur(ValeurCapteur $valCapteur): static
     {
-        if (!$this->commentaire->contains($commentaire)) {
-            $this->commentaire->add($commentaire);
-            $commentaire->setSA($this);
+        if (!$this->valCapteurs->contains($valCapteur)) {
+            $this->valCapteurs->add($valCapteur);
+            $valCapteur->setSA($this);
         }
 
         return $this;
     }
 
-    public function removeCommentaire(Commentaires $commentaire): static
+    public function removeValCapteur(ValeurCapteur $valCapteur): static
     {
-        if ($this->commentaire->removeElement($commentaire)) {
+        if ($this->valCapteurs->removeElement($valCapteur)) {
             // set the owning side to null (unless already changed)
-            if ($commentaire->getSA() === $this) {
-                $commentaire->setSA(null);
+            if ($valCapteur->getSA() === $this) {
+                $valCapteur->setSA(null);
             }
         }
 
         return $this;
     }
+
+
 }

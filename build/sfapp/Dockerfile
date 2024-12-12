@@ -24,7 +24,7 @@ RUN if [ ! -z ${USER_NAME} ] && [ ! -z ${GROUP_NAME} ] && [ ${USER_ID:-0} -ne 0 
     mkdir -p /home/$USER_NAME/.composer  && \
     chown -Rf ${USER_NAME}:${GROUP_NAME} /home/$USER_NAME  && \
     chown -R ${USER_NAME}:${GROUP_NAME} /app \
-    ; fi
+    ; fi \
 
 # Login to container as non-root user 
 USER ${USER_ID:-0}:${GROUP_ID:-0}

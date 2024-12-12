@@ -3,16 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\ActionLog;
+use App\Entity\Commentaires;
 use App\Entity\SA;
 use App\Entity\Capteur;
-use App\Entity\Commentaires;
-use App\Repository\CommentairesRepository;
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
 use App\Form\AjoutSAType;
 use App\Form\RechercheSaType;
 use App\Form\SuppressionType;
+use App\Repository\CommentairesRepository;
 use App\Repository\SARepository;
 use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,9 +79,6 @@ class SAController extends AbstractController
             else {
                 // Persister l'entité SA avant d'ajouter les capteurs
                 $entityManager->persist($SA);
-                if ($SA->getCapteurs()->isEmpty()) {
-                    $SA->generateCapteurs();
-                }
 
                 // Ajouter un log de création
                 $LogCrea = new SALog();
@@ -160,23 +157,25 @@ class SAController extends AbstractController
         return $this->render('sa/notfound.html.twig', []);
     }
 
+<<<<<<< sfapp/src/Controller/SAController.php
     #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
-    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager): Response
+    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
         $SA = $repo->find($id);
+        $commentaires = $commentairesRepository->find($SA);
         if (!$SA) {
             throw $this->createNotFoundException('SA introuvable.');
         }
         $histo=$SA->getSALogs();
         // trouver la salle d'un Sa
-        $plan = $entityManager->getRepository(Plan::class)->findOneBy(['sa' => $SA]);
+        $plan = $entityManager->getRepository(DetailPlan::class)->findOneBy(['sa' => $SA]);
         $salle = $plan ? $plan->getSalle() : null;
 
         return $this->render('sa/info.html.twig', [
             "SA" => $SA,
             "salle" => $salle,
             "histo" => $histo,
-            'commentaires' => $SA->getCommentaire(),
+            'commentaires' => $commentaires,
         ]);
     }
 
@@ -256,12 +255,12 @@ class SAController extends AbstractController
 
 
     #[Route("/sa/{id}/commentaires-ajax", name:'app_sa_commentaires_ajax')]
-    public function commentairesAjax(Sa $SA, Request $request): JsonResponse
+    public function commentairesAjax(Sa $SA, Request $request, CommentairesRepository $commentairesRepository): JsonResponse
     {
         $offset = (int) $request->query->get('offset', 5);
 
         // Récupérer les commentaires
-        $commentaires = $SA->getCommentaire()->slice($offset, 5);
+        $commentaires = $commentairesRepository->find($SA);
 
         // Préparer les données de réponse
         $data = [];
@@ -277,6 +276,7 @@ class SAController extends AbstractController
         // Retourner une réponse JSON
         return new JsonResponse($data);
     }
+
 
     #[Route('/sa/supprimer-selection', name: 'app_sa_supprimer_selection', methods: ['POST', 'GET'])]
     public function suppSelection(
@@ -318,6 +318,4 @@ class SAController extends AbstractController
             'sa' => $sa,
         ]);
     }
-
-
 }

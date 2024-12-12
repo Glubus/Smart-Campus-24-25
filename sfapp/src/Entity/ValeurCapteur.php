@@ -17,12 +17,16 @@ class ValeurCapteur
     #[ORM\Column]
     private ?float $valeur = null;
 
-    #[ORM\ManyToOne(inversedBy: 'valeurCapteurs')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Capteur $capteur = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $dateAjout = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    #[ORM\ManyToOne(inversedBy: 'valCapteurs')]
+    private ?SA $SA = null;
+
+    #[ORM\ManyToOne(inversedBy: 'valeurCapteurs')]
+    private ?Salle $Salle = null;
+    #[ORM\Column(type: 'string', length: 255, enumType: TypeCapteur::class)]
+    private ?TypeCapteur $type = null;
 
     public function getId(): ?int
     {
@@ -41,27 +45,49 @@ class ValeurCapteur
         return $this;
     }
 
-    public function getCapteur(): ?Capteur
+    public function getDateAjout(): ?\DateTimeInterface
     {
-        return $this->capteur;
+        return $this->dateAjout;
     }
 
-    public function setCapteur(?Capteur $capteur): static
+    public function setDateAjout(\DateTimeInterface $dateAjout): static
     {
-        $this->capteur = $capteur;
+        $this->dateAjout = $dateAjout;
 
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getSA(): ?SA
     {
-        return $this->date;
+        return $this->SA;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setSA(?SA $SA): static
     {
-        $this->date = $date;
+        $this->SA = $SA;
 
         return $this;
+    }
+
+    public function getSalle(): ?Salle
+    {
+        return $this->Salle;
+    }
+
+    public function setSalle(?Salle $Salle): static
+    {
+        $this->Salle = $Salle;
+
+        return $this;
+    }
+
+    public function getType(): ?TypeCapteur
+    {
+        return $this->type;
+    }
+
+    public function setType(?TypeCapteur $type): void
+    {
+        $this->type = $type;
     }
 }

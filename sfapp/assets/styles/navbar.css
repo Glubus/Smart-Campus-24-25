@@ -1,12 +1,24 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.allNav {
+    background-color: white;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 .navbar {
+    margin: auto;
     width: 1115px;
     height: 80px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: auto;
-    margin-top: 20px;
+    z-index: 2;
 }
 
 .accueil {
@@ -37,7 +49,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: auto;
     border-left: 1px solid black;
     font-size: 20px;
     padding-left: 45px;

@@ -5,7 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Batiment;
 use App\Entity\EtageSalle;
 use App\Entity\EtatAssignation;
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use DateTime;
@@ -50,17 +50,13 @@ class AppFixtures extends Fixture
         $SA->setNom('SATest');
         $manager->persist($SA);
 
-        $SA1 = new SA();
-        $SA1->setNom('SATest1');
-        $manager->persist($SA1);
-
-        $plan=new Plan();
+        $plan=new DetailPlan();
         $plan->setSA($SA);
         $plan->setSalle($D002);
         $plan->setDateAjout(new DateTime());
         $manager->persist($plan);
 
-        $plan=new Plan();
+        $plan=new DetailPlan();
         $plan->setSA($SA);
         $plan->setSalle($D001);
         $plan->setDateAjout(new DateTime());

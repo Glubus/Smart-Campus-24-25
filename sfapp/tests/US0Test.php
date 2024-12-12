@@ -65,7 +65,7 @@ class US0Test extends WebTestCase
     public function testLienPlanDispo(): void
     {
         
-        $selecteur = "ul li.dropdown a[href='/plan']";
+        $selecteur = "ul li.dropdown a[href='/detail_plan']";
         $this->assertSelectorExists($selecteur);
     }
 

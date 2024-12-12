@@ -20,13 +20,6 @@ a:hover {
     grid-template-columns: 25% 75%;
 }
 
-
-
-
-
-
-
-
 .rechercheBlock {
     grid-area: recherche;
     height: 100%;
@@ -213,4 +206,21 @@ a:hover {
 
 .btnModif:hover {
     background-color: #00AA1A;
+}
+
+.container {
+    display: flex;
+    gap: 20px; /* Espace entre les colonnes */
+    background-color:white;
+    flex-wrap: wrap;
+}
+
+.container > div {
+    flex: 1; /* Chaque div enfant occupe une part égale de l'espace disponible */
+    background-color: #f0f0f0; /* Couleur de fond pour mieux visualiser les colonnes */
+    padding: 10px;
+}
+
+.container > div:nth-child(2) {
+    background-color: #e0e0e0; /* Vous pouvez définir une couleur différente pour la deuxième colonne */
 }
