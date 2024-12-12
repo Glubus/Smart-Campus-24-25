@@ -35,31 +35,21 @@
 
 
             {% for sa in liste_SA %}
-                <a href="/sa/{{ sa.id }}">
+
                     <article class="salleBlock">
-                        <div class="infossa">
+                        <div class="infossalle">
                             <input type="checkbox" class="checkbox" value="{{ sa.id }}"/>
                             <div class="saSaNom" >
                                 <h3>{{ sa.nom }}</h3>
-                                {% if sa.plans is not null %}
-                                    {% for plan in sa.plans %}
-                                        <h3>{{ plan.sa.nom }}</h3>
-                                    {% endfor %}
-                                {% endif %}
                             </div>
-                            <div class="BatimentEtage">
-                                <p>Nom {{ sa.nom }}</p>
-
-                            </div>
-
                         </div>
 
-                        <div class="DetailsModif">
-                            <a href="/sa/{{ sa.id }}"><button class="btnDetailSA">Détails SA</button></a>
+                        <div class="DetailsModif">{# $wa #}
+                            {# <a path('app_sa_infos')><button class="btnDetailSA">Détails SA</button></a>#}
                             <a href="/modifiersa?id="{{ sa.id }}><button class="btnModif">Modifier</button></a>
                         </div>
                     </article>
-                </a>
+
             {% endfor %}
             <button class="btnAffPl">Afficher plus</button>
         </main>
@@ -90,16 +80,17 @@
 
             deleteButton.addEventListener('click', function () {
                 // Crée un formulaire caché
+                console.log("aaa");
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '/sa/supprimer-selection'; // L'URL vers votre route Symfony
+                form.action =  '/sa/supprimer-selection'; // L'URL vers votre route Symfony
 
                 // Ajoutez les checkboxes cochées au formulaire
                 checkboxes.forEach(checkbox => {
                     if (checkbox.checked) {
                         const input = document.createElement('input');
                         input.type = 'hidden';
-                        input.name = 'selected_sas[]';
+                        input.name = 'selected_sa[]';
                         input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
                         form.appendChild(input);
                     }
@@ -111,8 +102,7 @@
             });
 
             // Vérifiez initialement (au cas où une checkbox est pré-cochée)
-            toggleDeleteButton();
-        });
+            toggleDeleteButton();});
     </script>
 {% endblock %}
 
