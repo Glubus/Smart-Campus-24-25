@@ -157,7 +157,7 @@ class SAController extends AbstractController
         return $this->render('sa/notfound.html.twig', []);
     }
 
-<<<<<<< sfapp/src/Controller/SAController.php
+
     #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
     public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
