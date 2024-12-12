@@ -47,6 +47,10 @@ class SalleController extends AbstractController
             // Si aucun nom n'est saisi, afficher toutes les salles
             $salles = $salleRepository->findAll();
         }
+        foreach ($salles as $salle) {
+            var_dump($salle.getOnlySa());
+        }
+        exit();
 
         if ($salles) {
             return $this->render('salle/index.html.twig', [
