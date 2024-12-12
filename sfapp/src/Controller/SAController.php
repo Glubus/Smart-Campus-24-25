@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\Commentaires;
 use App\Entity\SA;
-use App\Entity\Capteur;
 use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -302,11 +301,21 @@ class SAController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $submittedString = $form->get('inputString')->getData();
             if ($submittedString=='CONFIRMER'){
-                foreach ($sa as $sas ) {
+
+                foreach ($sa as $sas) {
+                    // Remove related SALog entries
+                    foreach ($sas->getSALogs() as $log) {
+                        $entityManager->remove($log);
+                    }
+                    foreach ($sas->getValCapteurs() as $valCapteur) {
+                        $entityManager->remove($valCapteur);
+                    }
+                    // Remove the SA entity
                     $entityManager->remove($sas);
                 }
                 $entityManager->flush();
-                return $this->redirectToRoute('app_sa');
+
+                return $this->redirectToRoute('app_sa_liste');
             }
             else {
                 $this->addFlash('error', 'La saisie est incorrect.');
