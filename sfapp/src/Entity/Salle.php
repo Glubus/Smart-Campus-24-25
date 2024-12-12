@@ -49,7 +49,17 @@ class Salle
 
     public function getCountSA(): int
     {
-        return $this->plans->count();
+        return $this->detailPlans->count();
+    }
+
+    public function getOnlySa(): ?SA
+    {
+        if($this->getCountSA() == 1){
+            return $this->detailPlans->get($this->id);
+        }
+        else {
+            return null;
+        }
     }
 
     public function getId(): ?int
