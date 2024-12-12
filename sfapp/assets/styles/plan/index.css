@@ -1,0 +1,182 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-content{
+    border-top: 1px solid black;
+}
+
+#sidebar {
+    float: left;
+    padding: 10px;
+    background-color: #f8f8f8;
+    width: 25%;
+    position: fixed; /* Fix the sidebar in place */
+    /*top:0;*/
+    height: 100%; /* Make the sidebar full height */
+    border: 1px solid #ccc;
+}
+
+/* Sidebar styling */
+#plan_selection {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#etagesDiv {
+    margin-top: 15px;
+}
+
+#etagesList {
+    list-style: none;
+    padding: 0;
+}
+
+#etagesList li a, .etage-affiche-toutes{
+    text-decoration: none;
+    color: #007BFF;
+    display: block;
+    padding: 5px 10px;
+}
+
+#etagesList li a:hover, .etage-affiche-toutes:hover {
+    background-color: #e7f3ff;
+    border-radius: 5px;
+}
+
+#etagesList li a:active, .etage-affiche-toutes:active, .darken{
+    background-color: #d0e2f5;
+    border-radius: 5px;
+}
+
+/* Plan table styling */
+#plan {
+    width: 70%;
+    float: right;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#plan #table-header {
+    display: flex;
+    border: 1px solid black;
+    background-color: #00D01F;
+    border-bottom: 0;
+    color: white;
+    flex-grow: 1;
+}
+
+#plan #table-header tr{
+    display: flex;
+    justify-content: space-evenly;
+    flex-grow: 1;
+    margin: 10px;
+}
+
+#plan #table-header th{
+    flex: 1 0 33%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    max-width: 33%;
+}
+
+/* Table rows */
+#plan #table-content {
+    border: 1px solid black;
+    background-color: #FAF5FF;
+    min-height: 100px;
+}
+
+.ligne-attribution{
+    display: flex;
+    margin: 10px;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.ligne-attribution td{
+    font-weight: bold;
+    padding: 0 10px;
+    flex: 1 0 33%;
+    max-width: 33%;
+}
+
+.tdAttribuer{
+    text-align: center;
+}
+
+.salleDiv{
+    border: 5px solid #33CBEA;
+    background-color: white;
+    border-radius: 30px 0 30px 0;
+}
+
+/* Buttons and links */
+.caseBleu, .supprAttr {
+    text-decoration: none;
+    font-size:120px;
+}
+
+.caseBleu{
+    color: #33CBEA;
+    background-color: white;
+}
+
+.supprAttr {
+    color: red;
+    background-color: white;
+}
+
+
+.SAattribue {
+    background-color: white;
+    max-height: 100px;
+    max-width: 300px;
+    border: 5px solid #33CBEA;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+}
+
+.AucunSA {
+    border: 5px solid red;
+}
+
+.infoSA{
+    margin: 0;
+    text-align: left;
+}
+
+.caseBleu:hover, .supprAttr:hover {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Hidden content */
+.hidden {
+    display: none;
+}
+
+
+.green-circle {
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.toggle {
+    cursor: pointer;
+}
+

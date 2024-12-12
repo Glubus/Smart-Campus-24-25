@@ -3,16 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\DetailPlan;
+use App\Entity\Plan;
 use App\Entity\SA;
 use App\Form\AssociationSASalle;
 use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
+use App\Repository\PlanRepository;
+use App\Repository\SalleRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function PHPUnit\Framework\isNull;
 
 class DetailPlanController extends AbstractController
 {
@@ -56,14 +61,39 @@ class DetailPlanController extends AbstractController
         ]);
     }
     #[Route('/lier', name: 'app_lier_liste')]
-    public function list(DetailPlanRepository $em): Response
+    public function list(SalleRepository $salleRepo, PlanRepository $planRepo, Request $request): Response
     {
-        // Récupérer tous les plans
-        $plans = $em->findAll();
+        $selected_plan = $request->query->get('plan');
+        $selected_etage = $request->query->get('etage');
+
+        $salles = null;
+        if($selected_plan) {
+            $batiment = $planRepo->findOneBy(['id' => $selected_plan])->getBatiment();
+            if ($selected_etage) {
+                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
+            } else {
+                $salles = $salleRepo->findBy(['batiment' => $batiment]);
+            }
+        }
+
+
+        $plansArray = [];
+        $plans = $planRepo->findAll();
+        foreach ($plans as $plan) {
+            $plansArray[] = [
+                'id' => $plan->getId(),
+                'nom' => $plan->getNom(),
+                'nbEtages' => $plan->getBatiment()->getNbEtages(),
+                'batNom' => $plan->getBatiment()->getNom()
+            ];
+        }
 
         // Afficher la liste des plans dans le template
         return $this->render('detail_plan/liste.html.twig', [
-            'plans' => $plans,
+            'salles' => $salles,
+            'plans' => $plansArray,
+            'selected_plan' => $selected_plan,
+            'selected_etage' => $selected_etage,
         ]);
     }
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
