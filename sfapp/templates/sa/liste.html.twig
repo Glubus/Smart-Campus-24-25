@@ -1,56 +1,108 @@
- {% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un systeme d'acquisition (SA){% endblock %}
+{% block title %}Lister Salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5" >
-        <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
-        <br class="center mb-4" style="max-width: 100%;">
-        <div class="d-flex justify-content-between align-items-center">
-            {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-            <div class="form-group mr-2">
-                {{ form_row(form.nom) }}
+    <link rel="stylesheet" href="/css/listeSalles.css">
+    <h1 class="mainTitle">Liste des sas</h1>
+    <div class="all">
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+
+            <article class="filtresRecherche">
+                <div class="barreRech">
+                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                    <div class="form-group mr-2">
+                        {{ form_row(form.nom) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                    {{ form_end(form) }}
+                </div>
+                <h3 class="trier">Trier</h3>
+                <button class="btnTri">Date de création</button>
+                <button class="btnTri">Ordre alphabétique</button>
+            </article>
+            </a>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+
+            <div class="btns">
+                <a href="/sa/ajout"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
             </div>
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-            {{ form_end(form) }}
-
-            <a class="btn btn-primary ml-3" href="{{ path('app_sa_ajout') }}" role="button">Ajouter un SA</a>
-        </div>
-        <br/>
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead>
-            <tr class="table-dark">
-                <th class="nom">Nom</th>
-                <th class="col">Détails</th>
-                <th></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
 
 
+            {% for sa in liste_SA %}
 
-            {% for SA in liste_SA %}
-                <tr>
-                    <td class="nom">
-                        {{ SA.nom }} Systèmes d'acquisition
-                    </td>
-                    <td class="detail">
-                        <a href="{{ path("app_sa_infos", {id:SA.id })}}">
-                            voir
-                        </a>
-                    </td>
-                    <td style="width: 10%">
-                    <a class="btn btn-outline-success" href="{{ path('app_sa_modifier', {id:SA.id}) }}" role="button">Modifier</a>
-                    </td>
-                    <td style="width: 10%">
-                        <a href="{{ path("app_sa_suppression", { id : SA.id }) }}" class="btn btn-outline-danger">
-                            Supprimer
-                        </a>
-                    </td>
-                </tr>
+                    <article class="salleBlock">
+                        <div class="infossalle">
+                            <input type="checkbox" class="checkbox" value="{{ sa.id }}"/>
+                            <div class="saSaNom" >
+                                <h3>{{ sa.nom }}</h3>
+                            </div>
+                        </div>
+
+                        <div class="DetailsModif">{# $wa #}
+                            {# <a path('app_sa_infos')><button class="btnDetailSA">Détails SA</button></a>#}
+                            <a href="/modifiersa?id="{{ sa.id }}><button class="btnModif">Modifier</button></a>
+                        </div>
+                    </article>
+
             {% endfor %}
-            </tbody>
-        </table>
+            <button class="btnAffPl">Afficher plus</button>
+        </main>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ciblez les checkboxes et le bouton
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const deleteButton = document.getElementById('btnSuppr');
+
+            // Fonction pour vérifier si une checkbox est cochée
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                if (isAnyChecked) {
+                    deleteButton.classList.remove('hidden'); // Affiche le bouton
+                } else {
+                    deleteButton.classList.add('hidden'); // Masque le bouton
+                }
+            }
+
+            // Ajoutez un écouteur d'événement à chaque checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleDeleteButton);
+            });
+
+            deleteButton.addEventListener('click', function () {
+                // Crée un formulaire caché
+                console.log("aaa");
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action =  '/sa/supprimer-selection'; // L'URL vers votre route Symfony
+
+                // Ajoutez les checkboxes cochées au formulaire
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected_sa[]';
+                        input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
+                        form.appendChild(input);
+                    }
+                });
+
+                // Ajoutez le formulaire à la page et soumettez-le
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Vérifiez initialement (au cas où une checkbox est pré-cochée)
+            toggleDeleteButton();});
+    </script>
+{% endblock %}
+

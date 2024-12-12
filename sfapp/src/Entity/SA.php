@@ -54,16 +54,6 @@ class SA
         return $this;
     }
 
-    public function getDateAjout(): ?\DateTime
-    {
-        return $this->dateAjout;
-    }
-
-    public function setDateAjout(\DateTime $dateAjout): static
-    {
-        $this->dateAjout = $dateAjout;
-        return $this;
-    }
 
     public function getCapteurs(): Collection
     {
