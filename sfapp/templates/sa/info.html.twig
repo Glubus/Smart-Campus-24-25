@@ -1,84 +1,152 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SA - {{ SA.nom }}{% endblock %}
+{% block title %}SA {{ SA.nom }}{% endblock %}
 
 {% block body %}
     <div class="container my-5">
-        <h1 class="text-center mb-4">SA - {{ SA.nom }}</h1>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <a class="btn btn-success mt-3" href="{{ path('app_sa_ajout') }}" role="button">Ajouter un SA</a>
-        </div>
+        <h1 class="text-center mb-4">{{ SA.nom }}</h1>
 
-        <div class="row">
-            <!-- Colonne gauche : Détails de l'entité SA -->
-            <div class="col-md-6">
-                <h3>Détails de SA</h3>
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>Nom:</strong> {{ SA.nom }}</li>
-                  {#  {% if histo is not null %}
-                        <li class="list-group-item"><strong>Salle assignée:</strong> {{ histo }} (ID: {{ SA.detail_plan.Salle.id }})</li>
-                    {% else %}
-                        <li class="list-group-item"><strong>Pas de salle assignée</strong></li>
-                    {% endif %}
-                    #}
-                </ul>
+        <div class="row" style="border-top: 2px solid #ddd; padding: 15px;">
+            <!-- Left Sidebar -->
+            <div class="col-md-3" style="background-color: #C0C0C0; border-right: 2px solid #ddd; padding: 15px;">
 
-                {% if histo is null %}
-                    <a href="{{ path('app_plan', {'sa_id': SA.id}) }}" class="btn btn-primary mt-3">Assigner une salle</a>
-                {% endif %}
+                <div class="mb-4">
+                    <h3>Salle associée</h3>
+                    <div class="list-group">
+                        {% if SA.plans|length > 0 %}
+                            {% for plan in SA.plans %}
+                                <div class="list-group-item">
+                                    <strong>{{ plan.salle.nom }}</strong>
+                                    <a class="btn btn-primary" href="../salle/{{ plan.salle.id }}">Salle</a>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="list-group-item">Aucune Salle associée.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Historique des états -->
+                <div>
+                    <h3>Historique des états</h3>
+                    <table class="table table-bordered">
+                        <tbody>
+                        {% for historique in histo %}
+                            <tr>
+                                <td>{{ historique.date|date('d/m/Y') }}</td>
+                                <td>{{ historique.action.value }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2">Aucun historique disponible.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="{{ path('app_sa_log', {'id': SA.id}) }}" class="btn btn-primary">Voir tout l'historique</a>
+                </div>
             </div>
 
-            <!-- Colonne droite : Informations supplémentaires -->
-            <div class="col-md-6">
-                <h3>Informations supplémentaires</h3>
-                <h4 >Capteurs associés :</h4>
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>Nom</th>
-                        <th>Type</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Ajouter un commentaire -->
+                <div class="mb-4">
+                    <h3>Ajouter un commentaire</h3>
+                    <form method="post" action="{{ path('app_sa_commentaire', {'id': SA.id}) }}">
+                        <div class="mb-3">
+                            <label for="nomTech" class="form-label">Nom Tech</label>
+                            <input type="text" id="nomTech" name="nomTech" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter un commentaire</button>
+                    </form>
+                </div>
 
-        <!-- Section historique des modifications -->
-        <div class="mt-5">
-            <h3>Historique des modifications de l'état</h3>
-            {% if histo is not empty %}
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>Date de modification</th>
-                        <th>État</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for historique in histo %}
-                        <tr>
-                            <td>{{ historique.date|date('d/m/Y H:i') }}</td>
-                            <td>
-                                {% if historique.action.value == 'AJOUTER' %}
-                                    Ajouter
-                                {% elseif historique.action.value == 'MODIFIER' %}
-                                    Modifier
-                                {% elseif historique.action.value == 'SUPPRIMER' %}
-                                    Supprimé
-                                {% else %}
-                                    Inconnu
-                                {% endif %}
-                            </td>
-                        </tr>
+                <!-- Liste des commentaires -->
+                <div>
+                    <h3>Commentaires</h3>
+                    {% for commentaire in commentaires[:5] %}
+                        <div style="border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
+                            <div >
+                                {{ commentaire.nomTech }}, {{ commentaire.dateAjout|date('d/m/Y') }}<div style=" padding: 10px">
+                                    {{ commentaire.description }}
+                                </div>
+                            </div>
+                            <form method="post" action="{{ path('app_sa_commentaire_supprimer', {'id': SA.id, 'commentaireId': commentaire.id}) }}"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                  style="margin-left: 15px;">
+                                <input type="hidden" name="_token" value="{{ commentaire.id }}">
+                                <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                            </form>
+                        </div>
                     {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>Aucune modification d'état enregistrée pour ce SA.</p>
-            {% endif %}
-        </div>
+                    <div  id="comments-container">
+                        <!-- Les commentaires chargés s'afficheront ici -->
+                    </div>
+                    <button id="voir-plus" class="btn btn-primary" data-id="{{ SA.id }}" data-offset="0">Voir plus</button>
 
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('voir-plus').addEventListener('click', function () {
+            const btn = this;
+            const id = btn.getAttribute('data-id'); // Retrieve ID
+            const offset = parseInt(btn.getAttribute('data-offset')); // Retrieve offset
+
+            console.log(`Fetching comments for ID: ${id} with offset: ${offset}`);
+
+            fetch(`/sa/${id}/commentaires-ajax?offset=${offset+5}`)
+                .then(response => {
+                    console.log('Raw response:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Server response:', data);
+
+                    if (!Array.isArray(data) || data.length === 0) {
+                        alert('Aucun commentaire à afficher.');
+                        return;
+                    }
+
+                    const commentsContainer = document.getElementById('comments-container');
+                    data.forEach(comment => {
+                        const row = document.createElement('div');
+                        row.setAttribute('style', ' border-bottom: 1px solid #ddd   ; padding: 5px; display: flex; justify-content: space-between; align-items: center;');
+                        row.innerHTML = `
+        <div >
+            ${comment.nomTech}, ${new Date(comment.dateAjout).toLocaleDateString()}<div style=" padding: 10px">
+            ${comment.description}
+            </div>
+        </div>
+        <form method="post" action="/sa/${id}/commentaire-supprimer/${comment.id}"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                      style="margin-left: 15px;">
+                                    <input type="hidden" name="_token" value="{ comment.id }">
+                                    <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                                </form>
+    `;
+                        commentsContainer.appendChild(row);
+                    });
+
+
+                    // Mise à jour de l'offset
+                    btn.setAttribute('data-offset', offset + data.length);
+                })
+                .catch(error => {
+                    console.error('Erreur AJAX :', error);
+                    alert('Une erreur est survenue lors du chargement des commentaires.');
+                });
+        });
+
+    </script>
+
 {% endblock %}

@@ -58,7 +58,11 @@
                         </div>
                         <div class="DetailsModif">
                             {% if salle.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
+                                {% if salle.getOnlySa() %}
                                 <a href="{{ path('app_sa_infos', {'id': salle.getOnlySa().id}) }}"><button class="btnDetailSA">Détails SA</button></a>
+                                {% else %}
+                                    <p>Pas de SA disponnible</p>
+                                {% endif %}
                             {% elseif salle.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
                                 <a><button class="btnDetailSA">Détails des SA</button></a>
                             {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
