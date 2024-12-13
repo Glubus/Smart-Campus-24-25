@@ -58,45 +58,22 @@ class SAController extends AbstractController
         ]);
     }
     #[Route('/sa/ajout', name: 'app_sa_ajout')]
-    public function ajouter(SARepository $SARepository, EntityManagerInterface $entityManager, Request $request): Response
+    public function ajoutSA(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Création du nouvel objet SA
-        $SA = new SA();
+        $sa = new SA();
 
-        $form = $this->createForm(AjoutSAType::class, $SA);
+        $form = $this->createForm(AjoutSAType::class, $sa);
         $form->handleRequest($request);
 
-        // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
-            $SA->setDateAjout(new \DateTime());
+            $entityManager->persist($sa);
+            $entityManager->flush();
 
-            // Vérifier si le nom est unique
-            $existingSA = $entityManager->getRepository(SA::class)->findOneBy(['nom' => $SA->getNom()]);
-            if ($existingSA) {
-                $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
-            }
-            else {
-                // Persister l'entité SA avant d'ajouter les capteurs
-                $entityManager->persist($SA);
+            $this->addFlash('success', 'SA ajouté avec succès.');
 
-                // Ajouter un log de création
-                $LogCrea = new SALog();
-                $LogCrea->setSA($SA);
-                $LogCrea->setDate(new \DateTime());
-                $LogCrea->setAction(ActionLog::AJOUTER);
-                $entityManager->persist($LogCrea);
-
-                // Sauvegarder dans la base de données
-                $entityManager->flush();
-
-                $this->addFlash('success', 'SA et ses capteurs associés ont été ajoutés avec succès.');
-
-                // Redirection vers la liste des SA
-                return $this->redirectToRoute('app_sa_liste');
-            }
+            return $this->redirectToRoute('app_sa_liste');
         }
 
-        // Affichage du formulaire
         return $this->render('sa/ajout.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -157,11 +134,12 @@ class SAController extends AbstractController
     }
 
 
-    #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
+    #[Route('/sa/{id}', name: 'app_sa_infos')]
     public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
         $SA = $repo->find($id);
-        $commentaires = $commentairesRepository->find($SA);
+        $commentaires = $commentairesRepository->findBy(['SA' => $SA], ['dateAjout' => 'DESC'], 5);
+
         if (!$SA) {
             throw $this->createNotFoundException('SA introuvable.');
         }
@@ -169,6 +147,7 @@ class SAController extends AbstractController
         // trouver la salle d'un Sa
         $plan = $entityManager->getRepository(DetailPlan::class)->findOneBy(['sa' => $SA]);
         $salle = $plan ? $plan->getSalle() : null;
+        dump($commentaires);
 
         return $this->render('sa/info.html.twig', [
             "SA" => $SA,
@@ -253,27 +232,33 @@ class SAController extends AbstractController
     }
 
 
-    #[Route("/sa/{id}/commentaires-ajax", name:'app_sa_commentaires_ajax')]
+    #[Route("/sa/{id}/commentaires-ajax", name: 'app_sa_commentaires_ajax')]
     public function commentairesAjax(Sa $SA, Request $request, CommentairesRepository $commentairesRepository): JsonResponse
     {
-        $offset = (int) $request->query->get('offset', 5);
+        $offset = (int) $request->query->get('offset', 0);
 
-        // Récupérer les commentaires
-        $commentaires = $commentairesRepository->find($SA);
+        // Récupérer les commentaires associés
+        $commentaires = $commentairesRepository->findBy(
+            ['sa' => $SA],
+            ['dateAjout' => 'DESC'],
+            5,
+            $offset
+        );
 
-        // Préparer les données de réponse
-        $data = [];
-        foreach ($commentaires as $commentaire) {
-            $data[] = [
-                'id' => $commentaire->getId(),
-                'nomTech' => $commentaire->getNomTech(), // Assurez-vous que 'getNomCom()' existe
-                'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
-                'description' => $commentaire->getDescription(),
-            ];
+        // Si aucun commentaire n'est trouvé
+        if (!$commentaires) {
+            return new JsonResponse([], 200);
         }
 
-        // Retourner une réponse JSON
-        return new JsonResponse($data);
+        // Préparer les données pour JSON
+        $data = array_map(fn($commentaire) => [
+            'id' => $commentaire->getId(),
+            'nomTech' => $commentaire->getNomTech(),
+            'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
+            'description' => $commentaire->getDescription(),
+        ], $commentaires);
+
+        return new JsonResponse($data, 200);
     }
 
 
@@ -303,6 +288,9 @@ class SAController extends AbstractController
             if ($submittedString=='CONFIRMER'){
 
                 foreach ($sa as $sas) {
+                    foreach ($sas->getPlans() as $plan) {
+                        $entityManager->remove($plan);
+                    }
                     // Remove related SALog entries
                     foreach ($sas->getSALogs() as $log) {
                         $entityManager->remove($log);

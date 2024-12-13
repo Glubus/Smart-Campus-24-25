@@ -23,20 +23,22 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    /**
-     * @var Collection<int, ValeurCapteur>
-     */
     #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
     private Collection $valCapteurs;
 
+    #[ORM\ManyToOne(targetEntity: Salle::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Salle $salle = null;
+
     public function __construct()
     {
-        $this->capteurs = new ArrayCollection();
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
-        $this->commentaire = new ArrayCollection();
         $this->valCapteurs = new ArrayCollection();
+        $this->salles = new ArrayCollection();
     }
+
+
 
     public function getId(): ?int
     {
@@ -54,36 +56,6 @@ class SA
         return $this;
     }
 
-
-    public function getCapteurs(): Collection
-    {
-        return $this->capteurs;
-    }
-    public function addCapteur(Capteur $capteur): static
-    {
-        if (!$this->capteurs->contains($capteur)) {
-            $this->capteurs->add($capteur);
-            $capteur->setSA($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCapteur(Capteur $capteur): static
-    {
-        if ($this->capteurs->removeElement($capteur)) {
-            if ($capteur->getSA() === $this) {
-                $capteur->setSA(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * @return Collection<int, DetailPlan>
-     */
     public function getPlans(): Collection
     {
         return $this->plans;
@@ -102,7 +74,6 @@ class SA
     public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
-            // set the owning side to null (unless already changed)
             if ($plan->getSa() === $this) {
                 $plan->setSa(null);
             }
@@ -111,9 +82,6 @@ class SA
         return $this;
     }
 
-    /**
-     * @return Collection<int, SALog>
-     */
     public function getSALogs(): Collection
     {
         return $this->sALogs;
@@ -132,7 +100,6 @@ class SA
     public function removeSALog(SALog $sALog): static
     {
         if ($this->sALogs->removeElement($sALog)) {
-            // set the owning side to null (unless already changed)
             if ($sALog->getSA() === $this) {
                 $sALog->setSA(null);
             }
@@ -141,9 +108,6 @@ class SA
         return $this;
     }
 
-    /**
-     * @return Collection<int, ValeurCapteur>
-     */
     public function getValCapteurs(): Collection
     {
         return $this->valCapteurs;
@@ -162,7 +126,6 @@ class SA
     public function removeValCapteur(ValeurCapteur $valCapteur): static
     {
         if ($this->valCapteurs->removeElement($valCapteur)) {
-            // set the owning side to null (unless already changed)
             if ($valCapteur->getSA() === $this) {
                 $valCapteur->setSA(null);
             }
@@ -170,6 +133,30 @@ class SA
 
         return $this;
     }
+    public function getSalles(): Collection
+    {
+        return $this->salles;
+    }
 
+    public function getSalle(): ?Salle
+    {
+        return $this->salle;
+    }
 
+    public function setSalle(?Salle $salle): static
+    {
+        $this->salle = $salle;
+        return $this;
+    }
+
+    public function removeSalle(Salle $salle): static
+    {
+        if ($this->salles->removeElement($salle)) {
+            if ($salle->getSa() === $this) {
+                $salle->setSa(null);
+            }
+        }
+
+        return $this;
+    }
 }

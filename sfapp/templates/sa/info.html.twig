@@ -68,6 +68,7 @@
                 <!-- Liste des commentaires -->
                 <div>
                     <h3>Commentaires</h3>
+
                     {% for commentaire in commentaires[:5] %}
                         <div style="border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
                             <div >
@@ -103,7 +104,8 @@
 
             fetch(`/sa/${id}/commentaires-ajax?offset=${offset+5}`)
                 .then(response => {
-                    console.log('Raw response:', response);
+
+                    console.log('Raw response:', response,{id});
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
