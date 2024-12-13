@@ -27,12 +27,19 @@ class Batiment
     /**
      * @var Collection<int, Plan>
      */
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'Batiment')]
+    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'batiment')]
     private Collection $plans;
+
+    /**
+     * @var Collection<int, Salle>
+     */
+    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'batiment', cascade: ['persist', 'remove'])]
+    private Collection $salles;
 
     public function __construct()
     {
         $this->plans = new ArrayCollection();
+        $this->salles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -76,12 +83,9 @@ class Batiment
         return $this;
     }
 
-    /**
-     * @return Collection<int, Plan>
-     */
-    public function getPlans(): Collection
+    public function getPlanIds(): array
     {
-        return $this->plans;
+        return $this->plans->map(fn($plan) => $plan->getId())->toArray();
     }
 
     public function addPlan(Plan $plan): static
@@ -97,9 +101,37 @@ class Batiment
     public function removePlan(Plan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
-            // set the owning side to null (unless already changed)
             if ($plan->getBatiment() === $this) {
                 $plan->setBatiment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Salle>
+     */
+    public function getSalles(): Collection
+    {
+        return $this->salles;
+    }
+
+    public function addSalle(Salle $salle): static
+    {
+        if (!$this->salles->contains($salle)) {
+            $this->salles->add($salle);
+            $salle->setBatiment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSalle(Salle $salle): static
+    {
+        if ($this->salles->removeElement($salle)) {
+            if ($salle->getBatiment() === $this) {
+                $salle->setBatiment(null);
             }
         }
 
