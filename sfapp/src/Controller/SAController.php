@@ -134,7 +134,7 @@ class SAController extends AbstractController
     }
 
 
-    #[Route('/sa/{id}', name: 'app_sa_infos')]
+    #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
     public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
         $SA = $repo->find($id);
