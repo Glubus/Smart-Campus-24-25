@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Documentation - Utilisation des Formulaires{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Documentation - Utilisation des Formulaires</h1>
+        <p class="text-muted text-center">Veuillez suivre les étapes dans l'ordre pour éviter toute erreur dans la gestion des entités.</p>
+
+        <div class="accordion" id="accordionExample">
+            <!-- Étape 1 : Créer un bâtiment -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingBatiments">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBatiments" aria-expanded="true" aria-controls="collapseBatiments">
+                        Étape 1 : Formulaire de Création de Bâtiments
+                    </button>
+                </h2>
+                <div id="collapseBatiments" class="accordion-collapse collapse show" aria-labelledby="headingBatiments" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p>Avant de créer une salle ou un plan, un bâtiment doit être enregistré dans le système. Le formulaire permet de renseigner :</p>
+                        <ul>
+                            <li><strong>Nom :</strong> Nom du bâtiment.</li>
+                            <li><strong>Adresse :</strong> Localisation complète du bâtiment.</li>
+                        </ul>
+                        <br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 2 : Créer une salle -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSalles">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalles" aria-expanded="false" aria-controls="collapseSalles">
+                        Étape 2 : Formulaire de Création de Salles
+                    </button>
+                </h2>
+                <div id="collapseSalles" class="accordion-collapse collapse" aria-labelledby="headingSalles" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p>Une salle doit être associée à un bâtiment existant. Assurez-vous d'avoir créé un bâtiment avant de créer une salle. Le formulaire permet de renseigner :</p>
+                        <ul>
+                            <li><strong>Numéro :</strong> Numéro unique de la salle.</li>
+                            <li><strong>Étage :</strong> L'étage où se situe la salle.</li>
+                            <li><strong>Bâtiment :</strong> Sélection du bâtiment associé.</li>
+                        </ul>
+                        <br>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 3 : Créer un detail_plan -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingPlans">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlans" aria-expanded="false" aria-controls="collapsePlans">
+                        Étape 3 : Formulaire de Création de Plans
+                    </button>
+                </h2>
+                <div id="collapsePlans" class="accordion-collapse collapse" aria-labelledby="headingPlans" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p>Un plan doit être associé à une salle existante. Assurez-vous d'avoir créé une salle avant de créer un plan. Le formulaire permet de renseigner :</p>
+                        <ul>
+                            <li><strong>Date d'ajout :</strong> Date d'enregistrement du plan.</li>
+                            <li><strong>Salle associée :</strong> Salle correspondant au plan.</li>
+                        </ul>
+                        <br>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 4 : Créer un système d'acquisition -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSA">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSA" aria-expanded="false" aria-controls="collapseSA">
+                        Étape 4 : Formulaire de Création de Systèmes d'Acquisition
+                    </button>
+                </h2>
+                <div id="collapseSA" class="accordion-collapse collapse" aria-labelledby="headingSA" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p>Un système d'acquisition doit être associé à un plan existant. Assurez-vous d'avoir créé un plan avant de créer un système d'acquisition. Le formulaire permet de renseigner :</p>
+                        <ul>
+                            <li><strong>Nom :</strong> Identifiant du système.</li>
+                            <li><strong>Plan associé :</strong> Plan auquel le système est lié.</li>
+                        </ul>
+                        <br>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

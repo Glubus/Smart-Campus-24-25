@@ -1,0 +1,219 @@
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.mainTitle {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.all {
+    height: 100%;
+    display: grid;
+    grid-template-areas: "recherche liste";
+    grid-template-columns: 25% 75%;
+}
+
+.rechercheBlock {
+    grid-area: recherche;
+    height: 100%;
+    background-color: #D9D9D9;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.titreRecherche {
+    text-align: center;
+    font-size: 32px;
+    margin: 15px;
+}
+
+.filtresRecherche {
+    border-top: 1px solid black;
+}
+
+.barreRech {
+    margin-top: 20px;
+    margin-left: 15px;
+}
+
+.trier {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+.btnTri {
+    background-color: white;
+    border-radius: 10px;
+    border: none;
+    margin: 20px;
+}
+
+.liste {
+    grid-area: liste;
+    padding: 25px;
+    border-top: 1px solid black;
+}
+
+.titreListe {
+    font-size: 40px;
+}
+
+.btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.btnAjout {
+    margin-top: 10px;
+    width: 187px;
+    height: 36px;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+    border: none;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin-top: 10px;
+    width: 250px;
+    height: 36px;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+    border: none;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.btnAffPl {
+    border: none;
+    background-color: #868686;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 30px;
+    color: white;
+}
+
+.btnAffPl:hover {
+    background-color: #6A6A6A;
+}
+
+
+
+
+
+
+
+.salleBlock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    border: 1px solid black;
+    height: 132px;
+    margin-top: 30px;
+}
+
+.salleBlock:hover {
+    box-shadow: 0.9px 5px 5px black;
+}
+
+.checkbox {
+    margin-left: 15px;
+    margin-top: 15px;
+    transform: scale(1.5);
+}
+
+.salleBlock:has(.checkbox:checked) {
+    border: 1px solid dodgerblue;
+    background-color: lightblue;
+}
+
+.infosSalle {
+    display: flex;
+    flex-direction: row;
+}
+
+.SalleSaNom {
+    width: 200px;
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.BatimentEtage {
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.DetailsModif {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid black;
+    padding: 15px;
+}
+
+.btnDetailSA {
+    width: 187px;
+    height: 36px;
+    background-color: #868686;
+    border-radius: 10px;
+    color: white;
+    border: none;
+}
+
+.btnDetailSA:hover {
+    background-color: #6A6A6A;
+}
+
+.btnModif {
+    margin-top: 10px;
+    width: 187px;
+    height: 36px;
+    background-color: #00D01F;
+    border-radius: 10px;
+    color: white;
+    border: none;
+}
+
+.btnModif:hover {
+    background-color: #00AA1A;
+}
+
+.container {
+    display: flex;
+    gap: 20px; /* Espace entre les colonnes */
+    background-color:white;
+    flex-wrap: wrap;
+}
+
+.container > div {
+    flex: 1; /* Chaque div enfant occupe une part égale de l'espace disponible */
+    background-color: #f0f0f0; /* Couleur de fond pour mieux visualiser les colonnes */
+    padding: 10px;
+}
+
+.container > div:nth-child(2) {
+    background-color: #e0e0e0; /* Vous pouvez définir une couleur différente pour la deuxième colonne */
+}

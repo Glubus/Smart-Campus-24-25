@@ -1,15 +1,29 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Supprimer une salle{% endblock %}
 
 {% block body %}
-<div class="container my-5" style="width: 40%">
-    <h1 class="text-center mb-4">{{ salle }}</h1>
-    <p>Êtes vous sur de vouloir supprimer cette salle ?</p>
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
-    <a class="btn btn-primary" href="{{ path('app_salle') }}" style="margin-right: 10px; margin-top: 10px">Annuler</a>
-    {{ form_end(form) }}
-</div>
+    <div class="container my-5" style="width: 40%">
+        {% if salles | filter(o => o is null) | length > 0 %}
+            <h1 class="text-center mb-4">
+                Aucune salle sélectionnée pour la suppression
+            </h1>
+                <a class="btn btn-primary" href="{{ path('app_salle') }}" style="margin-right: 10px; margin-top: 10px">Visualiser les salles</a>
+        {% else %}
+            <h1 class="text-center mb-4">
+                Salle(s) sélectionnée(s):
+                {{ salles | map(o => o.getNom()) | join(', ') }}
+            </h1>
+            <p>Êtes-vous sûr de vouloir supprimer ces salles ?</p>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger" style="margin-top: 10px">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
+            <a class="btn btn-primary" href="/salle" style="margin-right: 10px; margin-top: 10px">Annuler</a>
+            {{ form_end(form) }}
+        {% endif %}
+    </div>
 {% endblock %}

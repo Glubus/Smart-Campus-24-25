@@ -1,4 +1,4 @@
-name: 'but-info2-a-sae3'
+name: 'ndi'
 
 services:
   nginx:
@@ -46,13 +46,13 @@ services:
       - 3306:3306
     volumes:
       - type: volume
-        source: database-volume
+        source: database-ds-volume
         target: /var/lib/mysql
     environment:
-      MYSQL_DATABASE: dbsfapp
-      MYSQL_ROOT_PASSWORD: rdbsfapp
-      MYSQL_USER: udbsfapp
-      MYSQL_PASSWORD: pdbsfapp
+      MYSQL_DATABASE: db
+      MYSQL_ROOT_PASSWORD: rndi
+      MYSQL_USER: ndi
+      MYSQL_PASSWORD: ndi
     networks:
       - network
 
@@ -62,7 +62,7 @@ networks:
     driver: bridge
 
 volumes:
-  database-volume:
+  database-ds-volume:
     driver: local
 
 

@@ -3,44 +3,147 @@
 {% block title %}Détails de la salle{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <div class="card shadow-lg">
-            <div class="card-header text-center bg-secondary text-white">
-                <h2 class="mb-0">Détails de la salle : {{ nom }}</h2>
+    <link rel="stylesheet" href="{{ asset("styles/infosSalle.css") }}">
+        <div class="all">
+            <h1>{{ salle.nom }}</h1>
+                <h2>Métriques de la salle</h2>
+                <div class="metriques">
+                    <div class="dataBlock temp">
+                        <h4 class="textData">Température</h4>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap1</p>
+                            </div>
+                            <h3 class="data">20°C</h3>
+                        </div>
+                    </div>
+
+                    <div class="dataBlock co2">
+                        <h4 class="textData">CO2</h4>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap2</p>
+                            </div>
+                            <h3 class="data">400ppm</h3>
+                        </div>
+                    </div>
+
+                    <div class="dataBlock humidite">
+                        <h4 class="textData">Humidité</h4>
+                        <div class="bottomMet">
+                            <div class="etatNomCap">
+                                <div class="etatCap"></div>
+                                <p class="nomCap">Cap3</p>
+                            </div>
+                            <h3 class="data">51.5%</h3>
+                        </div>
+                    </div>
             </div>
-            <div class="card-body">
-                <h4 class="card-title text-primary">Informations générales</h4>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Nom :</strong> {{ nom }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Bâtiment :</strong> {{ batiment.nom }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Adresse :</strong> {{ batiment.adresse }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Étage :</strong> {{ salle.etage.value }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Numéro :</strong> {{ salle.numero }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>SA attribué : </strong>
-                        {% if sa is not null %}
-                            <a href="{{ path('app_sa_infos', {id : sa.id}) }}" class="btn btn-outline-primary">{{ sa.nom }}</a>
-                        {% else %}
-                            <a href="{{ path('app_plan_ajout') }}" class="btn btn-primary">Attribuer un SA</a>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
-            <div class="card-footer text-center">
-                <a href="{{ path('app_salle') }}" class="btn btn-outline-secondary">
-                    Retour à la liste des salles
-                </a>
+            <div class="below">
+                <aside class="infosSalle">
+                    <h3 class="titreInfo">Informations</h3>
+                    <p class="el"><strong>Nom : </strong>{{ salle.nom }}</p>
+                    <p class="el"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
+                    <p class="el"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
+                    <p class="el"><strong>Etage : </strong>{{ salle.etage }}</p>
+                </aside>
+
+                <aside class="listeCapteurs">
+                    <h3 class="titreListeCapteurs">Capteurs</h3>
+                    <button class="btnCap">Température</button><br/>
+                    <button class="btnCap">CO2</button><br/>
+                    <button class="btnCap">Humidité</button><br/>
+                </aside>
+
+                <main class="graphs">
+                    <div class="echelle">
+                        <button class="gr">12 heures</button>
+                        <button class="gr">Un jour</button>
+                        <button class="gr">Une semaine</button>
+                    </div>
+
+                    <div class="graphique">
+                        <canvas id="salleGraph" style="width: 100%; height: 400px;"></canvas>
+                    </div>
+                </main>
             </div>
         </div>
-    </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM prêt");
+
+            const ctx = document.getElementById('salleGraph').getContext('2d');
+
+            // Récupérer les données depuis Twig
+            const rawData = {{ data|json_encode|raw }};
+            const labels = Object.keys(rawData); // Dates en tant que labels
+
+            // Initialiser les tableaux pour les datasets
+            const temp = [];
+            const co2 = [];
+            const humi = [];
+
+
+            // Parcourir les données pour extraire les valeurs
+            labels.forEach(label => {
+                const dataPoint = rawData[label];
+                temp.push(dataPoint['temperature'] || null); // Ajouter null si absence de valeur
+                co2.push(dataPoint['co2'] || null);
+                humi.push(dataPoint['humidite'] || null);
+            });
+
+            // Créer le graphique
+            const salleGraph = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Température',
+                            data: temp,
+                            borderColor: 'rgba(255, 217, 0, 1)',
+                            backgroundColor: 'rgba(255, 251, 120, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'CO2',
+                            data: co2,
+                            borderColor: 'rgba(255, 113, 113, 1)',
+                            backgroundColor: 'rgba(255, 186, 186, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Humidité',
+                            data: humi,
+                            borderColor: 'rgba(106, 223, 255, 1)',
+                            backgroundColor: 'rgba(185, 240, 255, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false, // Ne commence pas forcément à 0
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

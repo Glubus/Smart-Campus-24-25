@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\PlanRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use function PHPUnit\Framework\isNull;
 
 #[ORM\Entity(repositoryClass: PlanRepository::class)]
 class Plan
@@ -14,56 +17,115 @@ class Plan
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $dateAjout = null;
+    /**
+     * @var Collection<int, DetailPlan>
+     */
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'plan', cascade: ['remove'])]
+    private Collection $detailPlans;
 
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?SA $sa = null;
+    #[ORM\ManyToOne(inversedBy: 'plans')]
+    private ?Batiment $Batiment = null;
 
-    #[ORM\OneToOne(inversedBy: 'plan', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Salle $salle = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
+    public function getCountSA(): ?int{
+        if(is_null($this->detailPlans))
+            return 0;
+        else
+            return $this->detailPlans->count();
+    }
+
+    public function getCountSalle(): ?int{
+        $arr=[];
+        $i=0;
+        if(is_null($this->detailPlans))
+            return 0;
+        foreach ( $this->detailPlans as $plan){
+
+                if (!in_array($plan->getSalle(),$arr)) {
+                    $arr[] = $plan->getSalle();
+                    $i++;
+                }
+        }
+        return $i;
+    }
+
+    public function __construct()
+    {
+        $this->detailPlans = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getSA(): ?SA
+    public function getNom(): ?string
     {
-        return $this->sa;
+        return $this->nom;
     }
 
-    public function setSA(SA $SA): static
+    public function setNom(string $nom): static
     {
-        $this->sa = $SA;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getSalle(): ?Salle
+    /**
+     * @return Collection<int, DetailPlan>
+     */
+    public function getDetailPlans(): Collection
     {
-        return $this->salle;
+        return $this->detailPlans;
     }
 
-    public function setSalle(Salle $Salle): static
+    public function addDetailPlan(DetailPlan $detailPlan): static
     {
-        $this->salle = $Salle;
+        if (!$this->detailPlans->contains($detailPlan)) {
+            $this->detailPlans->add($detailPlan);
+            $detailPlan->setPlan($this);
+        }
 
         return $this;
     }
 
-    public function getDateAjout(): ?\DateTimeInterface
+    public function removeDetailPlan(DetailPlan $detailPlan): static
     {
-        return $this->dateAjout;
+        if ($this->detailPlans->removeElement($detailPlan)) {
+            // set the owning side to null (unless already changed)
+            if ($detailPlan->getPlan() === $this) {
+                $detailPlan->setPlan(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function setDateAjout(\DateTimeInterface $dateAjout): static
+    public function getBatiment(): ?Batiment
     {
-        $this->dateAjout = $dateAjout;
+        return $this->Batiment;
+    }
+
+    public function setBatiment(?Batiment $Batiment): static
+    {
+        $this->Batiment = $Batiment;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
 
         return $this;
     }

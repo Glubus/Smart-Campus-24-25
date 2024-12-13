@@ -1,0 +1,90 @@
+
+    <div class="allNav">
+        <nav class="navbar">
+            <a href="{{ path('app_page_acceuil') }}" style="text-decoration: none;">
+                <div class="accueil">
+                    <img src= "{{ asset('img/logo-iut.png') }}" class="logo">
+                    <h2 class="el1">Smart campus</h2>
+                </div>
+            </a>
+            <a href="{{ path('app_salle_liste') }}" style="text-decoration: none;">
+                <h3 class="elNav">
+                    Salles
+                </h3>
+            </a>
+            <a href="{{ path('app_sa_liste') }}" style="text-decoration: none;">
+                <h3 class="elNav">
+                    Systèmes d'acquisiton
+                </h3>
+            </a>
+            <a href="{{ path('app_plan_liste') }}" style="text-decoration: none;">
+                <h3 class="elNav">
+                    Plan
+                </h3>
+            </a>
+            <a href="{{ path('app_batiment_liste') }}" style="text-decoration: none;">
+                <h3 class="elNav">
+                    Batiment
+                </h3>
+            </a>
+        </nav>
+    </div>
+{#
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <img src="image/logo-iut.png" style="width: 40px; margin-right: 10px">
+            <a class="navbar-brand" href="{{ path('app_page_acceuil') }}">Smart Campus</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ path('app_guide') }}">Guide</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Salles
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('app_salle') }}">Liste</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_salle_ajout') }}">Ajouter une salle</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Bâtiments
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('app_batiment_liste') }}">Liste</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_batiment_ajouter') }}">Ajouter un bâtiment</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Systèmes d'acquisition
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sa">Liste</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_sa_ajout') }}">Ajouter un SA</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Plans
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('app_plan_liste') }}">Liste</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_plan_ajout') }}">Ajouter un detail_plan</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ path('app_guide') }}">Guide</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+#}

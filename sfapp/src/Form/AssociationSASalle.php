@@ -2,11 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\BatimentSalle;
-use App\Entity\EtageSalle;
+
 use App\Entity\SA;
 use App\Entity\Salle;
-use App\Entity\Plan;
+use App\Entity\DetailPlan;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -28,8 +27,8 @@ class AssociationSASalle extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('sa')
-                        ->leftJoin('sa.plan', 'plan')
-                        ->where('plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de Plan associé
+                        ->leftJoin('sa.plans', 'detail_plan')
+                        ->where('detail_plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de DetailPlan associé
                         ->orderBy('sa.nom', 'ASC'); // Trie les SA par nom, par exemple
                 },
                 'attr' => [
@@ -41,15 +40,12 @@ class AssociationSASalle extends AbstractType
         ->add('Salle', EntityType::class, [
             'class' => Salle::class,
             'choice_label' => function (Salle $salle) {
-                return $salle->getSalleNom();  // Appel à la méthode getSalleNom() de l'entité Salle
+                return $salle->getNom();  // Appel à la méthode getNom() de l'entité Salle
             },
             'label' => 'Salle',
             'required' => true,
             'query_builder' => function (EntityRepository $er) {
-                return $er->createQueryBuilder('s')
-                    ->leftJoin('s.plan', 'plan')
-                    ->where('plan.id IS NULL')
-                    ->orderBy('s.batiment', 'ASC');  // Trie les salles par nom
+                return $er->createQueryBuilder('s');  // Trie les salles par nom
             },
             'attr' => [
                 'class' => 'form-control salle-searchable', // Applique les classes Bootstrap et Select2
@@ -64,7 +60,7 @@ class AssociationSASalle extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Plan::class,
+            'data_class' => DetailPlan::class,
 
         ]);
     }

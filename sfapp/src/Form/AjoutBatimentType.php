@@ -35,6 +35,20 @@ class AjoutBatimentType extends AbstractType
                 ],
                 'required' => true,
             ])
+            ->add('nbEtages', TextType::class, [
+                'label' => 'Nombre d\'étages',
+                'label_attr' => [
+                    'class' => 'form-label text-primary'
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'maxlength' => '2',
+                    'placeholder' => 'Nombre d\'étages',
+                    'inputmode' => 'numeric', // Provides a numeric keyboard on mobile devices
+                    'pattern' => '^\d+$',   // Enforces numeric input on the browser side
+                ],
+                'required' => true,
+            ])
         ;
     }
 

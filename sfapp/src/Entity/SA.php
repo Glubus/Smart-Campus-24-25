@@ -17,17 +17,24 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'sa')]
+    private Collection $plans;
 
-    #[ORM\OneToMany(mappedBy: 'SA', targetEntity: Capteur::class, cascade: ['persist', 'remove'])]
-    private Collection $capteurs;
+    #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
+    private Collection $sALogs;
 
-    #[ORM\OneToOne(mappedBy: 'sa', cascade: ['persist', 'remove'])]
-    private ?Plan $plan = null;
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
+    private Collection $valCapteurs;
+
 
     public function __construct()
     {
-        $this->capteurs = new ArrayCollection();
+        $this->plans = new ArrayCollection();
+        $this->sALogs = new ArrayCollection();
+        $this->valCapteurs = new ArrayCollection();
     }
+
+
 
     public function getId(): ?int
     {
@@ -45,57 +52,86 @@ class SA
         return $this;
     }
 
-    public function getDateAjout(): ?\DateTime
+    public function getPlans(): Collection
     {
-        return $this->dateAjout;
+        return $this->plans;
     }
 
-    public function setDateAjout(\DateTime $dateAjout): static
+    public function addPlan(DetailPlan $plan): static
     {
-        $this->dateAjout = $dateAjout;
-        return $this;
-    }
-
-    public function getCapteurs(): Collection
-    {
-        return $this->capteurs;
-    }
-
-    public function addCapteur(Capteur $capteur): static
-    {
-        if (!$this->capteurs->contains($capteur)) {
-            $this->capteurs->add($capteur);
-            $capteur->setSA($this);
+        if (!$this->plans->contains($plan)) {
+            $this->plans->add($plan);
+            $plan->setSa($this);
         }
 
         return $this;
     }
 
-    public function removeCapteur(Capteur $capteur): static
+    public function removePlan(DetailPlan $plan): static
     {
-        if ($this->capteurs->removeElement($capteur)) {
-            if ($capteur->getSA() === $this) {
-                $capteur->setSA(null);
+        if ($this->plans->removeElement($plan)) {
+            if ($plan->getSa()=== $this) {
+                $plan->setSa(null);
             }
         }
 
         return $this;
     }
 
-    public function getPlan(): ?Plan
+    public function getSALogs(): Collection
     {
-        return $this->plan;
+        return $this->sALogs;
     }
 
-    public function setPlan(Plan $plan): static
+    public function addSALog(SALog $sALog): static
     {
-        // set the owning side of the relation if necessary
-        if ($plan->getSa() !== $this) {
-            $plan->setSa($this);
+        if (!$this->sALogs->contains($sALog)) {
+            $this->sALogs->add($sALog);
+            $sALog->setSA($this);
         }
-
-        $this->plan = $plan;
 
         return $this;
     }
+
+    public function removeSALog(SALog $sALog): static
+    {
+        if ($this->sALogs->removeElement($sALog)) {
+            if ($sALog->getSA() === $this) {
+                $sALog->setSA(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getValCapteurs(): Collection
+    {
+        return $this->valCapteurs;
+    }
+
+    public function addValCapteur(ValeurCapteur $valCapteur): static
+    {
+        if (!$this->valCapteurs->contains($valCapteur)) {
+            $this->valCapteurs->add($valCapteur);
+            $valCapteur->setSA($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValCapteur(ValeurCapteur $valCapteur): static
+    {
+        if ($this->valCapteurs->removeElement($valCapteur)) {
+            if ($valCapteur->getSA() === $this) {
+                $valCapteur->setSA(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+
+
 }

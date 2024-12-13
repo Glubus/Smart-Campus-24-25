@@ -1,21 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un systeme d'acquisition (SA){% endblock %}
+{% block title %}Ajouter un système d'acquisition (SA){% endblock %}
 
 {% block body %}
-<div class="container my-5" style="width: 40%">
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger" style="margin-top: 10px">
-            {{ message }}
-        </div>
-    {% endfor %}
-    <div class="container my-5">
-        <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Créer le SA</button>
-        <a href="/sa" class="btn btn-primary" style="margin-right: 10px; margin-top: 10px" role="button">Annuler</a>
-        {{ form_end(form) }}
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
 
+        body {
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{{ asset('/img/imageFondIut.jpg') }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-control {
+            width: 75%;
+        }
+
+        #salles-container .form-control {
+            width: 100%;
+        }
+
+    </style>
+
+    <div class="container my-5 card-body" style="width: 40%">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="text-center mb-4">Ajouter un système d'acquisition (SA)</h1>
+
+                {{ form_start(form) }}
+                <div class="form-group mb-3">
+                    {{ form_row(form.nom, {'label': 'Nom du SA', 'attr': {'class': 'form-control'}}) }}
+                    <a href="{{ path('app_salle_ajout') }}" class="btn btn-secondary" role="button" style="margin-left: 10px;">Ajouter une salle</a>
+                </div>
+
+                <h3>Salle</h3>
+                <div id="salles-container" class="mb-4">
+                    {{ form_row(form.salle, {'required': false, 'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger mt-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Enregistrer</button>
+                    <a href="{{ path('app_sa_liste') }}" class="btn btn-secondary" role="button">Annuler</a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("Page chargée avec succès.");
+        });
+    </script>
 {% endblock %}

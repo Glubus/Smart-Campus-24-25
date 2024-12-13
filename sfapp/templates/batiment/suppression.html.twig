@@ -5,11 +5,16 @@
 {% block body %}
     <div class="container my-5" style="width: 40%">
         <h1 class="text-center mb-4">{{ batiment.nom }}</h1>
-        <p>Êtes vous sur de vouloir supprimer ce SA ?</p>
+        <p>Êtes vous sur de vouloir supprimer ce batiment ?</p>
         {{ form_start(form) }}
         {{ form_widget(form) }}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" style="margin-top: 10px">
+                {{ message }}
+            </div>
+        {% endfor %}
         <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
-        <a class="btn btn-primary" href="/sa" style="margin-right: 10px; margin-top: 10px">Annuler</a>
+        <a class="btn btn-primary" href="{{ path('app_batiment_liste') }}" style="margin-right: 10px; margin-top: 10px">Annuler</a>
         {{ form_end(form) }}
     </div>
 {% endblock %}

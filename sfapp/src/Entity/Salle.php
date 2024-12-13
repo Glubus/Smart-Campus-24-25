@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use App\Entity\Batiment;
+use ContainerWYV09s8\getTranslation_ProviderFactory_NullService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\EtageSalle;
 
@@ -15,23 +18,57 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(enumType: EtageSalle::class)]
-    private ?EtageSalle $etage = null;
-
-    #[ORM\Column(length: 2, nullable: true)]
-    private ?string $numero = null;
+    #[ORM\Column(length: 1)]
+    private ?int $etage = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Batiment $batiment = null;
 
-    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist','remove'])]
-    private ?Plan $plan = null;
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
+    private Collection $detailPlans;
+    #[ORM\Column(length: 20)]
+    private ?string $nom = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $fenetre = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $radiateur = null;
+
+    /**
+     * @var Collection<int, ValeurCapteur>
+     */
+    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
+    private Collection $valeurCapteurs;
+    public function __construct()
+    {
+        $this->plans = new ArrayCollection();
+        $this->valeurCapteurs = new ArrayCollection();
+    }
+
+    public function getCountSA(): int
+    {
+        return $this->detailPlans->count();
+    }
+
+    public function getOnlySa(): int
+    {
+        if($this->getCountSA() == 1){
+
+            return $this->detailPlans[0]->getSA()->getId();
+        }
+        else {
+            return -1;
+        }
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
+
+
 
     public function setId(int $id): static
     {
@@ -40,32 +77,14 @@ class Salle
         return $this;
     }
 
-    public function getSalleNom(): string
-    {
-        $nom = $this->batiment->getNom() . $this->etage->value . str_pad($this->numero, 2, "0", STR_PAD_LEFT);
-        return $nom;
-    }
-
-    public function getEtage(): ?EtageSalle
+    public function getEtage(): int
     {
         return $this->etage;
     }
 
-    public function setEtage(?EtageSalle $etage): static
+    public function setEtage(int $etage): static
     {
         $this->etage = $etage;
-
-        return $this;
-    }
-
-    public function getNumero(): ?string
-    {
-        return $this->numero;
-    }
-
-    public function setNumero(?string $numero): static
-    {
-        $this->numero = $numero;
 
         return $this;
     }
@@ -82,19 +101,98 @@ class Salle
         return $this;
     }
 
-    public function getPlan(): ?Plan
+
+    public function getNom(): ?string
     {
-        return $this->plan;
+        return $this->nom;
     }
 
-    public function setPlan(Plan $plan): static
+    public function setNom(string $nom): static
     {
-        // set the owning side of the relation if necessary
-        if ($plan->getSalle() !== $this) {
-            $plan->setSalle($this);
+        $this->nom = $nom;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DetailPlan>
+     */
+    public function getDetailPlans(): Collection
+    {
+        return $this->detailPlans;
+    }
+
+    public function addDetailPlans(DetailPlan $detailPlans): static
+    {
+        if (!$this->detailPlans->contains($detailPlans)) {
+            $this->detailPlans->add($detailPlans);
+            $detailPlans->setSalle($this);
         }
 
-        $this->plan = $plan;
+        return $this;
+    }
+
+    public function removeDetailPlans(DetailPlan $detailPlans): static
+    {
+        if ($this->plans->removeElement($detailPlans)) {
+            // set the owning side to null (unless already changed)
+            if ($detailPlans->getSalle() === $this) {
+                $detailPlans->setSalle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFenetre(): ?int
+    {
+        return $this->fenetre;
+    }
+
+    public function setFenetre(int $fenetre): static
+    {
+        $this->fenetre = $fenetre;
+
+        return $this;
+    }
+
+    public function getRadiateur(): ?int
+    {
+        return $this->radiateur;
+    }
+
+    public function setRadiateur(int $radiateur): static
+    {
+        $this->radiateur = $radiateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ValeurCapteur>
+     */
+    public function getValeurCapteurs(): Collection
+    {
+        return $this->valeurCapteurs;
+    }
+
+    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
+            $this->valeurCapteurs->add($valeurCapteur);
+            $valeurCapteur->setSalle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    {
+        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+            // set the owning side to null (unless already changed)
+            if ($valeurCapteur->getSalle() === $this) {
+                $valeurCapteur->setSalle(null);
+            }
+        }
 
         return $this;
     }

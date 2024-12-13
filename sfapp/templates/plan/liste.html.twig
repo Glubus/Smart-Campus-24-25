@@ -1,36 +1,37 @@
-{# templates/plan/list.html.twig #}
+{# templates/detail_plan/list.html.twig #}
 
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des plans{% endblock %}
-
+{#
 {% block body %}
     <div class="container my-5">
         <h1>Liste des plans</h1>
         <div class="d-flex justify-content-end align-items-center">
-            <a class="btn btn-primary ml-3" href="{{ path('app_plan_ajout') }}" role="button">Ajouter une salle</a>
+            <a class="btn btn-primary ml-3" href="{{ path('app_plan_ajouter') }}" role="button">Ajouter une salle</a>
         </div>
         {% if plans is not empty %}
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Système d'acquisition</th>
-                    <th>Salle</th>
-                    <th>Date d'ajout</th>
+                    <th>Nom</th>
+                    <th>Batiment</th>
+                    <th>Date d'ajout du Plan</th>
+                    <th>Nombre de SA Affecter</th>
+                    <th>Nombre de Salle Utiliser</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for plan in plans %}
                     <tr>
-                        <td>{{ plan.id }}</td>
-                        <td>{{ plan.sa.nom }}</td> {# Affiche le nom du système d'acquisition #}
-                        <td>{{ plan.Salle.getSalleNom }}</td> {# Affiche le nom de la salle #}
-                        <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
-                        <td style="width: 10%">
-                            <a href="{{ path("app_plan_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">
-                                Supprimer
-                            </a>
+                        <td>{{ plan.nom }}</td>
+                        <td>{{ plan.Batiment.nom }}</td>
+                        <td>{{ plan.date ? plan.date|date('d/m/Y') : 'Non défini' }}</td>
+                        <td>
+                            {{ plan.getCountSA() }}
+                        </td>
+                        <td>
+                            {{ plan.getCountSalle() ? plan.getCountSalle() : "0" }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -38,7 +39,83 @@
             </table>
         {% else %}
             <p>Aucun plan trouvé.</p>
-            <a class="btn btn-primary" href="{{ path('app_plan_ajout')}}" role="button">Ajouter une assignation</a>
+            <a class="btn btn-primary" href="{{ path('app_lier_ajout')}}" role="button">Ajouter une assignation</a>
         {% endif %}
     </div>
+{% endblock %}
+#}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset("styles/liste_plan.css") }}">
+    <h1 class="mainTitle">Liste des salles</h1>
+    <div class="all">
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+            <article class="filtresRecherche">
+                <div class="barreRech">
+                </div>
+            </article>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+
+            <div class="btns">
+                    <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                    <button class="btnSuppr hidden" id="btnSuppr" onclick="submitForm()">Supprimer</button>
+            </div>
+            <div class="container">
+                {% for plan in plans %}
+                    <a href="{{ path('app_plan_infos', {'id': plan.id}) }}">
+                        <div class="salleBlock">
+                            <div class="infosSalle">
+                                <input type="checkbox" class="checkbox" value="{{ plan.id }}"/>
+                                <div class="SalleSaNom">
+                                    <h3>{{ plan.nom }}</h3>
+                                    {{ plan.Batiment.nom }}
+                                </div>
+                                <div class="BatimentEtage">
+                                    <p>SA Utilisé : {{ plan.getCountSA()}}</p>
+                                    <p>Salle Utilisé : {{ plan.getCountSalle()}}  </p>
+                                </div>
+                            </div>
+                            <div class="DetailsModif">
+                                <a href="{{ path('app_lier_liste', {'plan' : plan.id}) }}"><button class="btnDetailSA">Détails Plan</button></a>
+                                <a href=""><button class="btnModif">Modifier</button></a>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const deleteButton = document.getElementById('btnSuppr');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateButtonState);
+        });
+
+        function updateButtonState() {
+            const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
+            const count = selectedCheckboxes.length;
+
+            if (count > 0) {
+                deleteButton.textContent = `Supprimer ${count} sélectionné(s)`;
+                deleteButton.classList.remove('hidden');
+            } else {
+                deleteButton.classList.add('hidden');
+            }
+        }
+    });
+
+    window.submitForm = function() {
+        document.getElementById('deleteForm').submit();
+    }
+</script>
 {% endblock %}
