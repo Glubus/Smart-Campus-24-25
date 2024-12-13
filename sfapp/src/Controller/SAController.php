@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\Commentaires;
 use App\Entity\SA;
-use App\Entity\Capteur;
 use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -20,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\VarDumper\VarDumper;
 
@@ -156,7 +156,8 @@ class SAController extends AbstractController
         return $this->render('sa/notfound.html.twig', []);
     }
 
-    #[Route('/sa/{id}', name: 'app_sa_infos')]
+
+    #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
     public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
     {
         $SA = $repo->find($id);
@@ -179,12 +180,7 @@ class SAController extends AbstractController
 
 
     #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
-    public function ajouterCommentaire(
-        int $id,
-        Request $request,
-        EntityManagerInterface $entityManager,
-        SARepository $SARepository
-    ): Response {
+    public function ajouterCommentaire(int $id,Request $request,EntityManagerInterface $entityManager,SARepository $SARepository): Response {
         // Récupérer l'entité SA
         $SA = $SARepository->find($id);
 
@@ -278,5 +274,57 @@ class SAController extends AbstractController
 
         // Retourner une réponse JSON
         return new JsonResponse($data);
+    }
+
+
+    #[Route('/sa/supprimer-selection', name: 'app_sa_supprimer_selection', methods: ['POST', 'GET'])]
+    public function suppSelection(
+        Request $request,
+        SaRepository $saRepository,
+        EntityManagerInterface $entityManager,
+        SessionInterface $session
+    ): Response
+    {
+        $ids = $request->request->all('selected_sa');
+        if(empty($ids)) {
+            $ids = $session->get('selected_sa', []);
+        }
+        else
+            $session->set('selected_sa', $ids);
+
+        $sa = array_map(fn($id) => $saRepository->find($id), $ids);
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => 'CONFIRMER' // Passer la variable au formulaire
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $submittedString = $form->get('inputString')->getData();
+            if ($submittedString=='CONFIRMER'){
+
+                foreach ($sa as $sas) {
+                    // Remove related SALog entries
+                    foreach ($sas->getSALogs() as $log) {
+                        $entityManager->remove($log);
+                    }
+                    foreach ($sas->getValCapteurs() as $valCapteur) {
+                        $entityManager->remove($valCapteur);
+                    }
+                    // Remove the SA entity
+                    $entityManager->remove($sas);
+                }
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_sa_liste');
+            }
+            else {
+                $this->addFlash('error', 'La saisie est incorrect.');
+            }
+        }
+
+        return $this->render('sa/suppression_sa.html.twig', [
+            'form' => $form->createView(),
+            'sa' => $sa,
+        ]);
     }
 }

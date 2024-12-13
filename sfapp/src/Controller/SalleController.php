@@ -48,6 +48,7 @@ class SalleController extends AbstractController
             $salles = $salleRepository->findAll();
         }
 
+
         if ($salles) {
             return $this->render('salle/index.html.twig', [
                 'controller_name' => 'SalleController',

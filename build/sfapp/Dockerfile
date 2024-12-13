@@ -19,12 +19,13 @@ ARG GROUP_NAME
 ARG GROUP_ID
 
 # Create system user to run Composer and PHP Commands
-RUN if [ ! -z ${USER_NAME} ] && [ ! -z ${GROUP_NAME} ] && [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ] ; then \
-    useradd -G www-data,root -u $USER_ID -d /home/$USER_NAME $USER_NAME && \
-    mkdir -p /home/$USER_NAME/.composer  && \
-    chown -Rf ${USER_NAME}:${GROUP_NAME} /home/$USER_NAME  && \
-    chown -R ${USER_NAME}:${GROUP_NAME} /app \
-    ; fi \
+RUN if [ ! -z 0 ] && [ ! -z 0 ] && [ 0 -ne 0 ] && [ 0 -ne 0 ]; then \
+    useradd -G www-data,root -u 0 -d /home/0 0 && \
+    mkdir -p /home/0/.composer && \
+    chown -Rf 0:0 /home/0 && \
+    chown -R 0 /home/0; \
+fi
+
 
 # Login to container as non-root user 
 USER ${USER_ID:-0}:${GROUP_ID:-0}
