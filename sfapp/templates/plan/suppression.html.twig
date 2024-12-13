@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Supprimer une attribution {% endblock %}
+{% block title %}Supprimer plan {% endblock %}
 
 {% block body %}
     <div class="container my-5" style="width: 40%">
-        <h1 class="text-center mb-4">{{ plan.SA.getNom ~ ' ' ~ plan.Salle.get   Nom}}</h1>
-        <p>Êtes vous sur de vouloir supprimer cette attribution ?</p>
+        <h1 class="text-center mb-4">{{ plans | map(o => o.getNom()) | join(', ') }}</h1>
+        <p>Êtes vous sur de vouloir supprimer ce(s) plan(s) ?</p>
         {{ form_start(form) }}
         {{ form_widget(form) }}
         <button class="btn btn-primary" style="margin-right: 10px; margin-top: 10px">Supprimer</button>
-        <a class="btn btn-primary" href="/sa" style="margin-right: 10px; margin-top: 10px">Annuler</a>
+        <a class="btn btn-primary" href="{{ path('app_plan_liste') }}" style="margin-right: 10px; margin-top: 10px">Annuler</a>
         {{ form_end(form) }}
     </div>
 {% endblock %}

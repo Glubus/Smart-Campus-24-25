@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Plan;
 use App\Form\AjoutPlanType;
+use App\Form\SuppressionType;
 use App\Repository\PlanRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class PlanController extends AbstractController
@@ -39,6 +41,46 @@ class PlanController extends AbstractController
 
         return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/plan/supprimer', name: 'app_plan_supprimer')]
+    public function supprimer(EntityManagerInterface $em,
+                              Request $request,
+                              SessionInterface $session,
+                              PlanRepository $planRepo
+    ): Response
+    {
+        $ids = $request->request->all('selected_plans');
+        if(empty($ids)) {
+            $ids = $session->get('selected_plans', []);
+        }
+        else
+            $session->set('selected_plans', $ids);
+
+        $plans = array_map(fn($id) => $planRepo->find($id), $ids);
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => 'CONFIRMER' // Passer la variable au formulaire
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $submittedString = $form->get('inputString')->getData();
+            if ($submittedString=='CONFIRMER'){
+                foreach ($plans as $plan ) {
+                    $em->remove($plan);
+                }
+                $em->flush();
+                return $this->redirectToRoute('app_plan_liste');
+            }
+            else {
+                $this->addFlash('error', 'La saisie est incorrect.');
+            }
+        }
+
+        return $this->render('plan/suppression.html.twig', [
+            'form' => $form->createView(),
+            'plans' => $plans,
         ]);
     }
 

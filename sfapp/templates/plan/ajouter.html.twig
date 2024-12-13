@@ -19,21 +19,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    <script>
-        $(document).ready(function() {
-            // Applique select2 sur les éléments avec la classe 'sa-searchable' pour le SA
-            $('.sa-searchable').select2({
-                placeholder: "Sélectionnez un système d'acquisition",
-                allowClear: true
-            });
-
-            // Applique select2 sur les éléments avec la classe 'salle-searchable' pour la Salle
-            $('.salle-searchable').select2({
-                placeholder: "Sélectionnez une salle",
-                allowClear: true
-            });
-        });
-    </script>
-
 {% endblock %}
 

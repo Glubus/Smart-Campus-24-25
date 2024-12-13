@@ -64,14 +64,43 @@
             <h2 class="titreListe">Résultats</h2>
 
             <div class="btns">
-                <a href="/salle/ajout"><button class="btnAjout">Ajouter</button></a>
-                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+                <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr" onclick="submitForm()">Supprimer</button>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const checkboxes = document.querySelectorAll('.checkbox');
+                    const deleteButton = document.getElementById('btnSuppr');
+
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', updateButtonState);
+                    });
+
+                    function updateButtonState() {
+                        const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
+                        const count = selectedCheckboxes.length;
+
+                        if (count > 0) {
+                            deleteButton.textContent = `Supprimer ${count} sélectionné(s)`;
+                            deleteButton.classList.remove('hidden');
+                        } else {
+                            deleteButton.classList.add('hidden');
+                        }
+                    }
+                });
+
+                window.submitForm = function() {
+                    document.getElementById('deleteForm').submit();
+                }
+            </script>
+
             <div class="container">
-            {% for plan in plans %}
+            <form id="deleteForm" action="{{ path('app_plan_supprimer') }}" method="post">
+                {% for plan in plans %}
                     <div class="salleBlock">
                         <div class="infosSalle">
-                            <input type="checkbox" class="checkbox" value="{{ plan.id }}"/>
+                            <input type="checkbox" class="checkbox" name="selected_plans[]" value="{{ plan.id }}"/>
                             <div class="SalleSaNom">
                                 <h3>{{ plan.nom }}</h3>
                                     {{ plan.Batiment.nom }}
@@ -86,8 +115,8 @@
                             <a href=""><button class="btnModif">Modifier</button></a>
                         </div>
                     </div>
-                </a>
             {% endfor %}
+            </form>
             </div>
             <button class="btnAffPl">Afficher plus</button>
         </main>

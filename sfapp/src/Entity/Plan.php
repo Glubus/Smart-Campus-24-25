@@ -23,7 +23,7 @@ class Plan
     /**
      * @var Collection<int, DetailPlan>
      */
-    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'plan')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'plan', cascade: ['remove'])]
     private Collection $detailPlans;
 
     #[ORM\ManyToOne(inversedBy: 'plans')]
