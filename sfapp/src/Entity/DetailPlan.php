@@ -24,8 +24,8 @@ class DetailPlan
     #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?SA $sa = null;
 
-    /*#[ORM\ManyToOne(inversedBy: 'detailPlans')]
-    private ?Plan $plan = null;*/
+    #[ORM\ManyToOne(inversedBy: 'detailPlans')]
+    private ?Plan $plan = null;
 
 
 
@@ -70,7 +70,7 @@ class DetailPlan
         return $this;
     }
 
-    /*public function getPlan(): ?Plan
+    public function getPlan(): ?Plan
     {
         return $this->plan;
     }
@@ -80,6 +80,6 @@ class DetailPlan
         $this->plan = $plan;
 
         return $this;
-    }*/
+    }
 
 }

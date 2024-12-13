@@ -18,7 +18,7 @@ class BatimentFixtures extends Fixture
         // $manager->persist($product);
         $A=$this->make_batiment("A",3);
         $C=$this->make_batiment("C",3);
-        $D=$this->make_batiment("D",3);
+        $D=$this->make_batiment("D",4);
 
         $manager->persist($A);
         $manager->persist($C);

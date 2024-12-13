@@ -21,6 +21,10 @@ class PlanFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($plan);
         $this->addReference(self::PLAN_1, $plan);
 
+        $bat=$this->getReference(BatimentFixtures::BATIMENT_A, Batiment::class);
+        $plan=$this->make_plan("Prototype 2",new \DateTime(), $bat);
+        $manager->persist($plan);
+
         $manager->flush();
     }
 

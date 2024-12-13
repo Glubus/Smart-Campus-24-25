@@ -1,42 +1,175 @@
-{# templates/detail_plan/list.html.twig #}
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des plans{% endblock %}
+{% block title %}Details des plans{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <h1>Liste des plans</h1>
-        <div class="d-flex justify-content-end align-items-center">
-            <a class="btn btn-primary ml-3" href="{{ path('app_lier_ajout') }}" role="button">Ajouter une salle</a>
-        </div>
-        {% if plans is not empty %}
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Système d'acquisition</th>
-                    <th>Salle</th>
-                    <th>Date d'ajout</th>
-                </tr>
-                </thead>
-                <tbody>
+    {# Link to the CSS file#}
+    <link rel="stylesheet" href="{{ asset("styles/plan/index.css") }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <h1 class="text-center mb-4"> Details Plan </h1>
+
+    <div class="page-content">
+        <div id="sidebar">
+            <select id="plan_selection" onchange="updateEtages()">
+                <option value="" disabled selected>selectionner un plan</option>
                 {% for plan in plans %}
-                    <tr>
-                        <td>{{ plan.sa.nom }}</td> {# Affiche le nom du système d'acquisition #}
-                        <td>{{ plan.Salle.getNom }}</td> {# Affiche le nom de la salle #}
-                        <td>{{ plan.dateAjout ? plan.dateAjout|date('d/m/Y') : 'Non défini' }}</td>
-                        <td style="width: 10%">
-                            <a href="{{ path("app_lier_suppression", { id : plan.id }) }}" class="btn btn-outline-danger">
-                                Supprimer
-                            </a>
-                        </td>
-                    </tr>
+                    <option value="{{ plan.id }}"
+                            {% if plan.id == selected_plan %}
+                    selected
+                            {% endif %}>
+                        {{ plan.batNom }} - {{ plan.nom }}</option>
                 {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Aucun plan trouvé.</p>
-            <a class="btn btn-primary" href="{{ path('app_lier_ajout')}}" role="button">Ajouter une assignation</a>
-        {% endif %}
+            </select>
+                <div id="etagesDiv">
+                    <div class="vertical-line"></div>
+                    <span>
+                        <p id="etagesToutes"></p>
+                        <ul id="etagesList">
+                            <!-- Les elements de la liste seront genere ici par le script-->
+                        </ul>
+                    </span>
+                </div>
+
+        </div>
+
+        <table id="plan">
+            <thead id="table-header">
+                <tr>
+                    <th>Salle</th>
+                    <th>Attribution</th>
+                    <th>SA</th>
+                </tr>
+            </thead>
+            <tbody id="table-content">
+                {% for salle in salles %}
+                    <tr class="ligne-attribution">
+                        <td class="salleDiv">{{ salle.nom }}</td>
+                        <td class="tdAttribuer">
+                            <div class="horizontal-line"></div>
+                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, id:selected_plan}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
+                            <div class="flex">
+                                {% if salle.detailPlans|length == 0 %}
+                                    <div class="line-stop"><i class="fa fa-close"></i></div>
+                                {% else %}
+                                    <div class="horizontal-line"></div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        {% if salle.detailPlans|length == 0 %}
+                            <td class = "SAattribue AucunSA">Aucun SA attribue</td>
+                    </tr>
+                        {% elseif salle.detailPlans|length == 1%}
+                            <td class = "SAattribue">
+                            {% set plan = salle.detailPlans[0] %}
+                                <span class="infoSA">
+                                    <div>{{ plan.sa.nom }}</div>
+                                    <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
+                                </span>
+                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
+                            </td>
+                    </tr>
+                    {% else %}
+                        <td class="SAattribue">
+                                {{ salle.detailPlans|length }} SA attribues
+                                <i class="toggle caseBleu fa fa-arrow-circle-down" data-salle-id="{{ salle.id }}"></i>
+                            </td>
+                        </tr>
+                        {% for plan in salle.detailPlans %}
+                            <tr class="ligne-attribution hidden afficher-{{ salle.id }}">
+                                <td></td>
+                                <td class="flex-2">
+                                    <div class="line-aggregate"></div>
+                                </td>
+                                <td class="SAattribue">
+                                    <span class="infoSA">
+                                        <div>{{ plan.sa.nom }}</div>
+                                        <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
+                                    </span>
+                                    <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+
+    <script>
+        const plans = {{ plans|json_encode|raw }};
+
+        // Function to update the etage dropdown
+        function updateEtages() {
+            const planSelect = document.getElementById("plan_selection");
+            const etagesList = document.getElementById("etagesList");
+            const etagesToutes = document.getElementById("etagesToutes");
+            const selectedId = planSelect.value;
+
+            // Clear previous étage buttons
+            etagesToutes.innerHTML = '';
+            etagesList.innerHTML = '';
+
+            // Get selected plan
+            const selectedPlan = plans.find(p => p.id == selectedId);
+
+            if (selectedPlan) {
+                let selectedEtage = -1;
+                const link = document.createElement('a');  // Create a new <a> element
+                link.href = `?plan=${selectedId}`;  // Set the href attribute
+                link.textContent = "Afficher toutes";  // Set the link text
+                link.classList.add('etage-affiche-toutes');  // Add a CSS class for styling (optional)
+                {%if selected_etage is null %} {% if selected_plan is not null %} if({{selected_plan}} == selectedId) link.classList.add('darken');{% endif %}
+                {% else %} selectedEtage = {{ selected_etage }};
+                {% endif %}
+
+                etagesToutes.appendChild(link);
+
+
+                for (let i = 0; i < selectedPlan.nbEtages; i++) {
+                    const line = document.createElement('div');  // Create a new <a> element
+                    line.classList.add('horizontal-line');
+
+                    const link = document.createElement('a');  // Create a new <a> element
+                    link.href = `?plan=${selectedId}&etage=${i}`;  // Set the href attribute
+                    link.textContent = `Étage ${i}`;  // Set the link text
+                    link.classList.add('etage-list-item');  // Add a CSS class for styling (optional)
+                    if(selectedEtage == i) link.classList.add('darken');
+
+                    const listItem = document.createElement('li');  // Create a <li> element
+                    listItem.appendChild(line);
+                    listItem.appendChild(link);  // Append the <a> to the <li>
+
+                    etagesList.appendChild(listItem);  // Append the <li> to the list
+                }
+            }
+        }
+
+        window.onload = function() {
+            const selectionPlan = document.getElementById('plan_selection');
+
+            // Check if the selected option is set programmatically
+            const selectedValue = selectionPlan.value;
+
+            // Manually trigger the onchange event if there's a pre-selected value
+            if (selectedValue) {
+                updateEtages();
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButtons = document.querySelectorAll(".toggle");
+
+            toggleButtons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const salleId = this.getAttribute("data-salle-id");
+                    const details = document.querySelectorAll(`.afficher-${salleId}`);
+
+                    details.forEach(detail => { detail.classList.toggle('hidden'); });
+                    this.classList.toggle("fa-arrow-circle-up");
+                    this.classList.toggle("fa-arrow-circle-down");
+                });
+            });
+        });
+    </script>
 {% endblock %}

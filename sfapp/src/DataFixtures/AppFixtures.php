@@ -6,6 +6,7 @@ use App\Entity\Batiment;
 use App\Entity\EtageSalle;
 use App\Entity\EtatAssignation;
 use App\Entity\DetailPlan;
+use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use DateTime;
@@ -16,6 +17,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        /*
         $batimentC = new Batiment();
         $batimentC->setNom('C');
         $batimentC->setNbEtages(4);
@@ -50,16 +52,41 @@ class AppFixtures extends Fixture
         $SA->setNom('SATest');
         $manager->persist($SA);
 
-        $plan=new DetailPlan();
-        $plan->setSA($SA);
-        $plan->setSalle($D002);
-        $plan->setDateAjout(new DateTime());
+        $plan = new Plan();
+        $plan->setBatiment($batimentD);
+        $plan->setNom("plan01");
+        $plan->setDate(new DateTime());
         $manager->persist($plan);
 
-        $plan=new DetailPlan();
-        $plan->setSA($SA);
-        $plan->setSalle($D001);
-        $plan->setDateAjout(new DateTime());
-        $manager->flush();
+        $detailPlan=new DetailPlan();
+        $detailPlan->setSA($SA);
+        $detailPlan->setSalle($D003);
+        $detailPlan->setDateAjout(new DateTime());
+        $detailPlan->setPlan($plan);
+        $manager->persist($detailPlan);
+
+        $SA = new SA();
+        $SA->setNom('SA01');
+        $manager->persist($SA);
+
+        $detailPlan=new DetailPlan();
+        $detailPlan->setSA($SA);
+        $detailPlan->setSalle($D002);
+        $detailPlan->setDateAjout(new DateTime());
+        $detailPlan->setPlan($plan);
+        $manager->persist($detailPlan);
+
+        $SA = new SA();
+        $SA->setNom('SA02');
+        $manager->persist($SA);
+
+        $detailPlan=new DetailPlan();
+        $detailPlan->setSA($SA);
+        $detailPlan->setSalle($D002);
+        $detailPlan->setDateAjout(new DateTime());
+        $detailPlan->setPlan($plan);
+        $manager->persist($detailPlan);
+
+        $manager->flush();*/
     }
 }
