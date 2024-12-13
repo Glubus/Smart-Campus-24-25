@@ -50,20 +50,23 @@ class ValeurCapteurFixtures extends Fixture implements DependentFixtureInterface
                 switch ($type) {
                     case TypeCapteur::TEMPERATURE:
                         // Température entre -10°C et 35°C
-                        $lastVal[0]=$faker->randomFloat(2, $lastVal[0], $lastVal[0]+2);
+                        $lastVal[0]=$faker->randomFloat(2, $lastVal[0]-2, $lastVal[0]+2);
                         if ($lastVal[0]>35)$lastVal[0]=35;
+                        if ($lastVal[0]<-10)$lastVal[0]=-10;
                         $valeurCapteur->setValeur($lastVal[0]);
                         break;
                     case TypeCapteur::HUMIDITE:
                         // Humidité entre 30% et 90%
-                        $lastVal[1]=$faker->randomFloat(2, $lastVal[1], $lastVal[1]);
-                        if ($lastVal[1]>90)$lastVal[0]=90;
+                        $lastVal[1]=$faker->randomFloat(2, $lastVal[1]-10, $lastVal[1]+10);
+                        if ($lastVal[1]>90)$lastVal[1]=90;
+                        if($lastVal[1]<30)$lastVal[1]=30;
                         $valeurCapteur->setValeur($lastVal[1]);
                         break;
                     case TypeCapteur::CO2:
                         // CO2 entre 300 et 2000 ppm
-                        $lastVal[2]=$faker->randomFloat(2, $lastVal[2], $lastVal[2]+40);
-                        if ($lastVal[2]>1200)$lastVal[0]=1200;
+                        $lastVal[2]=$faker->randomFloat(2, $lastVal[2]-40, $lastVal[2]+40);
+                        if ($lastVal[2]>1200)$lastVal[2]=1200;
+                        if ($lastVal[2]<200)$lastVal[2]=200;
                         $valeurCapteur->setValeur($lastVal[2]);
                         break;
                 }

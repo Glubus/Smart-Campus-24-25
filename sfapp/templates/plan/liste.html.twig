@@ -54,9 +54,6 @@
             <article class="filtresRecherche">
                 <div class="barreRech">
                 </div>
-                <h3 class="trier">Trier</h3>
-                <button class="btnTri">Date de création</button>
-                <button class="btnTri">Ordre alphabétique</button>
             </article>
         </aside>
 
@@ -64,61 +61,61 @@
             <h2 class="titreListe">Résultats</h2>
 
             <div class="btns">
-                <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
-                <button class="btnSuppr hidden" id="btnSuppr" onclick="submitForm()">Supprimer</button>
+                    <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                    <button class="btnSuppr hidden" id="btnSuppr" onclick="submitForm()">Supprimer</button>
             </div>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const checkboxes = document.querySelectorAll('.checkbox');
-                    const deleteButton = document.getElementById('btnSuppr');
-
-                    checkboxes.forEach(checkbox => {
-                        checkbox.addEventListener('change', updateButtonState);
-                    });
-
-                    function updateButtonState() {
-                        const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
-                        const count = selectedCheckboxes.length;
-
-                        if (count > 0) {
-                            deleteButton.textContent = `Supprimer ${count} sélectionné(s)`;
-                            deleteButton.classList.remove('hidden');
-                        } else {
-                            deleteButton.classList.add('hidden');
-                        }
-                    }
-                });
-
-                window.submitForm = function() {
-                    document.getElementById('deleteForm').submit();
-                }
-            </script>
-
             <div class="container">
-            <form id="deleteForm" action="{{ path('app_plan_supprimer') }}" method="post">
                 {% for plan in plans %}
-                    <div class="salleBlock">
-                        <div class="infosSalle">
-                            <input type="checkbox" class="checkbox" name="selected_plans[]" value="{{ plan.id }}"/>
-                            <div class="SalleSaNom">
-                                <h3>{{ plan.nom }}</h3>
+                    <a href="{{ path('app_plan_infos', {'id': plan.id}) }}">
+                        <div class="salleBlock">
+                            <div class="infosSalle">
+                                <input type="checkbox" class="checkbox" value="{{ plan.id }}"/>
+                                <div class="SalleSaNom">
+                                    <h3>{{ plan.nom }}</h3>
                                     {{ plan.Batiment.nom }}
+                                </div>
+                                <div class="BatimentEtage">
+                                    <p>SA Utilisé : {{ plan.getCountSA()}}</p>
+                                    <p>Salle Utilisé : {{ plan.getCountSalle()}}  </p>
+                                </div>
                             </div>
-                            <div class="BatimentEtage">
-                                <p>SA Utilisé : {{ plan.getCountSA()}}</p>
-                                <p>Salle Utilisé : {{ plan.getCountSalle()}}  </p>
+                            <div class="DetailsModif">
+                                <a href="{{ path('app_lier_liste', {'plan' : plan.id}) }}"><button class="btnDetailSA">Détails Plan</button></a>
+                                <a href=""><button class="btnModif">Modifier</button></a>
                             </div>
                         </div>
-                        <div class="DetailsModif">
-                            <a href="{{ path('app_lier_liste', {'plan' : plan.id}) }}"><button class="btnDetailSA">Détails Plan</button></a>
-                            <a href=""><button class="btnModif">Modifier</button></a>
-                        </div>
-                    </div>
-            {% endfor %}
-            </form>
+                    </a>
+                {% endfor %}
             </div>
-            <button class="btnAffPl">Afficher plus</button>
         </main>
     </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const deleteButton = document.getElementById('btnSuppr');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateButtonState);
+        });
+
+        function updateButtonState() {
+            const selectedCheckboxes = document.querySelectorAll('.checkbox:checked');
+            const count = selectedCheckboxes.length;
+
+            if (count > 0) {
+                deleteButton.textContent = `Supprimer ${count} sélectionné(s)`;
+                deleteButton.classList.remove('hidden');
+            } else {
+                deleteButton.classList.add('hidden');
+            }
+        }
+    });
+
+    window.submitForm = function() {
+        document.getElementById('deleteForm').submit();
+    }
+</script>
 {% endblock %}

@@ -52,13 +52,14 @@ class Salle
         return $this->detailPlans->count();
     }
 
-    public function getOnlySa(): ?SA
+    public function getOnlySa(): int
     {
         if($this->getCountSA() == 1){
-            return $this->detailPlans->get($this->id);
+
+            return $this->detailPlans[0]->getSA()->getId();
         }
         else {
-            return null;
+            return -1;
         }
     }
 

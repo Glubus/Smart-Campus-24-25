@@ -26,16 +26,12 @@ class SA
     #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
     private Collection $valCapteurs;
 
-    #[ORM\ManyToOne(targetEntity: Salle::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Salle $salle = null;
 
     public function __construct()
     {
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
         $this->valCapteurs = new ArrayCollection();
-        $this->salles = new ArrayCollection();
     }
 
 
@@ -74,7 +70,7 @@ class SA
     public function removePlan(DetailPlan $plan): static
     {
         if ($this->plans->removeElement($plan)) {
-            if ($plan->getSa() === $this) {
+            if ($plan->getSa()=== $this) {
                 $plan->setSa(null);
             }
         }
@@ -133,30 +129,9 @@ class SA
 
         return $this;
     }
-    public function getSalles(): Collection
-    {
-        return $this->salles;
-    }
 
-    public function getSalle(): ?Salle
-    {
-        return $this->salle;
-    }
 
-    public function setSalle(?Salle $salle): static
-    {
-        $this->salle = $salle;
-        return $this;
-    }
 
-    public function removeSalle(Salle $salle): static
-    {
-        if ($this->salles->removeElement($salle)) {
-            if ($salle->getSa() === $this) {
-                $salle->setSa(null);
-            }
-        }
 
-        return $this;
-    }
+
 }

@@ -14,7 +14,7 @@ class DetailPlanFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $salle=$this->getReference(SalleFixtures::D002, Salle::class);
+        $salle=$this->getReference(SalleFixtures::D001, Salle::class);
         $sa=$this->getReference(SAFixtures::ESP_001, SA::class);
         $plan=$this->getReference(PlanFixtures::PLAN_1, Plan::class);
         $detail_plan=$this->ajouterDetail($plan,$sa, $salle);
