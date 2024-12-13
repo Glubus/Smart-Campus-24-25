@@ -3,57 +3,94 @@
 {% block title %}Liste des bâtiments{% endblock %}
 
 {% block body %}
-    <div class="container my-5">
-        <h1 class="text-center">Liste des Bâtiments</h1>
-        <div class="d-flex justify-content-end align-items-center mb-4">
-            <a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">Ajouter un bâtiment</a>
-        </div>
+    <link rel="stylesheet" href="{{ asset('/styles/listeSalles.css') }}">
+    <h1 class="mainTitle">Liste des Bâtiments</h1>
+    <div class="all">
 
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger">
-                {{ message.message }}
-                {% if message.batimentId is defined %}
-                    <a href="{{ path('app_salle_supprimer_liees', { id: message.batimentId }) }}" class="btn btn-danger btn-sm">
-                        Supprimer les salles liées
-                    </a>
-                {% endif %}
+        <aside class="rechercheBlock">
+            <h2 class="titreRecherche">Rechercher</h2>
+            <article class="filtresRecherche">
+                {#
+                <div class="barreRech">
+                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                    <div class="form-group mr-2">
+                        {{ form_row(form.nom) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                    {{ form_end(form) }}
+                </div> #}
+            </article>
+        </aside>
+
+        <main class="liste">
+            <h2 class="titreListe">Résultats</h2>
+
+            <div class="btns">
+                <a href="{{ path('app_batiment_ajouter') }}"><button class="btnAjout">Ajouter un bâtiment</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer sélection</button>
             </div>
-        {% endfor %}
 
-
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-dark">
-                <tr>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Adresse</th>
-                    <th scope="col">Nombre d'étages</th>
-                    <th scope="col">Supprimer</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
+            <article class="salles">
                 {% for batiment in batiments %}
-                    <tr>
-                        <td class="nom">{{ batiment.nom }}</td>
-                        <td>{{ batiment.adresse }}</td>
-                        <td>{{ batiment.nbEtages }}</td>
-                        <td style="width: 10%">
-                            <a class="btn btn-outline-success" href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}" role="button">Modifier</a>
-                        </td>
-                    <td>
-                        <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}" class="btn btn-outline-danger">Supprimer</a>
-                    </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="3" class="text-center">Aucun bâtiment trouvé.</td>
-                    </tr>
+                    <article class="salleBlock">
 
+                        <div class="infossalle">
+                            <input type="checkbox" class="checkbox" value="{{ batiment.id }}"/>
+                            <div class="saSaNom">
+                                <h3>{{ batiment.nom }}</h3>
+                                <p>Adresse : {{ batiment.adresse }}</p>
+                                <p>Nombre d'étages : {{ batiment.nbEtages }}</p>
+                            </div>
+                        </div>
+
+                        <div class="DetailsModif">
+                            <a href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}"><button class="btnModif">Modifier</button></a>
+                            <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}"><button class="btnSuppr">Supprimer</button></a>
+                        </div>
+                    </article>
+                {% else %}
+                    <p class="text-center">Aucun bâtiment trouvé.</p>
                 {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            </article>
+        </main>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const deleteButton = document.getElementById('btnSuppr');
+
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                deleteButton.classList.toggle('hidden', !isAnyChecked);
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleDeleteButton);
+            });
+
+            deleteButton.addEventListener('click', () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/batiment/supprimer-selection';
+
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected_batiments[]'; // Match controller's expected name
+                        input.value = checkbox.value;
+                        form.appendChild(input);
+                    }
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            toggleDeleteButton();
+        });
+    </script>
 {% endblock %}

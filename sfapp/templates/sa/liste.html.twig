@@ -1,14 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Lister Salle{% endblock %}
-
+{% block title %}Liste de Sa{% endblock %}
 {% block body %}
     <link rel="stylesheet" href="{{ asset('/styles/listeSalles.css') }}">
-    <h1 class="mainTitle">Liste des sas</h1>
+    <h1 class="mainTitle">Liste de Sa </h1>
     <div class="all">
+
         <aside class="rechercheBlock">
             <h2 class="titreRecherche">Rechercher</h2>
-
             <article class="filtresRecherche">
                 <div class="barreRech">
                     {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
@@ -22,35 +21,35 @@
                 <button class="btnTri">Date de création</button>
                 <button class="btnTri">Ordre alphabétique</button>
             </article>
-            </a>
         </aside>
 
         <main class="liste">
             <h2 class="titreListe">Résultats</h2>
 
             <div class="btns">
-                <a href="/sa/ajout"><button class="btnAjout">Ajouter</button></a>
+                <a href="{{ path('app_sa_ajout') }}"><button class="btnAjout">Ajouter</button></a>
                 <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
             </div>
 
+            <article class="salles">
+                {% for sa in liste_SA %}
 
-            {% for sa in liste_SA %}
-
-                <article class="salleBlock">
-                    <div class="infossalle">
-                        <input type="checkbox" class="checkbox" value="{{ sa.id }}"/>
-                        <div class="saSaNom" >
-                            <h3>{{ sa.nom }}</h3>
+                    <article class="salleBlock">
+                        <div class="infossalle">
+                            <input type="checkbox" class="checkbox" value="{{ sa.id }}"/>
+                            <div class="saSaNom" >
+                                <h3>{{ sa.nom }}</h3>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="DetailsModif">{# $wa #}
-                         <a href=/sa/{{sa.id}}><button class="btnDetailSA">Détails SA</button></a>
-                        <a href="/modifiersa?id="{{ sa.id }}><button class="btnModif">Modifier</button></a>
-                    </div>
-                </article>
+                        <div class="DetailsModif">{# $wa #}
+                            <a href=/sa/{{sa.id}}><button class="btnDetailSA">Détails SA</button></a>
+                            <a href="/modifiersa?id="{{ sa.id }}><button class="btnModif">Modifier</button></a>
+                        </div>
+                    </article>
 
-            {% endfor %}
+                {% endfor %}
+            </article>
             <button class="btnAffPl">Afficher plus</button>
         </main>
     </div>
@@ -59,50 +58,38 @@
 {% block javascripts %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Ciblez les checkboxes et le bouton
             const checkboxes = document.querySelectorAll('.checkbox');
             const deleteButton = document.getElementById('btnSuppr');
 
-            // Fonction pour vérifier si une checkbox est cochée
             function toggleDeleteButton() {
                 const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-                if (isAnyChecked) {
-                    deleteButton.classList.remove('hidden'); // Affiche le bouton
-                } else {
-                    deleteButton.classList.add('hidden'); // Masque le bouton
-                }
+                deleteButton.classList.toggle('hidden', !isAnyChecked);
             }
 
-            // Ajoutez un écouteur d'événement à chaque checkbox
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', toggleDeleteButton);
             });
 
-            deleteButton.addEventListener('click', function () {
-                // Crée un formulaire caché
-                console.log("aaa");
+            deleteButton.addEventListener('click', () => {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action =  '/sa/supprimer-selection'; // L'URL vers votre route Symfony
 
-                // Ajoutez les checkboxes cochées au formulaire
                 checkboxes.forEach(checkbox => {
                     if (checkbox.checked) {
                         const input = document.createElement('input');
                         input.type = 'hidden';
                         input.name = 'selected_sa[]';
-                        input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
+                        input.value = checkbox.value;
                         form.appendChild(input);
                     }
                 });
 
-                // Ajoutez le formulaire à la page et soumettez-le
                 document.body.appendChild(form);
                 form.submit();
             });
 
-            // Vérifiez initialement (au cas où une checkbox est pré-cochée)
-            toggleDeleteButton();});
+            toggleDeleteButton();
+        });
     </script>
 {% endblock %}
-
