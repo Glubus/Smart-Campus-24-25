@@ -16,15 +16,21 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class PlanController extends AbstractController
 {
+
+
     #[Route('/plan', name: 'app_plan_liste')]
     public function index(PlanRepository $repo): Response
     {
         $plan=$repo->findAll();
         return $this->render('plan/liste.html.twig', [
-            'controller_name' => 'PlanController',
-            'plans' => $plan
+            'css' => 'liste_plan',
+            'classItem' => "plan",
+            'items' => $plan,
+            'routeItem'=> "app_plan_ajouter",
+            'classSpecifique' => "getCount"
         ]);
     }
+
     #[Route('/plan/ajouter', name: 'app_plan_ajouter')]
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {

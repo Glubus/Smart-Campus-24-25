@@ -2,70 +2,55 @@
 
 {% block title %}Lister Salle{% endblock %}
 
+
+{# besoin :
+    classItem = nom de la classe
+    items = une liste de item avec la classe
+    routeItem = une route href pour les infos items
+    classSpecifique = une classe pour afficher les items de entrys
+#}
 {% block body %}
-    <link rel="stylesheet" href="{{ asset('/styles/listeSalles.css') }}">
-    <h1 class="mainTitle">Liste des salles</h1>
+    <link rel="stylesheet" href="{{ asset('/styles/liste/'~css~'.css') }}">
+    <h1 class="mainTitle">Liste des {{ classItem }}</h1>
     <div class="all">
 
-        <aside class="rechercheBlock">
-            <h2 class="titreRecherche">Rechercher</h2>
-            <article class="filtresRecherche">
-                <div class="barreRech">
-                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-                    <div class="form-group mr-2">
-                        {{ form_row(form.salleNom) }}
-                    </div>
-                    {{ form_end(form) }}
-                </div>
-
-            </article>
-        </aside>
 
         <main class="liste">
-            <h2 class="titreListe">Résultats</h2>
-
             <div class="btns">
-                <a href="{{ path('app_salle_ajout') }}"><button class="btnAjout">Ajouter</button></a>
-                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+                <a href="{{ path("app_"~classItem~"_ajouter") }}">
+                    <button class="btnAjout">Ajouter</button>
+                </a>
+                <button class="btnSuppr hidden" id="btnSuppr">
+                    Supprimer
+                </button>
             </div>
 
-            <article class="salles">
-                {% for salle in salles %}
-                <a href="{{ path('app_salle_infos', {'id': salle.id}) }}">
-                    <div class="salleBlock">
-                        <div class="infosSalle">  
-                            <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
-                            <div class="SalleSaNom">
-                                {% set SAAffiche = 0 %}
-                                {% if salle.detailPlans is not null %}
-                                    <h3 class="nomSalle" style="font-size: 45px">{{ salle.nom }}</h3>
-                                    {% for detailPlan in salle.detailPlans %}
-                                        {% if SAAffiche == 0 %}
-                                            <h3 class="nomSA">{{ detailPlan.sa.nom }}</h3>
-                                            {% set SAAffiche = 1 %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h3 class="nomSalle">{{ salle.nom }}</h3>
-                                {% endif %}
+            <article class="{{ classItem }}">
+                {% for item in items %}
+                    <div class="{{ classItem }}Block">
+                        <a href="{{ path( routeItem, {'id': item.id}) }}">
+                        <div class="{{ classItem }}Infos">
+                            <input type="checkbox" class="checkbox" value="{{ item.id }}"/>
+                            <div class="{{ classItem }}_1">
+                                  {% block nom %}
+
+                                {% endblock %}
                             </div>
-                            <div class="BatimentEtage">
-                                <p>Batiment {{ salle.batiment.nom }}</p>
-                                <p>Etage {{ salle.etage }}</p>
+                            <div class="{{ classSpecifique }}">
+                                {% block entry %}
+
+                                {% endblock %}
                             </div>
                         </div>
                         <div class="DetailsModif">
-                            {% if salle.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
-                                    <a href="{{ path('app_sa_infos', {'id': salle.getOnlySa()}) }}"><button class="btnDetailSA">Détails SA</button></a>
-                            {% elseif salle.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
-                                <a><button class="btnDetailSA">Détails des SA</button></a>
-                            {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
-                                <a><button class="btnDetailSA">Attribuer SA</button></a>
-                            {% endif %}
-                            <a href="/salle/modifier/{{ salle.id }}"><button class="btnModif">Modifier</button></a>
+                            {% block modif %}
+
+                            {% endblock %}
+                            <a href="/"><button class="btnModif">Modifier</button></a>
                         </div>
+                        </a>
                     </div>
-                </a>
+
                 {% endfor %}
             </article>
             <button class="btnAffPl">Afficher plus</button>
@@ -74,6 +59,7 @@
 {% endblock %}
 
 {% block javascripts %}
+    {#
     <script>
         console.log("DOM entièrement chargé");
         document.addEventListener('DOMContentLoaded', () => {
@@ -133,6 +119,6 @@
             // Vérifiez initialement (au cas où une checkbox est pré-cochée)
             toggleDeleteButton();
         });
-    </script>
+    </script> #}
 {% endblock %}
 

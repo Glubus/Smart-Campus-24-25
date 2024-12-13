@@ -77,6 +77,13 @@ h2 {
     width: 15px;
     height: 15px;
     border-radius: 10px;
+    background-color: red;
+}
+
+.etatCapFonctionne {
+    width: 15px;
+    height: 15px;
+    border-radius: 10px;
     background-color: green;
 }
 
