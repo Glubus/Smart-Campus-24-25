@@ -35,7 +35,7 @@ class AjoutPlanType extends AbstractType
                         'attr' => [
                             'placeholder' => 'Choisir un nom pour le Plan..',
                         ],
-                        'label' => "Nom d'\un plan",
+                        'label' => "Nom du plan",
                         'label_attr' => [
                             'class' => 'form-label'
                         ],
