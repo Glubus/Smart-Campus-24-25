@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une salle{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('/styles/ajouter/common.scss') }}">
+    <div class="container my-5 card-body">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="text-center mb-4">Ajouter une {{ classItem }}</h1>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger mt-1">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary mr-1 mt-1" role="button">Créer la {{ classItem }}</button>
+                    <a href="{{ path('app_'~classItem~'_liste')}}" class="btn btn-secondary mr-1 mt-1" role="button">Annuler</a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{%  block javascripts %}
+    {# <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Récupérer le champ bâtiment
+        const batimentField = document.querySelector('[data-action="update-max-etages"]');
+        const etageField = document.querySelector('[data-max-etage]');
+
+        if (batimentField && etageField) {
+            console.log("Champs détectés :", {
+                batimentField,
+                etageField
+            });
+
+            batimentField.addEventListener('change', function () {
+                const batimentId = this.value;
+                console.log("ID du bâtiment sélectionné :", batimentId);
+
+                // Exemple d'appel AJAX pour récupérer le nombre d'étages maximum
+                fetch(`/batiment/${batimentId}/max-etages`)
+                    .then(response => {
+                        console.log("Réponse brute du serveur :", response);
+                        if (!response.ok) {
+                            throw new Error(`Erreur serveur : ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Données reçues du serveur :", data);
+
+                        if (data.maxEtages) {
+                            console.log(`Mise à jour des champs avec maxEtages = ${data.maxEtages}`);
+
+                            // Met à jour le placeholder
+                            etageField.placeholder = `Max: ${data.maxEtages}`;
+                            console.log("Placeholder mis à jour :", etageField.placeholder);
+
+                            // Met à jour l'attribut "max"
+                            etageField.setAttribute('max', data.maxEtages);
+                            console.log("Attribut 'max' mis à jour :", etageField.getAttribute('max'));
+
+                            // Met à jour "data-max-etage"
+                            etageField.setAttribute('data-max-etage', data.maxEtages);
+                            console.log("Attribut 'data-max-etage' mis à jour :", etageField.getAttribute('data-max-etage'));
+                        } else {
+                            console.warn("Données invalides : 'maxEtages' manquant.");
+                        }
+                    })
+                    .catch(error => console.error('Erreur lors de la récupération des données ou de leur traitement :', error));
+            });
+        } else {
+            console.error("Les champs nécessaires n'ont pas été trouvés sur la page.");
+        }
+    });
+
+</script>
+    #}
+{% endblock %}

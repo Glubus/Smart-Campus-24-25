@@ -52,11 +52,14 @@ class SalleController extends AbstractController
 
 
         if ($salles) {
-            return $this->render('salle/index.html.twig', [
-                'controller_name' => 'SalleController',
-                'salles' => $salles,
+            return $this->render('salle/liste.html.twig', [
+                'css' => 'salle',
+                'classItem' => "salle",
+                'routeItem'=> "app_salle_ajouter",
+                'classSpecifique' => "BatimentEtage",
+                'items' => $salles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
-                'associations' => $associations,
+
             ]);
         } else {
             return $this->render('salle/notfound.html.twig', [
@@ -104,7 +107,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/salle/ajouter', name: 'app_salle_ajout')]
+    #[Route('/salle/ajouter', name: 'app_salle_ajouter')]
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
@@ -254,7 +257,7 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/suppression.html.twig', [
+        return $this->render('salle/supprimer.html.twig', [
             'form' => $form->createView(),
             'salles' => $salles,
         ]);

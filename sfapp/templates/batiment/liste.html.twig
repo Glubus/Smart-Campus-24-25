@@ -1,96 +1,16 @@
-{% extends 'base.html.twig' %}
+{# templates/detail_plan/list.html.twig #}
 
-{% block title %}Liste des bâtiments{% endblock %}
 
-{% block body %}
-    <link rel="stylesheet" href="{{ asset('/styles/listeSalles.css') }}">
-    <h1 class="mainTitle">Liste des Bâtiments</h1>
-    <div class="all">
+{% extends 'template/liste.html.twig' %}
 
-        <aside class="rechercheBlock">
-            <h2 class="titreRecherche">Rechercher</h2>
-            <article class="filtresRecherche">
-                {#
-                <div class="barreRech">
-                    {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
-                    <div class="form-group mr-2">
-                        {{ form_row(form.nom) }}
-                    </div>
-                    <button type="submit" class="btn btn-primary">Rechercher</button>
-                    {{ form_end(form) }}
-                </div> #}
-            </article>
-        </aside>
+{% block nom %}
+        <h3 class="{{ classItem }}Nom">
+                {{ item.nom }}
+        </h3>
+{% endblock  %}
+{% block entry %}
 
-        <main class="liste">
-            <h2 class="titreListe">Résultats</h2>
-
-            <div class="btns">
-                <a href="{{ path('app_batiment_ajouter') }}"><button class="btnAjout">Ajouter un bâtiment</button></a>
-                <button class="btnSuppr hidden" id="btnSuppr">Supprimer sélection</button>
-            </div>
-
-            <article class="salles">
-                {% for batiment in batiments %}
-                    <article class="salleBlock">
-
-                        <div class="infossalle">
-                            <input type="checkbox" class="checkbox" value="{{ batiment.id }}"/>
-                            <div class="saSaNom">
-                                <h3>{{ batiment.nom }}</h3>
-                                <p>Adresse : {{ batiment.adresse }}</p>
-                                <p>Nombre d'étages : {{ batiment.nbEtages }}</p>
-                            </div>
-                        </div>
-
-                        <div class="DetailsModif">
-                            <a href="{{ path('app_batiment_ajouter') }}?batiment={{ batiment.id }}"><button class="btnModif">Modifier</button></a>
-                            <a href="{{ path("app_batiment_suppression", { id : batiment.id }) }}"><button class="btnSuppr">Supprimer</button></a>
-                        </div>
-                    </article>
-                {% else %}
-                    <p class="text-center">Aucun bâtiment trouvé.</p>
-                {% endfor %}
-            </article>
-        </main>
-    </div>
 {% endblock %}
+{% block modif %}
 
-{% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const checkboxes = document.querySelectorAll('.checkbox');
-            const deleteButton = document.getElementById('btnSuppr');
-
-            function toggleDeleteButton() {
-                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-                deleteButton.classList.toggle('hidden', !isAnyChecked);
-            }
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', toggleDeleteButton);
-            });
-
-            deleteButton.addEventListener('click', () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/batiment/supprimer-selection';
-
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'selected_batiments[]'; // Match controller's expected name
-                        input.value = checkbox.value;
-                        form.appendChild(input);
-                    }
-                });
-
-                document.body.appendChild(form);
-                form.submit();
-            });
-
-            toggleDeleteButton();
-        });
-    </script>
 {% endblock %}
