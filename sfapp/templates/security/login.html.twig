@@ -1,0 +1,201 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <div class="container">
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2>Smart Campus</h2>
+            <form method="POST" action="/login">
+                <label for="username">Nom d’utilisateur</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i> <!-- Icône pour l'utilisateur -->
+                    <input type="text" value="{{ last_username }}" name="_username"
+                           id="username" class="form-control" placeholder="Entrée votre nom d'utilisateur" autocomplete="username" required autofocus>
+                </div>
+
+                <label for="password">Mot de passe</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i> <!-- Icône pour le mot de passe -->
+                    <input type="password" name="_password"
+                           id="password" class="form-control" placeholder="Entrée votre mot de passe" autocomplete="current-password" required>
+                </div>
+
+                <!-- Hidden CSRF Token -->
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button type="submit">SE CONNECTER</button>
+            </form>
+        </div>
+
+        <div class="line">
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <img src="{{ asset("img/logo-iut.png") }}" alt="IUT Logo">
+            <h2>Bon retour !</h2>
+            <p>Tu peux te connecter avec ton compte existant</p>
+        </div>
+    </div>
+
+    {% if app.user %}
+        <div class="alert alert-info">
+            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        /* General Reset */
+        .line{
+            margin-top:25px;
+            background:rgba(255, 255, 255, 0.7);
+            width:2px;
+            height:450px;
+        }
+        body {
+            background: linear-gradient(50deg, #001932,#0041B5);
+            color: #ffffff;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            z-index: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Décale de la moitié de la taille */
+            display: flex;
+            width: 900px;
+            height:500px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.35);
+            overflow: hidden;
+        }
+
+        /* Left Section */
+        .form-section {
+            flex: 1;
+            padding: 40px;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 10px 10px 40px; /* Ajout de padding à gauche pour laisser place à l'icône */
+
+        }
+        .form-section h2 {
+            font-size: 55px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 30px;
+        }
+
+        .input-icon {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6ba0ff;
+            font-size: 20px;
+        }
+
+        input {
+            width: 100%;
+            height: 50px;
+            margin-bottom: 40px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: 2px solid #6ba0ff;
+        }
+
+        button {
+            width: 60%;
+            padding: 12px;
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 22px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-left: 40%;
+            margin-top: -25px;
+        }
+
+        button:hover {
+            background: #005bb5;
+        }
+
+        /* Right Section */
+        .welcome-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .welcome-section img {
+            width: 220px; /* Taille de l'image */
+            margin-bottom: 20px;
+            filter: contrast(200%) brightness(240%) saturate(90%) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+            transition: filter 0.3s ease;
+        }
+
+        .welcome-section h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 16px;
+        }
+
+        /* Bandeau d'alerte "You are already logged in" */
+        .alert {
+            width: 100%;
+            background-color: #17a2b8; /* Couleur bleu clair */
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert a {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .alert a:hover {
+            color: #d1ecf1;
+        }
+    </style>
+{% endblock %}
