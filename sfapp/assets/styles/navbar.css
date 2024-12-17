@@ -3,7 +3,7 @@
     src: url('font/JejuGothic.ttf') format('truetype');
 }
 *{
-    font-family: 'JejuGothic', serif;
+        font-family: 'JejuGothic', serif;
 
 }
 body {

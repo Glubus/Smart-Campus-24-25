@@ -68,6 +68,16 @@ class SalleController extends AbstractController
         }
     }
 
+    #[Route('/salle/user', name: 'app_salle_user_liste')]
+    public function indexUser(SalleRepository $salleRepository): Response
+    {
+        $salles = $salleRepository->findAll();
+
+        return $this->render('salle/listeUser.html.twig', [
+            'salles' => $salles,
+        ]);
+    }
+
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
