@@ -15,7 +15,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap1</p>
                             </div>
-                            <h3 class="data">20°C</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
 
@@ -26,7 +26,7 @@
                                 <div class="etatCapFonctionne"></div>
                                 <p class="nomCap">Cap2</p>
                             </div>
-                            <h3 class="data">400ppm</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
 
@@ -37,7 +37,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap3</p>
                             </div>
-                            <h3 class="data">51.5%</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
             </div>

@@ -83,6 +83,8 @@ class SalleController extends AbstractController
         // Données des capteurs
         foreach($val as $valeur) {;
             $date=$valeur->getDateAjout()->format('Y-m-d H:i');
+
+
             switch ($valeur->getType()) {
                 case TypeCapteur::TEMPERATURE:
                     $arr[$date][TypeCapteur::TEMPERATURE->value] = $valeur->getValeur();
@@ -97,7 +99,16 @@ class SalleController extends AbstractController
                     $arr[$date][TypeCapteur::CO2->value] = $valeur->getValeur();
                     break;
             }
+            if (!isset($latestByType[$valeur->getType()->value]) || $date > $latestByType[$valeur->getType()->value]['date']) {
+                $latestByType[$valeur->getType()->value] = [
+                    'valeur' => $val,
+                    'date' => $date,
+                ];
+            }
         }
+
+
+
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
             'data'=>$arr,
