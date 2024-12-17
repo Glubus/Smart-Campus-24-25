@@ -73,8 +73,27 @@ class SalleController extends AbstractController
     {
         $salles = $salleRepository->findAll();
 
+        $col1 = array();
+        $col2 = array();
+        $col3 = array();
+
+        for($i = 0; $i < count($salles); $i++) {
+            if($i % 3 == 0){
+                array_push($col1, $salles[$i]);
+            }
+            elseif($i % 3 == 1){
+                array_push($col2, $salles[$i]);
+            }
+            elseif($i % 3 == 2){
+                array_push($col3, $salles[$i]);
+            }
+        }
+
         return $this->render('salle/listeUser.html.twig', [
             'salles' => $salles,
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
         ]);
     }
 
