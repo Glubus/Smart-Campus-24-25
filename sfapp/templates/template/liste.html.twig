@@ -9,8 +9,11 @@
     routeItem = une route href pour les infos items
     classSpecifique = une classe pour afficher les items de entrys
 #}
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('/styles/liste/'~css~'.scss') }}">
+{% endblock %}
 {% block body %}
-    <link rel="stylesheet" href="{{ asset('/styles/liste/'~css~'.css') }}">
+
     <h1 class="mainTitle">Liste des {{ classItem }}</h1>
     <div class="all">
 
@@ -28,13 +31,13 @@
             <article class="{{ classItem }}">
                 {% for item in items %}
                     <div class="{{ classItem }}Block">
-                        <a href="{{ path( routeItem, {'id': item.id}) }}">
+                        <a href="{{ path( "app_"~classItem~"_infos", {'id': item.id}) }}">
                         <div class="{{ classItem }}Infos">
                             <input type="checkbox" class="checkbox" value="{{ item.id }}"/>
                             <div class="{{ classItem }}_1">
                                   {% block nom %}
 
-                                {% endblock %}
+                                  {% endblock %}
                             </div>
                             <div class="{{ classSpecifique }}">
                                 {% block entry %}
@@ -59,7 +62,7 @@
 {% endblock %}
 
 {% block javascripts %}
-    {#
+
     <script>
         console.log("DOM entièrement chargé");
         document.addEventListener('DOMContentLoaded', () => {
@@ -98,14 +101,14 @@
                 // Crée un formulaire caché
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '/salle/supprimer-selection'; // L'URL vers votre route Symfony
+                form.action = '{{ path('app_'~classItem~'_supprimer_selection') }}'; // L'URL vers votre route Symfony
 
                 // Ajoutez les checkboxes cochées au formulaire
                 checkboxes.forEach(checkbox => {
                     if (checkbox.checked) {
                         const input = document.createElement('input');
                         input.type = 'hidden';
-                        input.name = 'selected_salles[]';
+                        input.name = 'selected[]';
                         input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
                         form.appendChild(input);
                     }
@@ -119,6 +122,6 @@
             // Vérifiez initialement (au cas où une checkbox est pré-cochée)
             toggleDeleteButton();
         });
-    </script> #}
+    </script>
 {% endblock %}
 

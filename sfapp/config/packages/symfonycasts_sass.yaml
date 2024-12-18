@@ -1,0 +1,7 @@
+symfonycasts_sass:
+  root_sass:
+    - 'assets/styles/liste/common.scss'
+    - 'assets/styles/liste/batiment.scss'
+    - 'assets/styles/liste/plan.scss'
+    - 'assets/styles/liste/sa.scss'
+    - 'assets/styles/liste/salle.scss'

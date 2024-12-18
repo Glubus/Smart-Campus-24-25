@@ -52,17 +52,49 @@ class SalleController extends AbstractController
 
 
         if ($salles) {
-            return $this->render('salle/index.html.twig', [
-                'controller_name' => 'SalleController',
-                'salles' => $salles,
+            return $this->render('salle/liste.html.twig', [
+                'css' => 'salle',
+                'classItem' => "salle",
+                'routeItem'=> "app_salle_ajouter",
+                'classSpecifique' => "BatimentEtage",
+                'items' => $salles,
                 'form' => $form->createView(), // Passer le formulaire à la vue
-                'associations' => $associations,
+
             ]);
         } else {
             return $this->render('salle/notfound.html.twig', [
                 'form' => $form->createView(),
             ]);
         }
+    }
+
+    #[Route('/salle/user', name: 'app_salle_user_liste')]
+    public function indexUser(SalleRepository $salleRepository): Response
+    {
+        $salles = $salleRepository->findAll();
+
+        $col1 = array();
+        $col2 = array();
+        $col3 = array();
+
+        for($i = 0; $i < count($salles); $i++) {
+            if($i % 3 == 0){
+                array_push($col1, $salles[$i]);
+            }
+            elseif($i % 3 == 1){
+                array_push($col2, $salles[$i]);
+            }
+            elseif($i % 3 == 2){
+                array_push($col3, $salles[$i]);
+            }
+        }
+
+        return $this->render('salle/listeUser.html.twig', [
+            'salles' => $salles,
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+        ]);
     }
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
@@ -115,7 +147,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/salle/ajouter', name: 'app_salle_ajout')]
+    #[Route('/salle/ajouter', name: 'app_salle_ajouter')]
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
@@ -265,7 +297,7 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/suppression.html.twig', [
+        return $this->render('salle/supprimer.html.twig', [
             'form' => $form->createView(),
             'salles' => $salles,
         ]);

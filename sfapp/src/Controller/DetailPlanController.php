@@ -123,7 +123,7 @@ class DetailPlanController extends AbstractController
                 ]);
             }
         }
-            return $this->render('detail_plan/suppression.html.twig', [
+            return $this->render('detail_plan/supprimer.html.twig', [
                 "detail_plan" => $detail_plan,
             ]);
     }

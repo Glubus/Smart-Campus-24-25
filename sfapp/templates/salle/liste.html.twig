@@ -1,0 +1,34 @@
+{# templates/detail_plan/list.html.twig #}
+
+
+{% extends 'template/liste.html.twig' %}
+
+{% block nom %}
+    {% set SAAffiche = 0 %}
+    {% if item.detailPlans is not null %}
+        <h3 class="salleNom" style="font-size: 45px">{{ item.nom }}</h3>
+        {% for detailPlan in item.detailPlans %}
+            {% if SAAffiche == 0 %}
+                <h3 class="saNom">{{ detailPlan.sa.nom }}</h3>
+                {% set SAAffiche = 1 %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h3 class="salleNom">{{ item.nom }}</h3>
+    {% endif %}
+{% endblock  %}
+
+{% block entry %}
+    <p>Batiment {{ item.batiment.nom }}</p>
+    <p>Etage {{ item.etage }}</p>
+{% endblock %}
+
+{% block modif %}
+    {% if item.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
+        <a href="{{ path('app_sa_infos', {'id': item.getOnlySa()}) }}"><button class="btnDetailSA">Détails SA</button></a>
+    {% elseif item.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
+        <a><button class="btnDetailSA">Détails des SA</button></a>
+    {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
+        <a><button class="btnDetailSA">Attribuer SA</button></a>
+    {% endif %}
+{% endblock %}

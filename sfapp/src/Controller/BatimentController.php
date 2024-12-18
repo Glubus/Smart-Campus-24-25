@@ -38,12 +38,33 @@ class BatimentController extends AbstractController
         // Récupérer la liste des bâtiments
         $batiments = $em->getRepository(Batiment::class)->findAll();
 
+
         return $this->render('batiment/liste.html.twig', [
-            'batiments' => $batiments,
+            'css' => 'batiment',
+            'classItem' => "batiment",
+            'items' => $batiments,
+            'routeItem'=> "app_batiment_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 
-    #[Route('/batiment/ajout', name: 'app_batiment_ajouter')]
+    #[Route('/batiment/{id}', name: 'app_batiment_infos',requirements: ['id' => '\d+'])]
+    public function infos(int $id, BatimentRepository $em): Response
+    {
+        // Récupérer la liste des bâtiments
+        $batiment = $em->find($id);
+
+
+        return $this->render('batiment/infos.html.twig', [
+            'css' => 'batiment',
+            'classItem' => "batiment",
+            'item' => $batiment,
+            'routeItem'=> "app_batiment_ajouter",
+            'classSpecifique' => ""
+        ]);
+    }
+
+    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
         $req=$request->get('batiment');
@@ -77,8 +98,12 @@ class BatimentController extends AbstractController
                 }
         }
 
-        return $this->render('batiment/ajouter.html.twig', [
+        return $this->render('template/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'batiment',
+            'classItem' => "batiment",
+            'routeItem'=> "app_batiment_ajouter",
+            'classSpecifique' => ""
         ]);
     }
     #[Route('/batiment/{id}/suppression', name: 'app_batiment_suppression')]
@@ -123,7 +148,7 @@ class BatimentController extends AbstractController
             }
         }
 
-        return $this->render('batiment/suppression.html.twig', [
+        return $this->render('batiment/supprimer.html.twig', [
             "form" => $form->createView(),
             "batiment" => $batiments,
         ]);
@@ -153,15 +178,16 @@ class BatimentController extends AbstractController
         SessionInterface $session
     ): Response {
         // Fetch the 'selected_batiments' from the request
-        $ids = $request->request->all('selected_batiments');
+        $ids = $request->request->all('selected');
 
         if (empty($ids)) {
-            $ids = $session->get('selected_batiments', []);
+            $ids = $session->get('selected', []);
         } else {
-            $session->set('selected_batiments', $ids);
+            $session->set('selected', $ids);
         }
 
         $batiments = array_map(fn($id) => $batimentRepository->find($id), $ids);
+
 
         $form = $this->createForm(SuppressionType::class, null, [
             'phrase' => 'CONFIRMER'
@@ -169,6 +195,7 @@ class BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $submittedString = $form->get('inputString')->getData();
 
             if ($submittedString === 'CONFIRMER') {
@@ -179,39 +206,6 @@ class BatimentController extends AbstractController
                 foreach ($batiments as $batiment) {
 
 
-                    $plans = $entityManager->getRepository(Plan::class)->findBy(['Batiment' => $ids]);
-
-
-
-                    foreach ($plans as $plan) {
-                        foreach ($plan->getDetailPlans() as $detailPlan) {
-                            $detailPlan->setPlan(null); // Détache le détail du plan
-                            $entityManager->persist($detailPlan); // Persiste le détail du plan
-                        }
-                        $entityManager->remove($plan);
-                    }
-
-
-                    $salles = $batiment->getSalles();
-                    foreach ($salles as $salle) {
-                        $sas = $entityManager->getRepository(SA::class)->findBy(['salle' => $salle]);
-                        foreach ($sas as $sa) {
-                            $sa->setSalle(null);
-                            $entityManager->persist($sa); // Persist pour enregistrer les modifications
-                        }
-                        $detailPlans = $salle->getDetailPlans();
-                        $valeurCapteurs = $salle->getValeurCapteurs();
-
-                        foreach ($detailPlans as $detailPlan) {
-                            $entityManager->remove($detailPlan);
-                        }
-
-                        foreach ($valeurCapteurs as $valeurCapteur) {
-                            $entityManager->remove($valeurCapteur);
-                        }
-
-                        $entityManager->remove($salle);
-                    }
                     $entityManager->remove($batiment);
                 }
                 $entityManager->flush();
@@ -222,9 +216,10 @@ class BatimentController extends AbstractController
             }
         }
 
-        return $this->render('batiment/suppression_batiment.html.twig', [
+        return $this->render('batiment/supprimer_multiple.html.twig', [
             'form' => $form->createView(),
-            'batiments' => $batiments,
+            'items' => $batiments,
+            'classItem'=> "batiment"
         ]);
     }
 

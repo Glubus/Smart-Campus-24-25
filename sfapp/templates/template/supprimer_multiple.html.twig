@@ -3,15 +3,15 @@
 
 {% block body %}
     <div class="container my-5" style="width: 40%">
-        {% if batiments | filter(o => o is null) | length > 0 %}
+        {% if items | filter(o => o is null) | length > 0 %}
             <h1 class="text-center mb-4">
-                Aucune batiment sélectionnée pour la suppression
+                Aucune {{ classItem }} sélectionnée pour la suppression
             </h1>
-            <a class="btn btn-primary" href="{{ path('app_batiment_liste') }}" style="margin-right: 10px; margin-top: 10px">Visualiser les batiments</a>
+            <a class="btn btn-primary" href="{{ path('app_'~classItem~'_liste') }}" style="margin-right: 10px; margin-top: 10px">Visualiser les batiments</a>
         {% else %}
             <h1 class="text-center mb-4">
-                batiment(s) sélectionnée(s):
-                {{ batiments | map(o => o.getNom()) | join(', ') }}
+                 {{ classItem }} sélectionnées:
+                {{ items | map(o => o.nom) | join(', ') }}
             </h1>
             <p>Êtes-vous sûr de vouloir supprimer ces batiments ?</p>
             {{ form_start(form) }}
