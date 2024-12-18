@@ -3,32 +3,136 @@
 {% block title %}Documentation - Utilisation des Formulaires{% endblock %}
 
 {% block body %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
 
-    <div style="display: flex; height: 2%;">
+        /* Header section */
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
 
-        <!-- Partie gauche -->
-        <div style="width: 50%; background-color: #f8f9fa; padding: 20px; border-right: 1px solid #ddd;">
-            <a href="{{ path('app_guide') }}" style="text-decoration: none; color: #007bff;">
-                <h3>Partie Gauche</h3>
-                <p>Contenu de la partie gauche.</p></a>
-        </div>
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
 
-        <!-- Partie droite -->
-        <div style="width: 50%; padding: 20px; background-color: #fff;">
-            <a href="{{ path('users_auth_ldap') }}" style="text-decoration: none; color: #007bff;">
+        /* Links section */
+        .links-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-bottom: 2px solid #ddd;
+        }
 
-                <h3>Partie Droite</h3>
-                <p>Contenu de la partie droite.</p></a>
-        </div>
+        .link-box {
+            flex: 1;
+            text-align: center;
+            padding: 10px 20px;
+            border-right: 1px solid #ddd;
+        }
 
+        .link-box:last-child {
+            border-right: none;
+        }
+
+        .link-box a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h2 {
+            color: #007bff;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .content h3 {
+            color: #333;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin: 10px 0 20px 20px;
+            padding: 0;
+            list-style-type: disc;
+        }
+
+        .content ul li {
+            margin: 8px 0;
+        }
+
+        /* Accordion styles */
+        .accordion-button {
+            font-size: 16px;
+        }
+
+        .accordion-body {
+            padding: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Documentation - Utilisation des Formulaires</h1>
     </div>
 
-    <div class="container my-5">
-        <h1 class="text-center mb-4">Documentation - Utilisation des Formulaires</h1>
+    <!-- Links Section -->
+    <div class="links-container">
+        <div class="link-box">
+            <a href="{{ path('app_guide') }}">Guide Site</a>
+        </div>
+        <div class="link-box">
+            <a href="{{ path('users_auth_ldap') }}">Guide SA</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h2 class="text-center">Documentation - Utilisation des Formulaires</h2>
         <p class="text-muted text-center">Veuillez suivre les étapes dans l'ordre pour éviter toute erreur dans la gestion des entités.</p>
 
         <div class="accordion" id="accordionExample">
-            <!-- Étape 1 : Créer un bâtiment -->
+            <!-- Étape 1 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingBatiments">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBatiments" aria-expanded="true" aria-controls="collapseBatiments">
@@ -42,12 +146,11 @@
                             <li><strong>Nom :</strong> Nom du bâtiment.</li>
                             <li><strong>Adresse :</strong> Localisation complète du bâtiment.</li>
                         </ul>
-                        <br>
                     </div>
                 </div>
             </div>
 
-            <!-- Étape 2 : Créer une salle -->
+            <!-- Étape 2 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSalles">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalles" aria-expanded="false" aria-controls="collapseSalles">
@@ -62,14 +165,11 @@
                             <li><strong>Étage :</strong> L'étage où se situe la salle.</li>
                             <li><strong>Bâtiment :</strong> Sélection du bâtiment associé.</li>
                         </ul>
-                        <br>
-
-
                     </div>
                 </div>
             </div>
 
-            <!-- Étape 3 : Créer un detail_plan -->
+            <!-- Étape 3 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingPlans">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlans" aria-expanded="false" aria-controls="collapsePlans">
@@ -83,13 +183,11 @@
                             <li><strong>Date d'ajout :</strong> Date d'enregistrement du plan.</li>
                             <li><strong>Salle associée :</strong> Salle correspondant au plan.</li>
                         </ul>
-                        <br>
-
                     </div>
                 </div>
             </div>
 
-            <!-- Étape 4 : Créer un système d'acquisition -->
+            <!-- Étape 4 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSA">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSA" aria-expanded="false" aria-controls="collapseSA">
@@ -103,11 +201,14 @@
                             <li><strong>Nom :</strong> Identifiant du système.</li>
                             <li><strong>Plan associé :</strong> Plan auquel le système est lié.</li>
                         </ul>
-                        <br>
-
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2024 Documentation - Utilisation des Formulaires. Tous droits réservés.
     </div>
 {% endblock %}
