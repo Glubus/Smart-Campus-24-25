@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Header section */
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        /* Flex container for links */
+        .links-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .link-box {
+            flex: 1;
+            text-align: center;
+            padding: 10px 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .link-box:last-child {
+            border-right: none;
+        }
+
+        .link-box a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h2 {
+            color: #007bff;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin: 10px 0 20px 20px;
+            padding: 0;
+            list-style-type: disc;
+        }
+
+        .content ul li {
+            margin: 8px 0;
+        }
+
+        .content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+
+    <script>
+//<![CDATA[
+gl = window.gl || {};
+gl.GfmAutoComplete = gl.GfmAutoComplete || {};
+gl.GfmAutoComplete.dataSources = {"members":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/members?type=Wiki\u0026type_id=Guide-D%27Installation%2FGuide-Installation-du-SA","issues":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/issues","mergeRequests":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/merge_requests","labels":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/labels?type=Wiki\u0026type_id=Guide-D%27Installation%2FGuide-Installation-du-SA","milestones":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/milestones","commands":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/commands?type=Wiki\u0026type_id=Guide-D%27Installation%2FGuide-Installation-du-SA","snippets":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/snippets","contacts":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/contacts?type=Wiki\u0026type_id=Guide-D%27Installation%2FGuide-Installation-du-SA","wikis":"/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/autocomplete_sources/wikis"};
+//]]>
+    </script>
+
+    <script>
+//<![CDATA[
+gl = window.gl || {};
+gl.client = {"isFirefox":true,"isWindows":true};
+//]]>
+    </script>
+</head>
+<body>
+
+
+<!-- Header -->
+<div class="header">
+    <h1>Guide Installation du SA</h1>
+</div>
+
+<!-- Links Section -->
+<div class="links-container">
+    <div class="link-box">
+        <a href="{{ path('app_guide') }}">Guide Site</a>
+    </div>
+    <div class="link-box">
+        <a href="{{ path('users_auth_ldap') }}">Guide SA</a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+    <h2>Matériel requis :</h2>
+    <ul>
+        <li>Carte ESP32 (par exemple, ESP32 DevKitC)</li>
+        <li>Capteurs (par exemple, DHT22 pour la température et l'humidité)</li>
+        <li>Câbles de connexion</li>
+        <li>Ordinateur avec un port USB</li>
+        <li>Carte Breadboard (facultatif, mais recommandé pour les connexions temporaires)</li>
+    </ul>
+
+    <h2>Prérequis ESP :</h2>
+    <p>Positionnez l'ESP32 sur votre breadboard (de préférence proche d'un bord). Prenez deux câbles adaptés :</p>
+    <ul>
+        <li>Câble noir : Connectez à une borne GND de l'ESP32.</li>
+        <li>Câble rouge : Connectez à une borne 5V de l'ESP32.</li>
+    </ul>
+    <img src="/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/wikis/uploads/df1a2ecb1a0687cc9e5635999656cc92/IMG_20241211_141147.jpg" alt="ESP32 Configuration">
+
+    <h2>Connexion les capteurs :</h2>
+    <h3>Pour le DHT22 (Température et Humidité)</h3>
+    <ul>
+        <li>Câble jaune : 10</li>
+        <li>Câble noir : GND</li>
+        <li>Câble rouge : 5V</li>
+    </ul>
+
+    <h3>Pour le SSD1306 (Écran OLED)</h3>
+    <ul>
+        <li>Câble jaune : 8</li>
+        <li>Câble blanc : 7</li>
+        <li>Câble noir : GND</li>
+        <li>Câble rouge : 5V</li>
+    </ul>
+    <img src="/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/wikis/uploads/1a98c35d6ce67abd4b9b5f5df05f525c/IMG_20241211_141537.jpg" alt="SSD1306 Configuration">
+
+    <h2>Remarques finales :</h2>
+    <p>Assurez-vous que tous les câbles soient bien connectés pour éviter les déconnexions accidentelles. Testez chaque capteur après installation pour valider les connexions.</p>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    &copy; 2024 Guide Installation SA - Tous droits réservés.
+</div>
+</body>
+</html>
+
+{% endblock %}

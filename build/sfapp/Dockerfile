@@ -9,9 +9,14 @@ ENV APP_ENV=dev
 # Copy php default configuration
 COPY ./build/sfapp/conf/default.ini /usr/local/etc/php/conf.d/default.ini
 
+#installing ldap
+RUN apt-get update && apt-get install -y \
+    libldap2-dev \
+    && docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu/ \
+    && docker-php-ext-install ldap
+
 # Set working directory
 WORKDIR /app/sfapp
-
 # Arguments defined in compose.yml
 ARG USER_NAME
 ARG USER_ID

@@ -3,6 +3,26 @@
 {% block title %}Documentation - Utilisation des Formulaires{% endblock %}
 
 {% block body %}
+
+    <div style="display: flex; height: 2%;">
+
+        <!-- Partie gauche -->
+        <div style="width: 50%; background-color: #f8f9fa; padding: 20px; border-right: 1px solid #ddd;">
+            <a href="{{ path('app_guide') }}" style="text-decoration: none; color: #007bff;">
+                <h3>Partie Gauche</h3>
+                <p>Contenu de la partie gauche.</p></a>
+        </div>
+
+        <!-- Partie droite -->
+        <div style="width: 50%; padding: 20px; background-color: #fff;">
+            <a href="{{ path('users_auth_ldap') }}" style="text-decoration: none; color: #007bff;">
+
+                <h3>Partie Droite</h3>
+                <p>Contenu de la partie droite.</p></a>
+        </div>
+
+    </div>
+
     <div class="container my-5">
         <h1 class="text-center mb-4">Documentation - Utilisation des Formulaires</h1>
         <p class="text-muted text-center">Veuillez suivre les étapes dans l'ordre pour éviter toute erreur dans la gestion des entités.</p>
