@@ -13,6 +13,7 @@ use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -28,25 +29,20 @@ class SalleController extends AbstractController
         $form = $this->createForm(RechercheSalleType::class);
         $associations = $detailPlanRepository->findAll();
 
-        // Traitement du formulaire de recherche
         $form->handleRequest($request);
         $salles = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
             $salleNom = $form->get('salleNom')->getData();
 
-            // Si un nom a été saisi, on filtre les salles par le nom du bâtiment ou l'étage
             if ($salleNom) {
-                // Chercher les salles dont le nom du bâtiment ou l'étage ou le numéro pourrait correspondre
                 $salles = $salleRepository->findAll();
 
-                // Filtrer les résultats avec getSalleNom() en PHP
                 $salles = array_filter($salles, function($salle) use ($salleNom) {
                     return stripos($salle->getNom(), $salleNom) !== false;
                 });
             }
         } else {
-            // Si aucun nom n'est saisi, afficher toutes les salles
             $salles = $salleRepository->findAll();
         }
 
@@ -71,26 +67,101 @@ class SalleController extends AbstractController
     #[Route('/salle/user', name: 'app_salle_user_liste')]
     public function indexUser(SalleRepository $salleRepository): Response
     {
+        $client = HttpClient::create();
+
+        $associations = [
+            "D205" => "ESP-004",
+            "D206" => "ESP-008",
+            "D207" => "ESP-006",
+            "D204" => "ESP-014",
+            "D203" => "ESP-012",
+            "D303" => "ESP-005",
+            "D304" => "ESP-011",
+            "C101" => "ESP-007",
+            "D109" => "ESP-024",
+            "Secrétariat" => "ESP-026",
+            "D001" => "ESP-030",
+            "D002" => "ESP-028",
+            "D004" => "ESP-020",
+            "C004" => "ESP-021",
+            "C007" => "ESP-022"
+        ];
+
+        $headers = [        // Si l'API nécessite des en-têtes d'authentification (ex: clé API)
+            'accept' => ' application/ld+json',
+            'dbname' => 'sae34bdk2eq3',
+            'username' => 'k2eq3',
+            'userpass' => 'nojsuk-kegfyh-3cyJmu'
+        ];
+
         $salles = $salleRepository->findAll();
 
-        $col1 = array();
-        $col2 = array();
-        $col3 = array();
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
 
-        for($i = 0; $i < count($salles); $i++) {
-            if($i % 3 == 0){
-                array_push($col1, $salles[$i]);
-            }
-            elseif($i % 3 == 1){
-                array_push($col2, $salles[$i]);
-            }
-            elseif($i % 3 == 2){
-                array_push($col3, $salles[$i]);
+        foreach ($salles as $salle) {
+            $tempValue = null;
+            $humValue = null;
+            $co2Value = null;
+            $localisation = null;
+
+            if(array_key_exists($salle->getNom(), $associations)) {
+                $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last?nomsa='.$associations[$salle->getNom()].'&limit=3&page=1';
+                $response = $client->request('GET', $url, [
+                    'headers' => $headers,
+                ]);
+                $data = json_decode($response->getContent(), true);
+                foreach ($data as $item) {
+                    if ($item['nom'] === 'temp') {
+                        $tempValue = $item['valeur'];
+                    }
+                    elseif ($item['nom'] === 'hum') {
+                        $humValue = $item['valeur'];
+                    }
+                    elseif ($item['nom'] === 'co2') {
+                        $co2Value = $item['valeur'];
+                    }
+                    $localisation = $item['localisation'];
+                }
+                var_dump($tempValue);
+                var_dump($humValue);
+                var_dump($co2Value);
+                var_dump($localisation);
+
+                /*if ($response->getStatusCode() != 200) {
+                    var_dump('Erreur 500');
+                    exit;
+                }
+                elseif($i % 3 == 0){
+                    if($salle->getNom() == $localisation){
+                        $col1[] = ['salle' => $salle, 'temp'=>$tempValue, 'co2'=>$co2Value, 'humi'=>$humValue];
+                    }
+                    else {
+                        $col1[] = ['salle' => $salle, 'temp' => 10, 'co2' => 400, 'humi' => 50];
+                    }
+                }
+                elseif($i % 3 == 1){
+                    if($salle->getNom() == $localisation){
+                        $col2[] = ['salle' => $salle, 'temp'=>$tempValue, 'co2'=>$co2Value, 'humi'=>$humValue];
+                    }
+                    else {
+                        $col2[] = ['salle' => $salle, 'temp' => 10, 'co2' => 400, 'humi' => 50];
+                    }
+                }
+                elseif($i % 3 == 2){
+                    if($salle->getNom() == $localisation){
+                        $col3[] = ['salle' => $salle, 'temp'=>$tempValue, 'co2'=>$co2Value, 'humi'=>$humValue];
+                    }
+                    else {
+                        $col3[] = ['salle' => $salle, 'temp' => 10, 'co2' => 400, 'humi' => 50];
+                    }
+                }*/
             }
         }
+        exit;
 
         return $this->render('salle/listeUser.html.twig', [
-            'salles' => $salles,
             'col1' => $col1,
             'col2' => $col2,
             'col3' => $col3,
@@ -315,3 +386,5 @@ class SalleController extends AbstractController
         ]);
     }
 }
+
+?>

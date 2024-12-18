@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\EtageSalle;
 use App\Entity\Salle;
+use App\Entity\TypeCapteur;
+use App\Entity\ValeurCapteur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

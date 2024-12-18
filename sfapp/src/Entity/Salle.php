@@ -41,6 +41,7 @@ class Salle
      */
     #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
     private Collection $valeurCapteurs;
+
     public function __construct()
     {
         $this->plans = new ArrayCollection();
