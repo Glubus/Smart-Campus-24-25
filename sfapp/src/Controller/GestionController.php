@@ -6,10 +6,12 @@ use App\Entity\Batiment;
 use App\Entity\Salle;
 use App\Entity\DetailPlan;
 use App\Entity\SA;
+use App\Entity\Utilisateur;
 use App\Form\ajoutBatimentType;
 use App\Form\ajoutSalleType;
 use App\Form\AssociationSASalle;
 use App\Form\ajoutSAType;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,5 +73,45 @@ class GestionController extends AbstractController
             'planForm' => $planForm->createView(),
             'saForm' => $saForm->createView(),
         ]);
+    }
+    #[Route('/admin/technicien', name: 'app_technicien_liste')]
+    public function gestion_technicien(Request $request, UtilisateurRepository $entityManager): Response
+    {
+        $items = $entityManager->findByRole('ROLE_USER');
+
+        return $this->render('gestion/liste.html.twig', [
+            'css' => 'technicien',
+            'classItem' => "technicien",
+            'items' => $items,
+            'routeItem'=> "app_batiment_ajouter",
+            'classSpecifique' => ""
+        ]);
+    }
+    #[Route('/admin/technicien/ajouter', name: 'app_technicien_ajouter')]
+    public function ajouter_technicien(): Response
+    {
+
+        return $this->redirectToRoute("app_register");
+    }
+    #[Route('/admin/technicien/{id}', name: 'app_technicien_infos')]
+    public function infos(int $id, UtilisateurRepository $repository): Response
+    {
+        $user=$repository->find($id);
+        $interventions = $user->getDetailInterventions();
+        return $this->render('gestion/infos.html.twig', [
+            'css' => 'technicien',
+            'classItem' => "technicien",
+            'item' => $user,
+            'routeItem'=> "app_technicien_ajouter",
+            'interventions' => $interventions,
+            'classSpecifique' => ""
+        ]);
+    }
+
+    #[Route('/admin/technicien/supprimer', name: 'app_technicien_supprimer_selection')]
+    public function supprimer(): Response
+    {
+
+        return $this->render('batiment/infos.html.twig', []);
     }
 }

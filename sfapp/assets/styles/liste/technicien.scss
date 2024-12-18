@@ -1,0 +1,48 @@
+@use 'common';
+
+.technicienBlock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    border: 1px solid black;
+    height: 132px;
+    margin-top: 30px;
+}
+
+.technicienBlock:hover {
+    box-shadow: 0.9px 5px 5px black;
+}
+
+.technicienBlock:has(.checkbox:checked) {
+    border: 1px solid dodgerblue;
+    background-color: lightblue;
+}
+
+.technicienInfos {
+    display: flex;
+    flex-direction: row;
+}
+
+.technicien_1 {
+    width: 200px;
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.technicien {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: inherit;
+    gap:10px;
+}
+.bisNom{
+    font-size: 20px;
+}
+.getCount {
+    font-size: 20px;
+    margin-left: 20px;
+}

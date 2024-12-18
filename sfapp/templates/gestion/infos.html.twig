@@ -1,33 +1,56 @@
-{% extends 'base.html.twig' %}
+{% extends 'template/infos.html.twig' %}
 
-{% block title %}Détails de la salle{% endblock %}
-
-{% block body %}
-    <link rel="stylesheet" href="{{ asset("styles/infos/common.scss") }}">
-        <div class="container my-5">
-            <div class="card shadow-lg">
-                <div class="card-header text-center bg-secondary text-white">
-                    <h2 class="mb-0">Détails de la salle : {{ item.nom }}</h2>
-                </div>
-                <div class="card-body">
-                    <h4 class="card-title text-primary">Informations générales</h4>
-                    <ul class="list-group list-group-flush">
-                        {% block liste %}
-
-                        {% endblock %}
-                    </ul>
-                </div>
-                {% block ajouts %}{% endblock %}
-                <div class="card-footer text-center">
-                    <a href="{{ path('app_'~classItem~'_liste') }}" class="btn btn-outline-secondary">
-                        Retour à la liste des salles
-                    </a>
-                </div>
-            </div>
-
-        </div>
+{% block liste %}
+    <li class="list-group-item">
+        <strong>Nom :</strong> {{ item.nom }}
+    </li>
+    <li class="list-group-item">
+        <strong>Prenom :</strong> {{ item.prenom }}
+    </li>
+    <li class="list-group-item">
+        <strong>Adresse :</strong> {{ item.email }}
+    </li>
+    <li class="list-group-item">
+        <strong>Adresse :</strong> {{ item.adresse }}
+    </li>
+    <li class="list-group-item">
+        <strong>Role :</strong>{% for role in item.roles %} {{ role }}{% endfor %}
+    </li>
 {% endblock %}
+{% block ajouts %}
+    <h1 class="mb-4">Interventions de {{ item.username }}</h1>
 
+    {% if interventions is not empty %}
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Salle</th>
+                <th scope="col">État</th>
+                <th scope="col">Date de l'Intervention</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for intervention in interventions %}
+                <tr>
+                    <td>{{ intervention.id }}</td>
+                    <td>{{ intervention.salle.nom }}</td>
+                    <td>
+                                <span class="badge bg-{{ intervention.etat == 'EN_COURS' ? 'warning' : (intervention.etat == 'TERMINEE' ? 'success' : 'danger') }}">
+                                    {{ intervention.etat }}
+                                </span>
+                    </td>
+                    <td>{{ intervention.dateIntervention|date('d/m/Y H:i') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Aucune intervention trouvée pour ce technicien.
+        </div>
+    {% endif %}
+{% endblock %}
 {#
 document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM prêt");
