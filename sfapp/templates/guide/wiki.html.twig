@@ -140,39 +140,112 @@ gl.client = {"isFirefox":true,"isWindows":true};
 
 <!-- Main Content -->
 <div class="content">
-    <h2>Matériel requis :</h2>
-    <ul>
-        <li>Carte ESP32 (par exemple, ESP32 DevKitC)</li>
-        <li>Capteurs (par exemple, DHT22 pour la température et l'humidité)</li>
-        <li>Câbles de connexion</li>
-        <li>Ordinateur avec un port USB</li>
-        <li>Carte Breadboard (facultatif, mais recommandé pour les connexions temporaires)</li>
-    </ul>
+    <div class="accordion" id="accordionExample">
+        <!-- Matériel requis -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingMaterials">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterials" aria-expanded="true" aria-controls="collapseMaterials">
+                    Matériel requis
+                </button>
+            </h2>
+            <div id="collapseMaterials" class="accordion-collapse collapse show" aria-labelledby="headingMaterials" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <ul>
+                        <li>Carte ESP32 (par exemple, ESP32 DevKitC)</li>
+                        <li>Capteurs (par exemple, DHT22 pour la température et l'humidité)</li>
+                        <li>Câbles de connexion</li>
+                        <li>Ordinateur avec un port USB</li>
+                        <li>Carte Breadboard (facultatif, mais recommandé pour les connexions temporaires)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingPrerequisites">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrerequisites" aria-expanded="false" aria-controls="collapsePrerequisites">
+                Prérequis ESP
+            </button>
+        </h2>
+        <div id="collapsePrerequisites" class="accordion-collapse collapse" aria-labelledby="headingPrerequisites" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <p>Positionnez l'ESP32 sur votre breadboard (de préférence proche d'un bord). Prenez deux câbles adaptés :</p>
+                <ul>
+                    <li>Câble noir : Connectez à une borne GND de l'ESP32.</li>
+                    <li>Câble rouge : Connectez à une borne 5V de l'ESP32.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <h2>Prérequis ESP :</h2>
-    <p>Positionnez l'ESP32 sur votre breadboard (de préférence proche d'un bord). Prenez deux câbles adaptés :</p>
-    <ul>
-        <li>Câble noir : Connectez à une borne GND de l'ESP32.</li>
-        <li>Câble rouge : Connectez à une borne 5V de l'ESP32.</li>
-    </ul>
-    <img src="/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/wikis/uploads/df1a2ecb1a0687cc9e5635999656cc92/IMG_20241211_141147.jpg" alt="ESP32 Configuration">
 
-    <h2>Connexion les capteurs :</h2>
-    <h3>Pour le DHT22 (Température et Humidité)</h3>
-    <ul>
-        <li>Câble jaune : 10</li>
-        <li>Câble noir : GND</li>
-        <li>Câble rouge : 5V</li>
-    </ul>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingDHT22">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDHT22" aria-expanded="false" aria-controls="collapseDHT22">
+                Pour le DHT22 (Température et Humidité)
+            </button>
+        </h2>
+        <div id="collapseDHT22" class="accordion-collapse collapse" aria-labelledby="headingDHT22" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <ul>
+                    <li>Câble jaune : 10</li>
+                    <li>Câble noir : GND</li>
+                    <li>Câble rouge : 5V</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <h3>Pour le SSD1306 (Écran OLED)</h3>
-    <ul>
-        <li>Câble jaune : 8</li>
-        <li>Câble blanc : 7</li>
-        <li>Câble noir : GND</li>
-        <li>Câble rouge : 5V</li>
-    </ul>
-    <img src="/2024-2025-but-info2-a-sae34/k2/k23/sae3-doc/-/wikis/uploads/1a98c35d6ce67abd4b9b5f5df05f525c/IMG_20241211_141537.jpg" alt="SSD1306 Configuration">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSSD1306">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSSD1306" aria-expanded="false" aria-controls="collapseSSD1306">
+                Pour le SSD1306 (Écran OLED)
+            </button>
+        </h2>
+        <div id="collapseSSD1306" class="accordion-collapse collapse" aria-labelledby="headingSSD1306" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <ul>
+                    <li>Câble jaune : 8</li>
+                    <li>Câble blanc : 7</li>
+                    <li>Câble noir : GND</li>
+                    <li>Câble rouge : 5V</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingDS13007">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDS13007" aria-expanded="false" aria-controls="collapseDS13007">
+                Pour le DS13007 (Date et Heure)
+            </button>
+        </h2>
+        <div id="collapseDS13007" class="accordion-collapse collapse" aria-labelledby="headingDS13007" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <ul>
+                    <li>Câble jaune : 5</li>
+                    <li>Câble blanc : 4</li>
+                    <li>Câble noir : GND</li>
+                    <li>Câble rouge : 5V</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingLS06">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLS06" aria-expanded="false" aria-controls="collapseLS06">
+                Pour le LS06-MΦ (Luminosité)
+            </button>
+        </h2>
+        <div id="collapseLS06" class="accordion-collapse collapse" aria-labelledby="headingLS06" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <ul>
+                    <li>Câble jaune : 6</li>
+                    <li>Câble blanc : Non requis</li>
+                    <li>Câble noir : GND</li>
+                    <li>Câble rouge : 5V</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <h2>Remarques finales :</h2>
     <p>Assurez-vous que tous les câbles soient bien connectés pour éviter les déconnexions accidentelles. Testez chaque capteur après installation pour valider les connexions.</p>
