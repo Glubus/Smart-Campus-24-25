@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes tâches{% endblock %}
+
+{% block body %}
+    <h1>Mes tâches</h1>
+    {% if taches is empty %}
+        <p>Aucune tâche trouvée.</p>
+    {% else %}
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Salle</th>
+                <th>État</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tache in taches %}
+                <tr>
+                    <td>{{ tache.id }}</td>
+                    <td>{{ tache.salle.nom }}</td>
+                    <td>{{ tache.etat }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
