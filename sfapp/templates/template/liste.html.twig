@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lister Salle{% endblock %}
+
+
+{# besoin :
+    classItem = nom de la classe
+    items = une liste de item avec la classe
+    routeItem = une route href pour les infos items
+    classSpecifique = une classe pour afficher les items de entrys
+#}
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('/styles/liste/'~css~'.scss') }}">
+{% endblock %}
+{% block body %}
+
+    <h1 class="mainTitle">Liste des {{ classItem }}</h1>
+    <div class="all">
+
+
+        <main class="liste">
+            <div class="btns">
+                <a href="{{ path("app_"~classItem~"_ajouter") }}">
+                    <button class="btnAjout">Ajouter</button>
+                </a>
+                <button class="btnSuppr hidden" id="btnSuppr">
+                    Supprimer
+                </button>
+            </div>
+
+            <article class="{{ classItem }}">
+                {% for item in items %}
+                    <div class="{{ classItem }}Block">
+                        <a href="{{ path( "app_"~classItem~"_infos", {'id': item.id}) }}">
+                        <div class="{{ classItem }}Infos">
+                            <input type="checkbox" class="checkbox" value="{{ item.id }}"/>
+                            <div class="{{ classItem }}_1">
+                                  {% block nom %}
+
+                                  {% endblock %}
+                            </div>
+                            <div class="{{ classSpecifique }}">
+                                {% block entry %}
+
+                                {% endblock %}
+                            </div>
+                        </div>
+                        <div class="DetailsModif">
+                            {% block modif %}
+
+                            {% endblock %}
+                            <a href="/"><button class="btnModif">Modifier</button></a>
+                        </div>
+                        </a>
+                    </div>
+
+                {% endfor %}
+            </article>
+            <button class="btnAffPl">Afficher plus</button>
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+        console.log("DOM entièrement chargé");
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM entièrement chargé");
+
+            // Ciblez les checkboxes et le bouton
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const deleteButton = document.getElementById('btnSuppr');
+
+            console.log("Checkboxes trouvées:", checkboxes);
+            console.log("Bouton Supprimer trouvé:", deleteButton);
+
+            if (!checkboxes || !deleteButton) {
+                console.error("Éléments manquants dans le DOM !");
+                return;
+            }
+
+            // Fonction pour vérifier si une checkbox est cochée
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                console.log("Checkboxes cochées :", isAnyChecked);
+
+                if (isAnyChecked) {
+                    deleteButton.classList.remove('hidden'); // Affiche le bouton
+                } else {
+                    deleteButton.classList.add('hidden'); // Masque le bouton
+                }
+            }
+
+            // Ajoutez un écouteur d'événement à chaque checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleDeleteButton);
+            });
+
+            deleteButton.addEventListener('click', function () {
+                // Crée un formulaire caché
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ path('app_'~classItem~'_supprimer_selection') }}'; // L'URL vers votre route Symfony
+
+                // Ajoutez les checkboxes cochées au formulaire
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected[]';
+                        input.value = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correcte
+                        form.appendChild(input);
+                    }
+                });
+
+                // Ajoutez le formulaire à la page et soumettez-le
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            // Vérifiez initialement (au cas où une checkbox est pré-cochée)
+            toggleDeleteButton();
+        });
+    </script>
+{% endblock %}
+

@@ -16,15 +16,20 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class PlanController extends AbstractController
 {
+
+
     #[Route('/plan', name: 'app_plan_liste')]
     public function index(PlanRepository $repo): Response
     {
         $plan=$repo->findAll();
         return $this->render('plan/liste.html.twig', [
-            'controller_name' => 'PlanController',
-            'plans' => $plan
+            'css' => 'plan',
+            'classItem' => "plan",
+            'items' => $plan,
+            'classSpecifique' => "getCount"
         ]);
     }
+
     #[Route('/plan/ajouter', name: 'app_plan_ajouter')]
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
@@ -78,7 +83,7 @@ class PlanController extends AbstractController
             }
         }
 
-        return $this->render('plan/suppression.html.twig', [
+        return $this->render('plan/supprimer.html.twig', [
             'form' => $form->createView(),
             'plans' => $plans,
         ]);
@@ -92,4 +97,89 @@ class PlanController extends AbstractController
         return $this->render('plan/infos.html.twig', ['plan'=>$plan]);
     }
 
+    #[Route('/plan/supprimer-selection', name: 'app_plan_supprimer_selection', methods: ['POST', 'GET'])]
+    public function suppSelection(
+        Request $request,
+        PlanRepository $planRepository,
+        EntityManagerInterface $entityManager,
+        SessionInterface $session
+    ): Response {
+        // Fetch the 'selected_batiments' from the request
+        $ids = $request->request->all('selected-');
+
+        if (empty($ids)) {
+            $ids = $session->get('selected_batiments', []);
+        } else {
+            $session->set('selected_batiments', $ids);
+        }
+
+        $batiments = array_map(fn($id) => $batimentRepository->find($id), $ids);
+
+
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => 'CONFIRMER'
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $submittedString = $form->get('inputString')->getData();
+
+            if ($submittedString === 'CONFIRMER') {
+
+                if (!is_iterable($batiments)) {
+                    throw new \Exception("No buildings found.");
+                }
+                foreach ($batiments as $batiment) {
+
+
+                    $plans = $entityManager->getRepository(Plan::class)->findBy(['Batiment' => $ids]);
+
+
+
+                    foreach ($plans as $plan) {
+                        foreach ($plan->getDetailPlans() as $detailPlan) {
+                            $detailPlan->setPlan(null); // Détache le détail du plan
+                            $entityManager->persist($detailPlan); // Persiste le détail du plan
+                        }
+                        $entityManager->remove($plan);
+                    }
+
+
+                    $salles = $batiment->getSalles();
+                    foreach ($salles as $salle) {
+                        $sas = $entityManager->getRepository(SA::class)->findBy(['salle' => $salle]);
+                        foreach ($sas as $sa) {
+                            $sa->setSalle(null);
+                            $entityManager->persist($sa); // Persist pour enregistrer les modifications
+                        }
+                        $detailPlans = $salle->getDetailPlans();
+                        $valeurCapteurs = $salle->getValeurCapteurs();
+
+                        foreach ($detailPlans as $detailPlan) {
+                            $entityManager->remove($detailPlan);
+                        }
+
+                        foreach ($valeurCapteurs as $valeurCapteur) {
+                            $entityManager->remove($valeurCapteur);
+                        }
+
+                        $entityManager->remove($salle);
+                    }
+                    $entityManager->remove($batiment);
+                }
+                $entityManager->flush();
+                return $this->redirectToRoute('app_batiment_liste');
+            }
+            else {
+                $this->addFlash('error', 'La saisie est incorrecte.');
+            }
+        }
+
+        return $this->render('batiment/supprimer_multiple.html.twig', [
+            'form' => $form->createView(),
+            'items' => $batiments,
+            'classItem'=> "batiment"
+        ]);
+    }
 }

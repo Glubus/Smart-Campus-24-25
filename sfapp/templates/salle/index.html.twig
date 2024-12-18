@@ -33,21 +33,10 @@
                 {% for salle in salles %}
                 <a href="{{ path('app_salle_infos', {'id': salle.id}) }}">
                     <div class="salleBlock">
-                        <div class="infosSalle">
+                        <div class="infosSalle">  
                             <input type="checkbox" class="checkbox" value="{{ salle.id }}"/>
                             <div class="SalleSaNom">
-                                {% set SAAffiche = 0 %}
-                                {% if salle.detailPlans is not null %}
-                                    <h3 class="nomSalle" style="font-size: 45px">{{ salle.nom }}</h3>
-                                    {% for detailPlan in salle.detailPlans %}
-                                        {% if SAAffiche == 0 %}
-                                            <h3 class="nomSA">{{ detailPlan.sa.nom }}</h3>
-                                            {% set SAAffiche = 1 %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h3 class="nomSalle">{{ salle.nom }}</h3>
-                                {% endif %}
+
                             </div>
                             <div class="BatimentEtage">
                                 <p>Batiment {{ salle.batiment.nom }}</p>

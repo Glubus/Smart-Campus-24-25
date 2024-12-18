@@ -25,6 +25,14 @@
                             <strong>Étage :</strong> {{ salle.etage }}
                         </li>
                         <li class="list-group-item">
+                            <strong>Radiateur : </strong>{{salle.radiateur}}
+
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Fenetre : </strong> {{ salle.fenetre }}
+
+                        </li>
+                        <li class="list-group-item">
                             <strong>SA attribué : </strong>
                                 <a href="{{ path('app_lier_liste') }}" class="btn btn-primary">Attribuer un SA</a>
 
@@ -99,5 +107,5 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             })
-        });
+        }});
 #}

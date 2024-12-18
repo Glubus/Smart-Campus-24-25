@@ -57,7 +57,7 @@ class SAController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    #[Route('/sa/ajout', name: 'app_sa_ajout')]
+    #[Route('/sa/ajouter', name: 'app_sa_ajouter')]
     public function ajoutSA(Request $request, EntityManagerInterface $entityManager): Response
     {
         $sa = new SA();
@@ -74,8 +74,12 @@ class SAController extends AbstractController
             return $this->redirectToRoute('app_sa_liste');
         }
 
-        return $this->render('sa/ajout.html.twig', [
+        return $this->render('sa/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'sa',
+            'classItem' => "sa",
+            'routeItem'=> "app_sa_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 
@@ -99,8 +103,12 @@ class SAController extends AbstractController
 
         // Render the page with the form and filtered results
         return $this->render('sa/liste.html.twig', [
-            "liste_SA" => $sa,
-            'form' => $form->createView(),
+            'css' => 'sa',
+            'classItem' => "sa",
+            'items' => $sa,
+            'routeItem'=> "app_sa_ajouter",
+            'classSpecifique' => "",
+            'form' => $form->createView()
         ]);
     }
     #[Route('/sa/{id}/suppression', name: 'app_sa_suppression')]
@@ -124,7 +132,7 @@ class SAController extends AbstractController
                 }
             }
 
-            return $this->render('sa/suppression.html.twig', [
+            return $this->render('sa/supprimer.html.twig', [
                 "form" => $form->createView(),
                 "SA" => $SA,
             ]);

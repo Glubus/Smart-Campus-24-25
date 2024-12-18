@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer un {{ classItem }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5" style="width: 40%">
+        <h1 class="text-center mb-4">{{ item.nom }}</h1>
+        <p>Êtes vous sur de vouloir supprimer ce {{ classItem }} ?</p>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger mt-1" >
+                {{ message }}
+            </div>
+        {% endfor %}
+        <button class="btn btn-primary mt-1 mr-1">Supprimer</button>
+        <a class="btn btn-primary mt-1 mr-1" href="{{ path('app_'~{{ classItem }}~'_liste') }}">Annuler</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
