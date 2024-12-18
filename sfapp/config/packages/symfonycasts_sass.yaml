@@ -5,3 +5,4 @@ symfonycasts_sass:
     - 'assets/styles/liste/plan.scss'
     - 'assets/styles/liste/sa.scss'
     - 'assets/styles/liste/salle.scss'
+    - 'assets/styles/liste/technicien.scss'
