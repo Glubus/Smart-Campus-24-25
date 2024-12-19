@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function PHPUnit\Framework\isNull;
 
 class BatimentController extends AbstractController
 {
@@ -83,22 +84,40 @@ class BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $batimentExistante = $batimentRepository->findBy(
-                ['nom' => $batiment->getNom()]);
-            if($batimentExistante
-            ) {
-                $this->addFlash('error', 'Ce batiment existe déjà');
-            }
-            else{
-                $em->persist($batiment);
-                $em->flush();
 
-                // Redirection vers la liste des bâtiments après ajout
-                return $this->redirectToRoute('app_batiment_liste');
+            $data = $form->getData();
+            // Access dynamically added "etages" data
+            $etages = $request->request->get('form')['etages'] ?? []; // Safely retrieve
+            foreach ($etages as $key => $etageName) {
+                // Save or process each étage
+                // Example: $entityManager->persist(new Etage($etageName));
+                if($etageName != null){
+                    $batiment->renameEtages($key, $etageName);
                 }
+            }
+
+            if (count($etages) !== count(array_unique($etages))) {
+                $this->addFlash('error', 'Chaque étage doit avoir un nom unique.');
+            }
+
+            else {
+                $batimentExistante = $batimentRepository->findBy(
+                    ['nom' => $batiment->getNom()]
+                );
+                if($batimentExistante) {
+                    $this->addFlash('error', 'Ce batiment existe déjà');
+                }
+                else{
+                    $em->persist($batiment);
+                    $em->flush();
+
+                    // Redirection vers la liste des bâtiments après ajout
+                    return $this->redirectToRoute('app_batiment_liste');
+                }
+            }
         }
 
-        return $this->render('template/ajouter.html.twig', [
+        return $this->render('batiment/ajouter.html.twig', [
             'form' => $form->createView(),
             'css' => 'batiment',
             'classItem' => "batiment",

@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Batiment;
 use App\Entity\Plan;
 use App\Form\AjoutPlanType;
 use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
 use App\Repository\PlanRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,10 +36,21 @@ class PlanController extends AbstractController
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
         $plan = new Plan();
+        $batiments_ids = $request->request->all('ajout_plan[Batiments]');
+
+        $batiments = [];
+        foreach ($batiments_ids as $id) {
+            $batiments[] = ($em->getRepository(BatimentRepository::class)->find($id));
+        }
+
         $form=$this->createForm(AjoutPlanType::class,$plan);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            dd($request->request->all());
             $plan->setDate(new DateTime());
+            foreach ($batiments as $batiment) {
+                $batiment->setPlan($plan); // Set the `plan` for each Batiment
+            }
             $em->persist($plan);
             $em->flush();
 
@@ -46,6 +59,10 @@ class PlanController extends AbstractController
 
         return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'plan',
+            'classItem' => "plan",
+            'routeItem'=> "app_plan_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 

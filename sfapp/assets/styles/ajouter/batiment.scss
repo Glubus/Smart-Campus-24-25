@@ -7,7 +7,7 @@ html, body {
 
 body {
     position: relative;
-    overflow: hidden; /* Empêche les débordements liés au flou */
+    //overflow: hidden; /* Empêche les débordements liés au flou */
 }
 
 body::before {

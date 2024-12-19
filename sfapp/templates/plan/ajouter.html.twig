@@ -1,23 +1,105 @@
-{# templates/detail_plan/liste.html.twig #}
-
-{% extends 'base.html.twig' %}
-
-{% block title %}Ajouter un plan{% endblock %}
-
-{% block body %}
-    <div class="container my-5" style="width: 40%">
-        <h1>Ajouter un plan</h1>
-
-        {# Formulaire Symfony #}
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        {{ form_end(form) }}
-    </div>
-
-    {# Intégration de Select2 pour la recherche dans le select #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
+{% extends 'template/ajouter.html.twig' %}
+{% block champ_dynamic %}
+    {% for batimentField in form.Batiments %}
+                {{ form_widget(batimentField) }}
+    {% endfor %}
+    <button type="button" id="add-batiment">Attribuer un batiment</button>
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('batiments');
+            const template = document.getElementById('ajout_plan_Batiments');
+            const addButton = document.getElementById('add-batiment');
+            let index = container.children.length; // Track current count of items
+            const selectedBatiments = new Set(); // Track selected Batiment values
+
+            const prototypeTemplate = template.getAttribute('data-prototype');
+            // Parse the template as DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = prototypeTemplate;
+            const optionCount = tempDiv.querySelectorAll('option').length;
+
+
+            // Add event listener to the 'Add Batiment' button
+            addButton.addEventListener('click', function (tagName, options) {
+                // Retrieve the prototype template and replace the index placeholder
+                const newFieldHtml = prototypeTemplate.replace(/__name__/g, index);
+                index++; // Increment for the next field
+
+                // Create a new div for the batiment field and append it
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = newFieldHtml;
+
+                // Extract the first child element (the field itself)
+                const newFieldDiv = tempContainer.firstElementChild;
+
+
+                // Add a remove button to the new field
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'remove-batiment btn btn-danger';
+                removeButton.textContent = 'Enlever';
+                removeButton.addEventListener('click', function () {
+                    newFieldDiv.remove();
+                    const selectField = newFieldDiv.querySelector('select');
+                    if (selectField) {
+                        selectedBatiments.delete(selectField.value); // Remove from selectedBatiments
+                        updateBatimentOptions();
+                    }
+                    checkMaxBatiment();
+                });
+
+                newFieldDiv.appendChild(removeButton);
+                container.appendChild(newFieldDiv);
+
+                updateBatimentOptions()
+                // Bind the filtering event to the new 'Batiment' select field
+                bindBatimentSelectFilter(newFieldDiv);
+                checkMaxBatiment();
+            });
+
+            // Function to bind filtering logic to each 'Batiment' select
+            function bindBatimentSelectFilter(batimentDiv) {
+                const selectField = batimentDiv.querySelector('select'); // Assuming the Batiment field is a select element
+                if (selectField) {
+                    selectField.previousValue = selectField.value;
+
+                    // Bind the change event to track selected value
+                    selectField.addEventListener('change', function () {
+                        if (selectField.previousValue) {
+                            selectedBatiments.delete(selectField.previousValue);
+                        }
+
+                        const selectedValue = selectField.value;
+                        if (selectedValue) {
+                            selectedBatiments.add(selectedValue); // Add to selectedBatiments
+                        }
+
+                        selectField.previousValue = selectedValue;
+
+                        // Update the options for all select fields
+                        updateBatimentOptions();
+                    });
+                }
+            }
+
+            // Function to filter Batiment options
+            function updateBatimentOptions(){
+                const selectFields = container.querySelectorAll('select');
+                selectFields.forEach(selectField => {
+                    const options = selectField.querySelectorAll('option');
+                    options.forEach(function (option) {
+                        option.disabled = selectedBatiments.has(option.value);
+                    });
+                });
+            }
+
+            function checkMaxBatiment(){
+                addButton.disabled = optionCount - 1 === container.childNodes.length;
+            }
+        });
+    </script>
+{% endblock %}
