@@ -7,6 +7,8 @@ use App\Entity\EtatIntervention;
 use App\Repository\DetailInterventionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +19,9 @@ class TechnicienController extends AbstractController
 {
     #[Route('/technicien/taches', name: 'app_technicien_taches')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
-    public function viewTaches(DetailInterventionRepository $repository): Response
+    public function viewTaches(Request $request,
+                               DetailInterventionRepository $repository,
+                               FormFactoryInterface $formFactory): Response
     {
         // Récupérer l'utilisateur connecté
         $technicien = $this->getUser();
@@ -26,12 +30,28 @@ class TechnicienController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à vos tâches.');
         }
 
+        $form = $formFactory->createBuilder()
+            ->setMethod('POST')
+            ->add('show_all_tasks', SubmitType::class, [
+                'label' => 'Afficher toutes les tâches',
+                'attr' => ['class' => 'btn btn-primary mb-4'],
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
         // Récupérer les tâches de l'utilisateur connecté
-        $taches = $repository->findBy(['technicien' => $technicien]);
+            $taches = $repository->findNonTermine($technicien);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $taches = $repository->findBy(['technicien' => $technicien]);
+        }
 
         // Retourner la vue avec les tâches
         return $this->render('technicien/taches.html.twig', [
             'taches' => $taches,
+            'form' => $form->createView(),
+
         ]);
     }
 

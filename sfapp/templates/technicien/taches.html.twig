@@ -17,10 +17,14 @@
 
         <h1 class="text-center mb-4">Vos tâches</h1>
 
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+
         <div class="row">
             {% for tache in taches %}
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm text-white {% if tache.etat.value == 'en attente' %}bg-danger{% elseif tache.etat.value == 'en cours' %}bg-warning{% else %}bg-light text-dark{% endif %}">
+                    <div class="card shadow-sm text-white {% if tache.etat.value == 'en attente' %}bg-danger{% elseif tache.etat.value == 'en cours' %}bg-warning{% else %}bg-dark{% endif %}">
                         <div class="card-body">
                             <h5 class="card-title fw-bold">{{ tache.salle.nom }}</h5>
                             <p class="card-text text-end small state-label">{{ tache.etat.value }}</p>
