@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,6 +34,37 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $prenom = null;
+
+    /**
+     * @var Collection<int, DetailIntervention>
+     */
+    #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'technicien')]
+    private Collection $detailInterventions;
+
+    public function __construct()
+    {
+        $this->detailInterventions = new ArrayCollection();
+    }
+
+    public function generateUsername(): void
+    {
+        $prenomInitial = substr($this->prenom, 0, 1); // Prendre la première lettre du prénom
+        $nomPart = substr($this->nom, 0, 5); // Prendre les cinq premières lettres du nom de famille
+        $digit = rand(0, 9); // Générer un chiffre aléatoire
+        $this->username=strtolower($prenomInitial . $nomPart . $digit);
+    }
 
     public function getId(): ?int
     {
@@ -106,5 +139,89 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function addRoles(mixed $roleSelected)
+    {
+        if (!in_array($roleSelected,$this->roles))
+            $this->roles[]=$roleSelected;
+    }
+
+    /**
+     * @return Collection<int, DetailIntervention>
+     */
+    public function getDetailInterventions(): Collection
+    {
+        return $this->detailInterventions;
+    }
+
+    public function addDetailIntervention(DetailIntervention $detailIntervention): static
+    {
+        if (!$this->detailInterventions->contains($detailIntervention)) {
+            $this->detailInterventions->add($detailIntervention);
+            $detailIntervention->setTechnicien($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetailIntervention(DetailIntervention $detailIntervention): static
+    {
+        if ($this->detailInterventions->removeElement($detailIntervention)) {
+            // set the owning side to null (unless already changed)
+            if ($detailIntervention->getTechnicien() === $this) {
+                $detailIntervention->setTechnicien(null);
+            }
+        }
+
+        return $this;
     }
 }

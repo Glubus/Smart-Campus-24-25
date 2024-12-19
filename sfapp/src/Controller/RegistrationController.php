@@ -22,6 +22,11 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
+            $roleSelected = $form->get('roles')->getData();
+
+            // Attribution du rôle sous forme de tableau (Symfony utilise un tableau pour les rôles)
+            $user->addRoles($roleSelected);
+            $user->generateUsername();
             $plainPassword = $form->get('plainPassword')->getData();
 
             // encode the plain password
@@ -36,7 +41,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'form' => $form,
         ]);
     }
 }

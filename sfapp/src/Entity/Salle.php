@@ -42,10 +42,16 @@ class Salle
     #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
     private Collection $valeurCapteurs;
 
+    /**
+     * @var Collection<int, DetailIntervention>
+     */
+    #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'salle')]
+    private Collection $detailInterventions;
     public function __construct()
     {
         $this->plans = new ArrayCollection();
         $this->valeurCapteurs = new ArrayCollection();
+        $this->detailInterventions = new ArrayCollection();
     }
 
     public function getCountSA(): int
@@ -192,6 +198,36 @@ class Salle
             // set the owning side to null (unless already changed)
             if ($valeurCapteur->getSalle() === $this) {
                 $valeurCapteur->setSalle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DetailIntervention>
+     */
+    public function getDetailInterventions(): Collection
+    {
+        return $this->detailInterventions;
+    }
+
+    public function addDetailIntervention(DetailIntervention $detailIntervention): static
+    {
+        if (!$this->detailInterventions->contains($detailIntervention)) {
+            $this->detailInterventions->add($detailIntervention);
+            $detailIntervention->setSalle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetailIntervention(DetailIntervention $detailIntervention): static
+    {
+        if ($this->detailInterventions->removeElement($detailIntervention)) {
+            // set the owning side to null (unless already changed)
+            if ($detailIntervention->getSalle() === $this) {
+                $detailIntervention->setSalle(null);
             }
         }
 
