@@ -6,7 +6,8 @@
 
 /* Général */
 body {
-    background: linear-gradient(to top right, #001932, #0041B5);
+    background-image: linear-gradient(to top right, #001932, #0041B5);
+    background-attachment: fixed;
     color: #fff;
     height: 100vh;
     display: flex;
@@ -108,6 +109,13 @@ body {
     width: 100%;
     margin: 10px 0;
     cursor: pointer;
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.card:hover {
+    box-shadow:
+            2px 2px 20px white,
+            -2px -2px 20px white;
 }
 
 .card.expanded {
