@@ -202,7 +202,7 @@ class SalleController extends AbstractController
                     if ($item['nom'] === 'temp') {
                         $tempValue = $item['valeur'];
                         $tempValue = (float)$tempValue;
-                    } elseif ($item['nom'] === 'hu    m') {
+                    } elseif ($item['nom'] === 'hum') {
                         $humValue = $item['valeur'];
                         $humValue = (float)$humValue;
                     } elseif ($item['nom'] === 'co2') {
@@ -227,14 +227,22 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/listeUser.html.twig', [
+        return $this->render('salle/user_liste.html.twig', [
             'col1' => $col1,
             'col2' => $col2,
             'col3' => $col3,
         ]);
     }
 
-    #[Route('/salle/user/{id}', name: 'app_salle_user_infos')]
+    #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
+    public function infosUser(int $id, SalleRepository $salleRepository)
+    {
+        $salle = $salleRepository->find($id);
+
+        return $this->render('salle/user_infos.html.twig', [
+            'salle' => $salle
+        ]);
+    }
 
 
     #[Route('/salle/ajouter', name: 'app_salle_ajouter')]

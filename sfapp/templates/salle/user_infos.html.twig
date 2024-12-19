@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la salle{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset("styles/user_infos.css") }}">
+    <div class="all">
+        <h1>{{ salle.nom }}</h1>
+        <h2>Métriques de la salle</h2>
+        <div class="metriques">
+            <div class="dataBlock temp">
+                <h4 class="textData">Température</h4>
+                <div class="bottomMet">
+                    <div class="etatNomCap">
+                        <div class="etatCap"></div>
+                        <p class="nomCap">Cap1</p>
+                    </div>
+                    <h3 style="font-size: 40px">22.3°C</h3>
+                </div>
+            </div>
+
+            <div class="dataBlock co2">
+                <h4 class="textData">CO2</h4>
+                <div class="bottomMet">
+                    <div class="etatNomCap">
+                        <div class="etatCapFonctionne"></div>
+                        <p class="nomCap">Cap2</p>
+                    </div>
+                    <h3 style="font-size: 40px">400ppm</h3>
+                </div>
+            </div>
+
+            <div class="dataBlock humidite">
+                <h4 class="textData">Humidité</h4>
+                <div class="bottomMet">
+                    <div class="etatNomCap">
+                        <div class="etatCap"></div>
+                        <p class="nomCap">Cap3</p>
+                    </div>
+                    <h3 style="font-size: 40px">50%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="below user card">
+            <aside class="infosSalle">
+                <h3 class="titreInfo card-header">Informations</h3>
+                <p class="el" style="margin-top: 20px"><strong>Nom : </strong>{{ salle.nom }}</p>
+                <p class="el"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
+                <p class="el"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
+                <p class="el"><strong>Etage : </strong>{{ salle.etage }}</p>
+            </aside>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+{% endblock %}
