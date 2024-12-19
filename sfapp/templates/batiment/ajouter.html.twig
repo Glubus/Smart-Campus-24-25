@@ -1,4 +1,58 @@
 {% extends 'template/ajouter.html.twig' %}
+{% block champ_dynamic %}
+<div>
+    <label class="form-label text-primary" id="toggleLabel" style="cursor: pointer">
+        Personnalisation des noms des étages <span class="ms-2 dropdown-icon">&#x25BC;</span>
+    </label>
+    <div  id="personnalisation" style="display: none;" class="etages-collection">
+        {# Champ a saisir pour personnaliser les noms d'etages#}
+        <input type = 'text' name = 'form[etages][0]' class = 'form-control mb-2' placeholder = "Nom de l'étage 0">
+    </div>
+</div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nbEtagesSelect = document.getElementById('ajout_batiment_nbEtages'); // Dropdown for nbEtages
+        const toggleLabel = document.getElementById('toggleLabel'); // Dropdown for nbEtages
+        const NomEtages = document.getElementById('personnalisation'); // Dropdown for nbEtages
+        const etagesContainer = document.querySelector('.etages-collection'); // Container for etages
+        let prevNbEtages = 1;
+
+
+        toggleLabel.addEventListener('click', function () {
+            const expanded = NomEtages.classList.contains("expanded");
+            NomEtages.style.display = expanded ? 'none' : 'block';
+            const icon = toggleLabel.querySelector('.dropdown-icon');
+            icon.innerHTML = expanded ? '&#x25BC;' : '&#x25B2;'; // ▼ or ▲
+
+            NomEtages.classList.toggle("expanded");
+        });
+
+        nbEtagesSelect.addEventListener('change', function () {
+            const selectedCount = parseInt(this.value);
+            if(selectedCount < prevNbEtages){
+                for(let i = prevNbEtages + 1; i > selectedCount + 1; i--) {
+                    const toDelete = etagesContainer.childNodes.item(i);
+                    etagesContainer.removeChild(toDelete);
+                }
+            }
+
+            for (let i = prevNbEtages; i < selectedCount; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = `form[etages][${i}]`;
+                input.className = 'form-control mb-2';
+                input.placeholder = `Nom du niveau ${i}`;
+
+                etagesContainer.appendChild(input);
+            }
+            prevNbEtages = selectedCount;
+        });
+    });
+</script>
+{% endblock %}
 
 

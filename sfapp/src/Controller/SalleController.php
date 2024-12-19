@@ -247,6 +247,7 @@ class SalleController extends AbstractController
         $batiments = $batimentRepository->findAll();
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $salleExistante = $salleRepository->findOneBy(
                 ['nom' => $salle->getNom()]);
             if($salleExistante) {

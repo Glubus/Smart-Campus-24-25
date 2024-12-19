@@ -11,14 +11,14 @@
 
     <div class="page-content">
         <div id="sidebar">
-            <select id="plan_selection" onchange="updateEtages()">
+            <select id="batiment_selection" onchange="updateEtages()">
                 <option value="" disabled selected>selectionner un plan</option>
-                {% for plan in plans %}
-                    <option value="{{ plan.id }}"
-                            {% if plan.id == selected_plan %}
+                {% for batiment in batiments %}
+                    <option value="{{ batiment.id }}"
+                            {% if batiment.id == selected_batiment %}
                     selected
                             {% endif %}>
-                        {{ plan.batNom }} - {{ plan.nom }}</option>
+                        {{ batiment.nom }}</option>
                 {% endfor %}
             </select>
                 <div id="etagesDiv">
@@ -47,7 +47,7 @@
                         <td class="salleDiv">{{ salle.nom }}</td>
                         <td class="tdAttribuer">
                             <div class="horizontal-line"></div>
-                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, id:selected_plan}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
+                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : id}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
                             <div class="flex">
                                 {% if salle.detailPlans|length == 0 %}
                                     <div class="line-stop"><i class="fa fa-close"></i></div>
@@ -97,59 +97,62 @@
     </div>
 
     <script>
-        const plans = {{ plans|json_encode|raw }};
+        const batiments = {{ batiments|json_encode|raw }};
 
         // Function to update the etage dropdown
         function updateEtages() {
-            const planSelect = document.getElementById("plan_selection");
+            const batSelect = document.getElementById("batiment_selection");
             const etagesList = document.getElementById("etagesList");
             const etagesToutes = document.getElementById("etagesToutes");
-            const selectedId = planSelect.value;
+            const selectedId = batSelect.value;
 
             // Clear previous étage buttons
             etagesToutes.innerHTML = '';
             etagesList.innerHTML = '';
 
             // Get selected plan
-            const selectedPlan = plans.find(p => p.id == selectedId);
+            const selectedBatiment = batiments.find(b => b.id == selectedId);
 
-            if (selectedPlan) {
+            if (selectedBatiment) {
                 let selectedEtage = -1;
                 const link = document.createElement('a');  // Create a new <a> element
-                link.href = `?plan=${selectedId}`;  // Set the href attribute
+                link.href = `?batiment=${selectedId}`;  // Set the href attribute
                 link.textContent = "Afficher toutes";  // Set the link text
                 link.classList.add('etage-affiche-toutes');  // Add a CSS class for styling (optional)
-                {%if selected_etage is null %} {% if selected_plan is not null %} if({{selected_plan}} == selectedId) link.classList.add('darken');{% endif %}
+                {%if selected_etage is null %} {% if selected_batiment is not null %} if({{selected_batiment}} == selectedId) link.classList.add('darken');{% endif %}
                 {% else %} selectedEtage = {{ selected_etage }};
                 {% endif %}
 
                 etagesToutes.appendChild(link);
 
 
-                for (let i = 0; i < selectedPlan.nbEtages; i++) {
-                    const line = document.createElement('div');  // Create a new <a> element
+                // Loop through the etage names in the selected batiment
+                selectedBatiment.nomEtages.forEach((etageName, index) => {
+                    const line = document.createElement('div');  // Create a new <div> element
                     line.classList.add('horizontal-line');
 
                     const link = document.createElement('a');  // Create a new <a> element
-                    link.href = `?plan=${selectedId}&etage=${i}`;  // Set the href attribute
-                    link.textContent = `Étage ${i}`;  // Set the link text
-                    link.classList.add('etage-list-item');  // Add a CSS class for styling (optional)
-                    if(selectedEtage == i) link.classList.add('darken');
+                    link.href = `?batiment=${selectedId}&etage=${index}`;  // Use the index for linking
+                    link.textContent = `Niveau ${etageName}`;  // Display the etage name
+                    link.classList.add('etage-list-item');  // Add a CSS class for styling
+
+                    // Highlight the selected etage
+                    {% if selected_batiment is not null %} if({{selected_batiment}} == selectedId && selectedEtage == index) link.classList.add('darken'){% endif %};
 
                     const listItem = document.createElement('li');  // Create a <li> element
-                    listItem.appendChild(line);
-                    listItem.appendChild(link);  // Append the <a> to the <li>
+                    listItem.appendChild(line);  // Append the horizontal line
+                    listItem.appendChild(link);  // Append the <a> element
 
                     etagesList.appendChild(listItem);  // Append the <li> to the list
-                }
+                });
             }
         }
 
         window.onload = function() {
-            const selectionPlan = document.getElementById('plan_selection');
+            const selectionBatiment = document.getElementById('batiment_selection');
 
             // Check if the selected option is set programmatically
-            const selectedValue = selectionPlan.value;
+            const selectedValue = selectionBatiment.value;
 
             // Manually trigger the onchange event if there's a pre-selected value
             if (selectedValue) {
