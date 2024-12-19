@@ -1,29 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes tâches{% endblock %}
+{% block title %}Vos tâches{% endblock %}
 
 {% block body %}
-    <h1>Mes tâches</h1>
-    {% if taches is empty %}
-        <p>Aucune tâche trouvée.</p>
-    {% else %}
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Salle</th>
-                <th>État</th>
-            </tr>
-            </thead>
-            <tbody>
+    <div class="container mt-5">
+        <div class="row mb-4">
+            <div class="col">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Rechercher...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-center mb-4">Vos tâches</h1>
+
+        <div class="row">
             {% for tache in taches %}
-                <tr>
-                    <td>{{ tache.id }}</td>
-                    <td>{{ tache.salle.nom }}</td>
-                    <td>{{ tache.etat }}</td>
-                </tr>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm text-white {% if tache.etat.value == 'en attente' %}bg-danger{% elseif tache.etat.value == 'en cours' %}bg-warning{% else %}bg-light text-dark{% endif %}">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ tache.salle.nom }}</h5>
+                            <p class="card-text text-end small state-label">{{ tache.etat.value }}</p>
+                            <p class="card-text text-white-50 small">Dernière donnée enregistrée il y a 10 minutes</p>
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-success btn-sm change-state" data-id="{{ tache.id }}">
+                                    Modifier l'état
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.change-state').forEach(button => {
+            button.addEventListener('click', () => {
+                const card = button.closest('.card');
+                const tacheId = button.dataset.id;
+                const currentState = button.dataset.state;
+
+                if (!tacheId) {
+                    console.error("ID de la tâche non défini");
+                    return;
+                }
+
+                // Liste des états disponibles
+                const states = ['en attente', 'en cours', 'terminée'];
+                let nextState = states[(states.indexOf(currentState) + 1) % states.length];
+                let nextStateIndex = states.indexOf(nextState);
+
+                // Requête AJAX pour mettre à jour l'état
+                fetch(`/api/taches/${tacheId}/etat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ etat: nextState }),
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+                        return response.json();
+                    })
+                    .then(() => {
+                        // Mettre à jour visuellement la carte
+                        button.dataset.state = nextState;
+                        card.classList.remove('bg-danger', 'bg-warning', 'bg-light', 'text-dark');
+                        if (nextState === 'en attente') {
+                            card.classList.add('bg-danger', 'text-white');
+                        } else if (nextState === 'en cours') {
+                            card.classList.add('bg-warning', 'text-white');
+                        } else {
+                            card.classList.add('bg-dark', 'text-dark');
+                        }
+                        card.querySelector('.state-label').textContent = nextState;
+                    })
+                    .catch(error => console.error(error));
+            });
+        });
+
+    </script>
 {% endblock %}
