@@ -44,6 +44,14 @@ class TechicienFixtures extends Fixture
         $detailIntervention->setTechnicien($technicien);
         $detailIntervention->setSalle($d307);
         $detailIntervention->setEtat(EtatIntervention::EN_COURS); // Exemple : état "en cours"
+        $detailIntervention->setDateAjout(new \DateTime());
+        $manager->persist($detailIntervention);
+
+        $detailIntervention = new DetailIntervention();
+        $detailIntervention->setTechnicien($technicien);
+        $detailIntervention->setSalle($d307);
+        $detailIntervention->setEtat(EtatIntervention::EN_ATTENTE); // Exemple : état "en cours"
+        $detailIntervention->setDateAjout(new \DateTime());
         $manager->persist($detailIntervention);
 
         // Exécuter les persistes
