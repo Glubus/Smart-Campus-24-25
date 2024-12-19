@@ -36,19 +36,12 @@ class PlanController extends AbstractController
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
         $plan = new Plan();
-        $batiments_ids = $request->request->all('ajout_plan[Batiments]');
-
-        $batiments = [];
-        foreach ($batiments_ids as $id) {
-            $batiments[] = ($em->getRepository(BatimentRepository::class)->find($id));
-        }
 
         $form=$this->createForm(AjoutPlanType::class,$plan);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dd($request->request->all());
             $plan->setDate(new DateTime());
-            foreach ($batiments as $batiment) {
+            foreach ($plan->getBatiments() as $batiment) {
                 $batiment->setPlan($plan); // Set the `plan` for each Batiment
             }
             $em->persist($plan);

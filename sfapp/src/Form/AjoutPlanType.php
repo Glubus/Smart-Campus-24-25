@@ -8,7 +8,6 @@ use App\Entity\Plan;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,28 +27,25 @@ class AjoutPlanType extends AbstractType
                             'class' => 'form-label'
                         ],
                     ])
-         ->add('Batiments', CollectionType::class, [
-             'entry_type' => EntityType::class,
-             'entry_options' => [
-                 'class' => Batiment::class,
-                 'choice_label' => 'nom',
-                 'placeholder' => 'selectionner un batiment...',
-                 'query_builder' => function (EntityRepository $er) {
-                     return $er->createQueryBuilder('ba')
-                         ->where('ba.plan IS NULL') // Use 'plan' if it is an object relation
-                         ->orderBy('ba.nom', 'ASC');
-                 },
-                 'attr' => [
-                     'class' => 'form-control sa-searchable',
-                     'data-live-search' => 'true',
-                 ],
-                 'label' => false,
-             ],
-             'allow_add' => true, // Allow adding new fields dynamically
-             'allow_delete' => true, // Allow removing fields dynamically
-             'by_reference' => false, // Important for proper Doctrine association
-             'label' => 'Batiments',
-         ])
+            ->add('Batiments', EntityType::class, [
+                'class' => Batiment::class, // Class of the entity
+                'choice_label' => 'nom',   // Field to be displayed for each option (the name of the building)
+                'multiple' => true,        // Allows multiple selections
+                'expanded' => true,        // If you want checkboxes instead of a select dropdown
+                'placeholder' => 'Selectionner des bâtiments...', // Placeholder
+                'query_builder' => function (EntityRepository $er) {
+                    // Create the query to retrieve the Batiments
+                    return $er->createQueryBuilder('ba')
+                        ->where('ba.plan IS NULL') // Condition for the Batiments
+                        ->orderBy('ba.nom', 'ASC'); // Ordering the Batiments by name
+                },
+                'label' => 'Bâtiments',  // Label for the field
+                'attr' => [
+                    'class' => 'form-control sa-searchable', // Optional: Add custom styles
+                    'data-live-search' => 'true', // Optional: Add live search
+                    'style' => 'margin-left: 10px; display: flex; flex-direction: column;',
+                ]
+            ])
         ;
     }
 

@@ -84,13 +84,9 @@ class BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $data = $form->getData();
             // Access dynamically added "etages" data
-            $etages = $request->request->get('form')['etages'] ?? []; // Safely retrieve
+            $etages = $request->request->all('form')['etages']; // Safely retrieve
             foreach ($etages as $key => $etageName) {
-                // Save or process each étage
-                // Example: $entityManager->persist(new Etage($etageName));
                 if($etageName != null){
                     $batiment->renameEtages($key, $etageName);
                 }
