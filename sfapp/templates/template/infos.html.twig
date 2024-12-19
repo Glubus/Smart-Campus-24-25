@@ -5,12 +5,12 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset("styles/infos/common.scss") }}">
         <div class="container my-5">
-            <div class="card shadow-lg">
-                <div class="card-header text-center bg-secondary text-white">
+            <div class="card">
+                <div class="card-header text-center text-white">
                     <h2 class="mb-0">Détails de la salle : {{ item.nom }}</h2>
                 </div>
                 <div class="card-body">
-                    <h4 class="card-title text-primary">Informations générales</h4>
+                    <h4 class="card-title">Informations générales</h4>
                     <ul class="list-group list-group-flush">
                         {% block liste %}
 
@@ -19,12 +19,11 @@
                 </div>
                 {% block ajouts %}{% endblock %}
                 <div class="card-footer text-center">
-                    <a href="{{ path('app_'~classItem~'_liste') }}" class="btn btn-outline-secondary">
+                    <a href="{{ path('app_'~classItem~'_liste') }}" class="btn btn-primary">
                         Retour à la liste des salles
                     </a>
                 </div>
             </div>
-
         </div>
 {% endblock %}
 
