@@ -11,11 +11,14 @@ use App\Form\ajoutBatimentType;
 use App\Form\ajoutSalleType;
 use App\Form\AssociationSASalle;
 use App\Form\ajoutSAType;
+use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class GestionController extends AbstractController
@@ -93,7 +96,7 @@ class GestionController extends AbstractController
 
         return $this->redirectToRoute("app_register");
     }
-    #[Route('/admin/technicien/{id}', name: 'app_technicien_infos')]
+    #[Route('/admin/technicien/{id}', name: 'app_technicien_infos',requirements: ['id' => '\d+'])]
     public function infos(int $id, UtilisateurRepository $repository): Response
     {
         $user=$repository->find($id);
@@ -109,9 +112,54 @@ class GestionController extends AbstractController
     }
 
     #[Route('/admin/technicien/supprimer', name: 'app_technicien_supprimer_selection')]
-    public function supprimer(): Response
+    public function supprimer(        Request $request,
+                                      UtilisateurRepository $repository,
+                                      EntityManagerInterface $entityManager,
+                                      SessionInterface $session): Response
     {
+        $ids = $request->request->all('selected');
 
-        return $this->render('batiment/infos.html.twig', []);
+        if (empty($ids)) {
+            $ids = $session->get('selected', []);
+        } else {
+            $session->set('selected', $ids);
+        }
+
+        $technicien = array_map(fn($id) => $repository->find($id), $ids);
+
+
+        $form = $this->createForm(SuppressionType::class, null, [
+            'phrase' => 'CONFIRMER'
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $submittedString = $form->get('inputString')->getData();
+
+            if ($submittedString === 'CONFIRMER') {
+
+                if (!is_iterable($technicien)) {
+                    throw new \Exception("No buildings found.");
+                }
+                foreach ($technicien as $tech) {
+
+
+                    $entityManager->remove($tech);
+                }
+                $entityManager->flush();
+                return $this->redirectToRoute('app_batiment_liste');
+            }
+            else {
+                $this->addFlash('error', 'La saisie est incorrecte.');
+            }
+        }
+
+        return $this->render('template/supprimer_multiple.html.twig', [
+            'form' => $form->createView(),
+            'items' => $technicien,
+            'classItem'=> "technicien"
+        ]);
+
     }
 }
