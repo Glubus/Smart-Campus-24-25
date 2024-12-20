@@ -113,3 +113,13 @@ h2 {
 .el {
     margin-left: 10px;
 }
+
+.conseils {
+    text-align: center;
+    font-size: 10px;
+    color: black;
+    background-color: white;
+    height: 50px;
+    width: 100%;
+    margin-bottom: 40px;
+}
