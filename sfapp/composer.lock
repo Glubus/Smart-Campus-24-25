@@ -7223,7 +7223,6 @@
                 "symfony/console": "<5.4",
                 "symfony/framework-bundle": "<6.4",
                 "symfony/http-client": "<5.4",
-                "symfony/ldap": "<5.4",
                 "symfony/serializer": "<6.4",
                 "symfony/twig-bundle": "<5.4",
                 "symfony/validator": "<6.4"
@@ -7238,7 +7237,6 @@
                 "symfony/form": "^5.4|^6.0|^7.0",
                 "symfony/framework-bundle": "^6.4|^7.0",
                 "symfony/http-client": "^5.4|^6.0|^7.0",
-                "symfony/ldap": "^5.4|^6.0|^7.0",
                 "symfony/process": "^5.4|^6.0|^7.0",
                 "symfony/rate-limiter": "^5.4|^6.0|^7.0",
                 "symfony/serializer": "^6.4|^7.0",
@@ -7323,7 +7321,6 @@
             "conflict": {
                 "symfony/event-dispatcher": "<5.4",
                 "symfony/http-foundation": "<5.4",
-                "symfony/ldap": "<5.4",
                 "symfony/security-guard": "<5.4",
                 "symfony/translation": "<5.4.35|>=6.0,<6.3.12|>=6.4,<6.4.3|>=7.0,<7.0.3",
                 "symfony/validator": "<5.4"
@@ -7336,7 +7333,6 @@
                 "symfony/event-dispatcher": "^5.4|^6.0|^7.0",
                 "symfony/expression-language": "^5.4|^6.0|^7.0",
                 "symfony/http-foundation": "^5.4|^6.0|^7.0",
-                "symfony/ldap": "^5.4|^6.0|^7.0",
                 "symfony/string": "^5.4|^6.0|^7.0",
                 "symfony/translation": "^5.4.35|~6.3.12|^6.4.3|^7.0.3",
                 "symfony/validator": "^6.4|^7.0"
