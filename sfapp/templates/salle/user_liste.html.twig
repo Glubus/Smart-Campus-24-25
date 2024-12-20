@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la salle{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('/styles/user_liste.css') }}">
+    <div class="container">
+        <div class="header">
+            <div class="search">
+                <input type="text" placeholder="Rechercher..." class="search-bar">
+                <button class="search-button">🔍</button>
+            </div>
+            <h1 class="title">Salles</h1>
+            <button class="sort-button">Trier ⬇</button>
+        </div>
+
+        <div class="listeSalles">
+            <div class="col1">
+                {% for item in col1 %}
+                    <div class="card" id="card">
+                        <div class="cardMainInfos">
+                            <div class="card-top">
+                                <p class="room-name">{{ item.salle.nom }}</p>
+                                <div class="etat">
+                                    <p class="status" id="status">En intervention</p>
+                                    <div class="pastilleStatus"></div>
+                                </div>
+                            </div>
+                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="card-content" id="card-content">
+                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
+                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="metrics">
+                                    <div class="metric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="metric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="metric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                                <div class="conseils">
+                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
+                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
+                                </div>
+                            {% endif %}
+                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col2">
+                {% for item in col2 %}
+                    <div class="card" id="card">
+                        <div class="cardMainInfos">
+                            <div class="card-top">
+                                <p class="room-name">{{ item.salle.nom }}</p>
+                                <div class="etat">
+                                    <p class="status" id="status">En intervention</p>
+                                    <div class="pastilleStatus"></div>
+                                </div>
+                            </div>
+                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="card-content" id="card-content">
+                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
+                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="metrics">
+                                    <div class="metric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="metric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="metric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                                <div class="conseils">
+                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
+                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
+                                </div>
+                            {% endif %}
+                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col3">
+                {% for item in col3 %}
+                    <div class="card" id="card">
+                        <div class="cardMainInfos">
+                            <div class="card-top">
+                                <p class="room-name">{{ item.salle.nom }}</p>
+                                <div class="etat">
+                                    <p class="status" id="status">En intervention</p>
+                                    <div class="pastilleStatus"></div>
+                                </div>
+                            </div>
+                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="card-content" id="card-content">
+                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
+                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="metrics">
+                                    <div class="metric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="metric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="metric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                                <div class="conseils">
+                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
+                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
+                                </div>
+                            {% endif %}
+                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Sélectionner toutes les cartes
+            const cards = document.querySelectorAll(".card");
+
+            // Ajouter un gestionnaire d'événements à chaque carte
+            cards.forEach((card) => {
+                const cardContent = card.querySelector(".card-content");
+                card.addEventListener("click", function () {
+                    // Toggle la classe "expanded" pour agrandir/rétrécir
+                    card.classList.toggle("expanded");
+                    cardContent.classList.toggle("expanded");
+
+                    // Afficher/masquer le contenu
+                    if (cardContent.style.display === "block") {
+                        cardContent.style.display = "none";
+                    } else {
+                        cardContent.style.display = "block";
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

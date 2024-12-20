@@ -202,7 +202,7 @@ class SalleController extends AbstractController
                     if ($item['nom'] === 'temp') {
                         $tempValue = $item['valeur'];
                         $tempValue = (float)$tempValue;
-                    } elseif ($item['nom'] === 'hu    m') {
+                    } elseif ($item['nom'] === 'hum') {
                         $humValue = $item['valeur'];
                         $humValue = (float)$humValue;
                     } elseif ($item['nom'] === 'co2') {
@@ -227,14 +227,97 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/listeUser.html.twig', [
+        return $this->render('salle/user_liste.html.twig', [
             'col1' => $col1,
             'col2' => $col2,
             'col3' => $col3,
         ]);
     }
 
-    #[Route('/salle/user/{id}', name: 'app_salle_user_infos')]
+    #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
+    public function infosUser(int $id, SalleRepository $salleRepository)
+    {
+        $salle = $salleRepository->find($id);
+
+        $tempValue = null;
+        $humValue = null;
+        $co2Value = null;
+
+        $client = HttpClient::create();
+
+        $associations = [
+            "D205" => "ESP-004",
+            "D206" => "ESP-008",
+            "D207" => "ESP-006",
+            "D204" => "ESP-014",
+            "D203" => "ESP-012",
+            "D303" => "ESP-005",
+            "D304" => "ESP-011",
+            "C101" => "ESP-007",
+            "D109" => "ESP-024",
+            "Secrétariat" => "ESP-026",
+            "D001" => "ESP-030",
+            "D002" => "ESP-028",
+            "D004" => "ESP-020",
+            "C004" => "ESP-021",
+            "C007" => "ESP-022"
+        ];
+
+        $db = [
+            "ESP-004" => "sae34bdk1eq1",
+            "ESP-008" => "sae34bdk1eq2",
+            "ESP-006" => "sae34bdk1eq3",
+            "ESP-014" => "sae34bdk2eq1",
+            "ESP-012" => "sae34bdk2eq2",
+            "ESP-005" => "sae34bdk2eq3",
+            "ESP-011" => "sae34bdl1eq1",
+            "ESP-007" => "sae34bdl1eq2",
+            "ESP-024" => "sae34bdl1eq3",
+            "ESP-026" => "sae34bdl2eq1",
+            "ESP-030" => "sae34bdl2eq2",
+            "ESP-028" => "sae34bdl2eq3",
+            "ESP-020" => "sae34bdm1eq1",
+            "ESP-021" => "sae34bdm1eq2",
+            "ESP-022" => "sae34bdm1eq3"
+        ];
+
+        if(array_key_exists($salle->getNom(), $associations)) {
+            $headers["dbname"] = $db[$associations[$salle->getNom()]];
+            $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last?nomsa=' . $associations[$salle->getNom()] . '&limit=3&page=1';
+            $response = $client->request('GET', $url, [
+                'headers' => $headers,
+            ]);
+
+            if ($response->getStatusCode() != 200) {
+                var_dump('Erreur 500');
+                exit;
+            }
+
+            $data = json_decode($response->getContent(), true);
+            foreach ($data as $item) {
+                if ($item['nom'] === 'temp') {
+                    $tempValue = $item['valeur'];
+                    $tempValue = (float)$tempValue;
+                } elseif ($item['nom'] === 'hum') {
+                    $humValue = $item['valeur'];
+                    $humValue = (float)$humValue;
+                } elseif ($item['nom'] === 'co2') {
+                    $co2Value = $item['valeur'];
+                    $co2Value = (float)$co2Value;
+                }
+            }
+        }
+
+        $tempValue = round($tempValue, 1);
+        $co2Value = round($co2Value, 0);
+        $humValue = round($humValue, 1);
+
+        $infos[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+
+        return $this->render('salle/user_infos.html.twig', [
+            'infos' => $infos
+        ]);
+    }
 
 
     #[Route('/salle/ajouter', name: 'app_salle_ajouter')]
