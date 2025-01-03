@@ -23,15 +23,30 @@
 
         <div class="row">
             {% for tache in taches %}
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm text-white {% if tache.etat.value == 'en attente' %}bg-danger{% elseif tache.etat.value == 'en cours' %}bg-warning{% else %}bg-dark{% endif %}">
+                <div class=" col-md-4 mb-3">
+                    <div class="taches card shadow-sm text-white
+                    {% if tache.etat.value == 'en attente' %}
+                        bg-warning
+                    {% elseif tache.etat.value == 'en cours' %}
+                        bg-primary
+                    {% else %}
+                        bg-success
+                    {% endif %}">
                         <div class="card-body">
                             <h5 class="card-title fw-bold">{{ tache.salle.nom }}</h5>
                             <p class="card-text text-end small state-label">{{ tache.etat.value }}</p>
                             <p class="card-text text-white-50 small">Dernière donnée enregistrée il y a 10 minutes</p>
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-success btn-sm change-state" data-id="{{ tache.id }}">
-                                    Modifier l'état
+                                <button class="btn btn-info btn-sm change-state {% if tache.etat.value == 'en cours' %}en-cours{% elseif tache.etat.value == 'en attente' %}en-attente{% endif %}"
+                                        data-id="{{ tache.id }}">
+                                    {% if tache.etat.value == 'en attente' %}
+                                        Passer en cours
+                                    {% elseif tache.etat.value == 'en cours' %}
+                                        Passer en attente
+                                    {% endif %}
+                                </button>
+                                <button class="btn btn-info btn-sm termine" data-id="{{ tache.id }}">
+                                    terminer la tache
                                 </button>
                             </div>
                         </div>
@@ -42,11 +57,11 @@
     </div>
 
     <script>
-        document.querySelectorAll('.change-state').forEach(button => {
+        document.querySelectorAll('.en-cours').forEach(button => {
             button.addEventListener('click', () => {
-                const card = button.closest('.card');
-                const tacheId = button.dataset.id;
-                const currentState = button.dataset.state;
+                const card = button.closest('.card'); // Trouve la carte parente
+                const tacheId = button.dataset.id; // Récupère l'ID de la tâche
+                const currentState = button.textContent.trim(); // Utilise le texte du bouton comme état actuel
 
                 if (!tacheId) {
                     console.error("ID de la tâche non défini");
@@ -54,9 +69,60 @@
                 }
 
                 // Liste des états disponibles
-                const states = ['en attente', 'en cours', 'terminée'];
-                let nextState = states[(states.indexOf(currentState) + 1) % states.length];
-                let nextStateIndex = states.indexOf(nextState);
+
+                const newState = button.classList.contains('en-attente') ? 'en cours' : 'en attente';
+
+                // AJAX request to update the state
+                fetch(`/api/taches/${tacheId}/etat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ etat: newState }), // Send the new state
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+                        return response.json();
+                    })
+                    .then(() => {
+                        // Update the button text and class
+                        button.textContent = newState === 'en attente' ? 'Passer en cours' : 'Passer en attente';
+                        button.classList.toggle('en-attente', newState === 'en cours');
+                        button.classList.toggle('en-cours', newState === 'en attente');
+
+                        // Update the card's classes
+                        card.classList.remove('bg-warning', 'bg-primary', 'bg-success');
+                        if (newState === 'en attente') {
+                            card.classList.add('bg-warning');
+                        } else if (newState === 'en cours') {
+                            card.classList.add('bg-primary');
+                        } else {
+                            card.classList.add('bg-success');
+                        }
+
+                        // Update the state label
+                        const stateLabel = card.querySelector('.state-label');
+                        if (stateLabel) {
+                            stateLabel.textContent = newState;
+                        }
+                    })
+                    .catch(error => console.error(error));
+            });
+        });
+
+        document.querySelectorAll('.en-attente').forEach(button => {
+            button.addEventListener('click', () => {
+                const card = button.closest('.card'); // Trouve la carte parente
+                const tacheId = button.dataset.id; // Récupère l'ID de la tâche
+
+                if (!tacheId) {
+                    console.error("ID de la tâche non défini");
+                    return;
+                }
+
+                // Déterminer le nouvel état
+                const newState = button.classList.contains('en-cours') ? 'en attente' : 'en cours';
 
                 // Requête AJAX pour mettre à jour l'état
                 fetch(`/api/taches/${tacheId}/etat`, {
@@ -65,28 +131,53 @@
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
                     },
-                    body: JSON.stringify({ etat: nextState }),
+                    body: JSON.stringify({ etat: newState }), // Envoie le nouvel état
                 })
                     .then(response => {
                         if (!response.ok) throw new Error('Erreur lors de la mise à jour');
                         return response.json();
                     })
                     .then(() => {
-                        // Mettre à jour visuellement la carte
-                        button.dataset.state = nextState;
-                        card.classList.remove('bg-danger', 'bg-warning', 'bg-light', 'text-dark');
-                        if (nextState === 'en attente') {
-                            card.classList.add('bg-danger', 'text-white');
-                        } else if (nextState === 'en cours') {
-                            card.classList.add('bg-warning', 'text-white');
+                        // Met à jour visuellement le bouton
+                        button.textContent = newState === 'en attente' ? 'Passer en cours' : 'Passer en attente';
+                        button.classList.toggle('en-attente', newState === 'en attente');
+                        button.classList.toggle('en-cours', newState === 'en cours');
+
+                        // Met à jour les classes de la carte
+                        card.classList.remove('bg-warning', 'bg-primary', 'bg-success');
+                        if (newState === 'en attente') {
+                            card.classList.add('bg-warning');
+                        } else if (newState === 'en cours') {
+                            card.classList.add('bg-primary');
                         } else {
-                            card.classList.add('bg-dark', 'text-dark');
+                            card.classList.add('bg-success');
                         }
-                        card.querySelector('.state-label').textContent = nextState;
+
+                        // Met à jour le label de l'état
+                        const stateLabel = card.querySelector('.state-label');
+                        if (stateLabel) {
+                            stateLabel.textContent = newState;
+                        }
                     })
                     .catch(error => console.error(error));
             });
         });
 
     </script>
+    <style>
+        body {
+            background-image: linear-gradient(to top right, #001932, #0041B5);
+            background-attachment: fixed;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .taches {
+            border: #82C1FF solid 3px;
+
+        }
+    </style>
 {% endblock %}
