@@ -4,29 +4,45 @@
 
 {% block body %}
     <div class="container mt-5">
-        <div class="row mb-4">
-            <div class="col">
+        <div class="row mb-4 align-items-center">
+            <!-- Bouton "Toutes les tâches" à gauche -->
+            <div class="col-md-4">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            </div>
+
+            <!-- Titre au centre -->
+            <div class="col-md-4 text-center">
+                <h1 class="mb-0">Vos tâches</h1>
+            </div>
+
+            <!-- Barre de recherche à droite -->
+            <div class="col-md-4">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Rechercher...">
-                    <button class="btn btn-outline-secondary" type="button">
+                    <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Rechercher par nom"
+                            id="searchInput">
+                    <button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            id="searchButton">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <h1 class="text-center mb-4">Vos tâches</h1>
-
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        {{ form_end(form) }}
-
         <div class="row">
             {% for tache in taches %}
-                <div class=" col-md-4 mb-3">
+                <div
+                        class="col-md-4 mb-3 task"
+                        data-name="{{ tache.salle.nom|lower }}">
                     <div class="taches card shadow-sm text-white
-                    {% if tache.etat.value == 'en attente' %}
-                        bg-warning
+                     {% if tache.etat.value == 'en attente' %}
+                        bg-dark-orange
                     {% elseif tache.etat.value == 'en cours' %}
                         bg-primary
                     {% else %}
@@ -35,19 +51,26 @@
                         <div class="card-body">
                             <h5 class="card-title fw-bold">{{ tache.salle.nom }}</h5>
                             <p class="card-text text-end small state-label">{{ tache.etat.value }}</p>
-                            <p class="card-text text-white-50 small">Dernière donnée enregistrée il y a 10 minutes</p>
+                            <p class="card-text text-white-50 small">tache crée le {{ tache.dateAjout|date('d-m-Y H:i:s') }}.</p>
+
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-info btn-sm change-state {% if tache.etat.value == 'en cours' %}en-cours{% elseif tache.etat.value == 'en attente' %}en-attente{% endif %}"
-                                        data-id="{{ tache.id }}">
+                                <button
+                                        class="btn btn-info btn-sm change-state {% if tache.etat.value == 'en cours' %}en-cours{% elseif tache.etat.value == 'en attente' %}en-attente{% endif %}"
+                                        data-id="{{ tache.id }}"
+                                        {% if tache.etat.value == 'terminée' %}disabled{% endif %}>
                                     {% if tache.etat.value == 'en attente' %}
                                         Passer en cours
                                     {% elseif tache.etat.value == 'en cours' %}
                                         Passer en attente
+                                    {% elseif tache.etat.value == 'terminée' %}
+                                        Tâche terminée
                                     {% endif %}
                                 </button>
+                                {% if tache.etat.value != 'terminée' %}
                                 <button class="btn btn-info btn-sm termine" data-id="{{ tache.id }}">
                                     terminer la tache
                                 </button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -57,61 +80,7 @@
     </div>
 
     <script>
-        document.querySelectorAll('.en-cours').forEach(button => {
-            button.addEventListener('click', () => {
-                const card = button.closest('.card'); // Trouve la carte parente
-                const tacheId = button.dataset.id; // Récupère l'ID de la tâche
-                const currentState = button.textContent.trim(); // Utilise le texte du bouton comme état actuel
-
-                if (!tacheId) {
-                    console.error("ID de la tâche non défini");
-                    return;
-                }
-
-                // Liste des états disponibles
-
-                const newState = button.classList.contains('en-attente') ? 'en cours' : 'en attente';
-
-                // AJAX request to update the state
-                fetch(`/api/taches/${tacheId}/etat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    body: JSON.stringify({ etat: newState }), // Send the new state
-                })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Erreur lors de la mise à jour');
-                        return response.json();
-                    })
-                    .then(() => {
-                        // Update the button text and class
-                        button.textContent = newState === 'en attente' ? 'Passer en cours' : 'Passer en attente';
-                        button.classList.toggle('en-attente', newState === 'en cours');
-                        button.classList.toggle('en-cours', newState === 'en attente');
-
-                        // Update the card's classes
-                        card.classList.remove('bg-warning', 'bg-primary', 'bg-success');
-                        if (newState === 'en attente') {
-                            card.classList.add('bg-warning');
-                        } else if (newState === 'en cours') {
-                            card.classList.add('bg-primary');
-                        } else {
-                            card.classList.add('bg-success');
-                        }
-
-                        // Update the state label
-                        const stateLabel = card.querySelector('.state-label');
-                        if (stateLabel) {
-                            stateLabel.textContent = newState;
-                        }
-                    })
-                    .catch(error => console.error(error));
-            });
-        });
-
-        document.querySelectorAll('.en-attente').forEach(button => {
+        document.querySelectorAll('.change-state, .termine').forEach(button => {
             button.addEventListener('click', () => {
                 const card = button.closest('.card'); // Trouve la carte parente
                 const tacheId = button.dataset.id; // Récupère l'ID de la tâche
@@ -121,47 +90,94 @@
                     return;
                 }
 
-                // Déterminer le nouvel état
-                const newState = button.classList.contains('en-cours') ? 'en attente' : 'en cours';
-
-                // Requête AJAX pour mettre à jour l'état
-                fetch(`/api/taches/${tacheId}/etat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    body: JSON.stringify({ etat: newState }), // Envoie le nouvel état
-                })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Erreur lors de la mise à jour');
-                        return response.json();
+                if (button.classList.contains('change-state')) {
+                    // Gestion du changement d'état
+                    const newState = button.classList.contains('en-cours') ? 'en attente' : 'en cours';
+                    fetch(`/api/taches/${tacheId}/etat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ etat: newState }), // Envoie le nouvel état
                     })
-                    .then(() => {
-                        // Met à jour visuellement le bouton
-                        button.textContent = newState === 'en attente' ? 'Passer en cours' : 'Passer en attente';
-                        button.classList.toggle('en-attente', newState === 'en attente');
-                        button.classList.toggle('en-cours', newState === 'en cours');
+                        .then(response => {
+                            if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+                            return response.json();
+                        })
+                        .then(() => {
+                            // Mise à jour visuelle du bouton
+                            button.textContent = newState === 'en attente' ? 'Passer en cours' : 'Passer en attente';
+                            button.classList.toggle('en-attente', newState === 'en attente');
+                            button.classList.toggle('en-cours', newState === 'en cours');
 
-                        // Met à jour les classes de la carte
-                        card.classList.remove('bg-warning', 'bg-primary', 'bg-success');
-                        if (newState === 'en attente') {
-                            card.classList.add('bg-warning');
-                        } else if (newState === 'en cours') {
-                            card.classList.add('bg-primary');
-                        } else {
+                            // Mise à jour des classes de la carte
+                            card.classList.remove('bg-warning', 'bg-primary', 'bg-success');
+                            if (newState === 'en attente') {
+                                card.classList.add('bg-warning');
+                            } else if (newState === 'en cours') {
+                                card.classList.add('bg-primary');
+                            }
+                        })
+                        .catch(error => console.error(error));
+                } else if (button.classList.contains('termine')) {
+                    // Gestion de la fin de tâche
+                    const newState = "terminée";
+                    fetch(`/api/taches/${tacheId}/etat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ etat: newState }), // Envoie l'état "terminée"
+                    })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+                            return response.json();
+                        })
+                        .then(() => {
+                            // Mise à jour visuelle
+                            card.classList.remove('bg-warning', 'bg-primary');
                             card.classList.add('bg-success');
-                        }
+                            const stateLabel = card.querySelector('.state-label');
+                            if (stateLabel) {
+                                stateLabel.textContent = newState;
+                            }
 
-                        // Met à jour le label de l'état
-                        const stateLabel = card.querySelector('.state-label');
-                        if (stateLabel) {
-                            stateLabel.textContent = newState;
-                        }
-                    })
-                    .catch(error => console.error(error));
+                            // Désactive ou supprime les boutons
+                            button.textContent = "Tâche terminée";
+                            button.disabled = true;
+                            card.querySelectorAll('.change-state').forEach(btn => btn.remove());
+                        })
+                        .catch(error => console.error(error));
+                }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const tasks = document.querySelectorAll('.task');
+
+            function filterTasks() {
+                const query = searchInput.value.toLowerCase();
+                tasks.forEach(task => {
+                    const taskName = task.getAttribute('data-name');
+                    if (taskName.includes(query)) {
+                        task.style.display = ''; // Show matching tasks
+                    } else {
+                        task.style.display = 'none'; // Hide non-matching tasks
+                    }
+                });
+            }
+
+            // Trigger filtering on button click
+            searchButton.addEventListener('click', filterTasks);
+
+            // Trigger filtering as user types
+            searchInput.addEventListener('input', filterTasks);
+        });
+
 
     </script>
     <style>
@@ -177,7 +193,12 @@
 
         .taches {
             border: #82C1FF solid 3px;
-
         }
+
+        .bg-dark-orange {
+            background-color: #FF8C00; /* Darker orange */
+            color: #ffffff; /* Ensure text is readable */
+        }
+
     </style>
 {% endblock %}
