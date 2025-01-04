@@ -3,6 +3,8 @@
 {% block title %}Vos tâches{% endblock %}
 
 {% block body %}
+    <link rel="stylesheet" href="{{ asset('/styles/technicien/taches.scss') }}">
+
     <div class="container mt-5">
         <div class="row mb-4 align-items-center">
             <!-- Bouton "Toutes les tâches" à gauche -->
@@ -180,25 +182,4 @@
 
 
     </script>
-    <style>
-        body {
-            background-image: linear-gradient(to top right, #001932, #0041B5);
-            background-attachment: fixed;
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .taches {
-            border: #82C1FF solid 3px;
-        }
-
-        .bg-dark-orange {
-            background-color: #FF8C00; /* Darker orange */
-            color: #ffffff; /* Ensure text is readable */
-        }
-
-    </style>
 {% endblock %}
