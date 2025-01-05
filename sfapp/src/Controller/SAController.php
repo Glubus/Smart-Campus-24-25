@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\Commentaires;
 use App\Entity\SA;
+use Symfony\Component\Security\Core\Security;
 use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -167,13 +168,23 @@ class SAController extends AbstractController
 
 
     #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
-    public function ajouterCommentaire(int $id,Request $request,EntityManagerInterface $entityManager,SARepository $SARepository): Response {
+    public function ajouterCommentaire(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SARepository $SARepository,
+        Security $security // Ajout du service Security
+    ): Response
+    {
         // Récupérer l'entité SA
         $SA = $SARepository->find($id);
 
         // Récupérer la description du commentaire
         $description = $request->request->get('description');
-        $nomTech = $request->request->get('nomTech');
+
+        // Récupérer le nom du technicien connecté
+        $user = $security->getUser();
+        $nomTech = $user ? $user->getNom() : '';
 
         // Créer et associer le commentaire
         $commentaire = new Commentaires();
