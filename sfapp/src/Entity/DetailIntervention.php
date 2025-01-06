@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DetailInterventionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DetailInterventionRepository::class)]
@@ -22,6 +23,9 @@ class DetailIntervention
     private ?Salle $salle = null;
     #[ORM\Column(type: 'string', length: 255, enumType: EtatIntervention::class)]
     private ?EtatIntervention $etat = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $dateAjout = null;
 
     public function getId(): ?int
     {
@@ -60,5 +64,17 @@ class DetailIntervention
     public function setEtat(?EtatIntervention $etat): void
     {
         $this->etat = $etat;
+    }
+
+    public function getDateAjout(): ?\DateTimeInterface
+    {
+        return $this->dateAjout;
+    }
+
+    public function setDateAjout(\DateTimeInterface $dateAjout): static
+    {
+        $this->dateAjout = $dateAjout;
+
+        return $this;
     }
 }

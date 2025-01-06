@@ -30,6 +30,15 @@ class DetailInterventionRepository extends ServiceEntityRepository
     //            ->getResult()
     //        ;
     //    }
+    public function findNonTermine(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.etat != :etatTerminee')
+            ->setParameter('etatTerminee', 'terminée') // Replace with the actual value representing the "Terminee" state
+            ->orderBy('d.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
     //    public function findOneBySomeField($value): ?DetailIntervention
     //    {
