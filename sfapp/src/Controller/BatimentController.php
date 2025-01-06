@@ -65,7 +65,22 @@ class BatimentController extends AbstractController
         ]);
     }
 
-    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
+    #[Route('/batiment/modifier/{id}', name: 'app_batiment_modifier')]
+    public function modifier(int $id, Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
+    {
+        $batiment = $batimentRepository->find($id);
+
+        return $this->render('batiment/ajouter.html.twig', [
+            'css' => 'batiment',
+            'classItem' => "batiment",
+            'item' => $batiment,
+            'routeItem'=> "app_batiment_modifier",
+            'classSpecifique' => ""
+        ]);
+    }
+
+
+        #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
         $req=$request->get('batiment');

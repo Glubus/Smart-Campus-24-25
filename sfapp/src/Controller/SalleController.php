@@ -76,7 +76,6 @@ class SalleController extends AbstractController
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
-        $batiment = $salle->getBatiment();
         $end = new \DateTime();
         $start = (clone $end)->modify('-1 days'); // 7 jours avant
         $arr=[];
@@ -351,10 +350,6 @@ class SalleController extends AbstractController
 
         $form->handleRequest($request);
 
-        if($selection) {
-            $form->get('Batiment')->setData($selection);
-        }
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             $salle = $form->getData()['salle'];
@@ -370,6 +365,9 @@ class SalleController extends AbstractController
             }
         }
 
+        if($selection) {
+            $form->get('Batiment')->setData($batimentRepository->find($selection));
+        }
         return $this->render('salle/ajout.html.twig', [
             'form' => $form->createView(),
             'css' => 'common',
@@ -379,7 +377,7 @@ class SalleController extends AbstractController
         ]);
     }
 
-    #[Route('/salle/modifier/{id}', name: 'app_salle_update')]
+    #[Route('/salle/modifier/{id}', name: 'app_salle_modifier')]
     public function modifier(int $id,Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
         $salle = $salleRepository->find($id);

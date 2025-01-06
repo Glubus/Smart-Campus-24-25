@@ -59,6 +59,18 @@ class PlanController extends AbstractController
         ]);
     }
 
+    #[Route('/plan/modifier/{id}', name: 'app_plan_modifier')]
+    public function modifier(int $id, EntityManagerInterface $em, Request $request): Response
+    {
+        return $this->render('plan/ajouter.html.twig', [
+            'form' => $form->createView(),
+            'css' => 'plan',
+            'classItem' => "plan",
+            'routeItem'=> "app_plan_ajouter",
+            'classSpecifique' => ""
+        ]);
+    }
+
     #[Route('/plan/supprimer', name: 'app_plan_supprimer')]
     public function supprimer(EntityManagerInterface $em,
                               Request $request,

@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="{{ asset("styles/plan/index.css") }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <h1 class="text-center mb-4"> Details Plan </h1>
+    <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
 
     <div class="page-content">
         <div id="sidebar">
             <select id="batiment_selection" onchange="updateEtages()">
-                <option value="" disabled selected>selectionner un plan</option>
+                <option value="" disabled selected>selectionner un batiment</option>
                 {% for batiment in batiments %}
                     <option value="{{ batiment.id }}"
                             {% if batiment.id == selected_batiment %}
@@ -47,7 +47,7 @@
                         <td class="salleDiv">{{ salle.nom }}</td>
                         <td class="tdAttribuer">
                             <div class="horizontal-line"></div>
-                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : id}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
+                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
                             <div class="flex">
                                 {% if salle.detailPlans|length == 0 %}
                                     <div class="line-stop"><i class="fa fa-close"></i></div>

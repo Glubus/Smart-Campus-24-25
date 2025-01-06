@@ -37,7 +37,7 @@ class SAController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
 
-            if (count($SARepository->findBy(["nom" => $SA->getNom()], ["nom" => "ASC"]))>1){
+            if (count($SARepository->findBy(["nom" => $SA->getNom()], ["nom" => "ASC"]))>0){
                 $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
             }
             else{
@@ -53,8 +53,12 @@ class SAController extends AbstractController
             }
         }
         // Affichage du formulaire
-        return $this->render('sa/ajout.html.twig', [
+        return $this->render('sa/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'sa',
+            'classItem' => "sa",
+            'routeItem'=> "app_sa_modifier",
+            'classSpecifique' => ""
         ]);
     }
     #[Route('/sa/ajouter', name: 'app_sa_ajouter')]
@@ -66,12 +70,17 @@ class SAController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($sa);
-            $entityManager->flush();
+            if (count($entityManager->getRepository(SA::class)->findBy(["nom" => $sa->getNom()], ["nom" => "ASC"]))>0){
+                $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
+            }
+            else {
+                $entityManager->persist($sa);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'SA ajouté avec succès.');
+                $this->addFlash('success', 'SA ajouté avec succès.');
 
-            return $this->redirectToRoute('app_sa_liste');
+                return $this->redirectToRoute('app_sa_liste');
+            }
         }
 
         return $this->render('sa/ajouter.html.twig', [

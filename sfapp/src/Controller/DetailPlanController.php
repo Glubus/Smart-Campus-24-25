@@ -120,7 +120,7 @@ class DetailPlanController extends AbstractController
             'batiments' => $batimentsArray,
             'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
-            'id' => $id
+            'plan_select' => $plan
         ]);
     }
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
