@@ -10,7 +10,6 @@ use Doctrine\Persistence\ObjectManager;
 
 class SalleFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const D003 = 'D003';
     public const D205 = 'D205';
     public const D206 = 'D206';
     public const D207 = 'D207';
@@ -33,7 +32,6 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $batC = $this->getReference(BatimentFixtures::BATIMENT_C, Batiment::class);
 
         // Création des salles
-        $d003 = $this->make_Salle($batD, "D003", 0, 5, 5);
         $d205 = $this->make_Salle($batD, "D205", 2, 5, 5);
         $d206 = $this->make_Salle($batD, "D206", 2, 6, 5);
         $d207 = $this->make_Salle($batD, "D207", 2, 7, 5);
@@ -51,7 +49,6 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $c007 = $this->make_Salle($batC, "C007", 0, 7, 3);
 
         // Persist des salles
-        $manager->persist($d003);
         $manager->persist($d205);
         $manager->persist($d206);
         $manager->persist($d207);
@@ -69,7 +66,6 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($c007);
 
         // Ajout des références pour les liaisons futures
-        $this->addReference(self::D003, $d003);
         $this->addReference(self::D205, $d205);
         $this->addReference(self::D206, $d206);
         $this->addReference(self::D207, $d207);
