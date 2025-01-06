@@ -6,6 +6,9 @@ use App\Entity\EtageSalle;
 use App\Entity\Salle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use http\Client\Response;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @extends ServiceEntityRepository<Salle>
@@ -17,10 +20,15 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SalleRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Salle::class);
     }
+
+
+
+
 
 //    /**
 //     * @return Salle[] Returns an array of Salle objects

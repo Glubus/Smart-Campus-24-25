@@ -1,0 +1,26 @@
+{
+  "name": "sfapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@symfony/webpack-encore": "^5.0.1",
+    "postcss-loader": "^8.1.1",
+    "sass": "^1.83.0",
+    "sass-loader": "^16.0.4",
+    "webpack-notifier": "^1.15.0"
+  },
+  "dependencies": {
+    "@symfony/stimulus-bridge": "github:symfony/stimulus-bridge"
+  }
+}
