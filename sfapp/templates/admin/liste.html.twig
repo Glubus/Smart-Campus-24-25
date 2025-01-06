@@ -8,8 +8,24 @@
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="text-center">Administration - Liste des Techniciens</h1>
-
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <a href="{{ path('app_register') }}" class="btn btn-secondary">Ajouter un technicien</a>
+            </div>
+            <div class="col-md-4 text-center">
+                <h1 class="mb-0">Administration - Liste des Techniciens</h1>
+            </div>
+            <div class="col-md-4"></div> <!-- Espace vide pour équilibrer -->
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                <div class="form-group mr-2">
+                    {{ form_row(form.nom) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
         <div class="row">
             {% for technicien in techniciens %}
                 <div class="col-md-6 col-lg-4 mb-4">

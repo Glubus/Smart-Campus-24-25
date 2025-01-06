@@ -70,7 +70,7 @@ class GestionController extends AbstractController
         }
 
         // Rendu du template avec tous les formulaires
-        return $this->render('gestion/liste.html.twig', [
+        return $this->render('gestion/index.html.twig', [
             'batimentForm' => $batimentForm->createView(),
             'salleForm' => $salleForm->createView(),
             'planForm' => $planForm->createView(),

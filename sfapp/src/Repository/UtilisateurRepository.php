@@ -40,6 +40,18 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
             ->getQuery()
             ->getResult();
     }
+    public function findTechniciensByRoleAndNom(string $role, string $nom): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->andWhere('u.nom = :nom') // Vérifie le nom des techniciens
+            ->setParameter('role', '%"'.$role.'"%') // Vérifie le rôle dans le JSON
+            ->setParameter('nom', $nom) // Vérifie le nom exact
+            ->getQuery()
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return Utilisateur[] Returns an array of Utilisateur objects
     //     */

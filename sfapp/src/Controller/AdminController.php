@@ -6,6 +6,7 @@ use App\Entity\DetailIntervention;
 use App\Entity\DetailPlan;
 use App\Entity\EtatIntervention;
 use App\Form\DetailInterventionType;
+use App\Form\RechercheSaType;
 use App\Repository\DetailInterventionRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,13 +19,32 @@ use App\Entity\Utilisateur;
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'app_admin')]
-    public function index(UtilisateurRepository $utilisateurRepository): Response
+    public function index(Request $request, UtilisateurRepository $utilisateurRepository): Response
     {
-        $techniciens = $utilisateurRepository->findByRole('ROLE_TECHNICIEN');
+
+        $form = $this->createForm(RechercheSaType::class);
+        $form->handleRequest($request);
+
+        // Check if the form is submitted and valid, then filter results
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+
+            dump($data);
+            // Filter the `SA` entities based on the search term
+            if (!empty($data['nom'])) {
+                // Recherche avec filtre par nom
+                $techniciens = $utilisateurRepository->findTechniciensByRoleAndNom('ROLE_TECHNICIEN', $data['nom']);
+            }
+        } else {
+            // If no filtering, get all entities
+            $techniciens = $utilisateurRepository->findByRole('ROLE_TECHNICIEN');
+        }
 
         return $this->render('admin/liste.html.twig', [
             'controller_name' => 'AdminController',
             'techniciens' => $techniciens,
+            'form' => $form->createView()
         ]);
     }
     #[Route('/new', name: 'app_detail_intervention_new', methods: ['GET', 'POST'])]
