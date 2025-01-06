@@ -88,7 +88,7 @@ class BatimentController extends AbstractController
             $etages = $request->request->all('form')['etages']; // Safely retrieve
             foreach ($etages as $key => $etageName) {
                 if($etageName != null){
-                    $batiment->renameEtages($key, $etageName);
+                    $batiment->renameEtage($key, $etageName);
                 }
             }
 

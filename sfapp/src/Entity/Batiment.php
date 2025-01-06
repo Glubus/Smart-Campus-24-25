@@ -27,67 +27,28 @@ class Batiment
 
 
 
-    /**
-     * @var Collection<int, Salle>
-     */
-    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'batiment', cascade: ['persist', 'remove'])]
-    private Collection $salles;
-
-    #[ORM\Column(type: "json", nullable: true)]
-    private array $etages = [];
-
     #[ORM\ManyToOne(inversedBy: 'batiments')]
     private ?Plan $plan = null;
 
+    /**
+     * @var Collection<int, Etage>
+     */
+    #[ORM\OneToMany(targetEntity: Etage::class, mappedBy: 'batiment', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $etages;
+
     public function __construct()
     {
-        $this->salles = new ArrayCollection();
-        $this->etages = []; // Initialize as an empty array
+        $this->etages = new ArrayCollection();
     }
-    /**
-     * Get the list of etages.
-     *
-     * @return array
-     */
-    public function renameEtages(int $index, string $newName): self
+
+    public function renameEtage(int $index, string $newName): self
     {
-        $this->etages[$index] = $newName;
+        $etage = $this->etages[$index];
+        $etage->setNom($newName);
 
         return $this;
     }
 
-    public function getEtages(): array
-    {
-        return $this->etages;
-    }
-
-    /**
-     * Add a new etage (name) to the list.
-     *
-     * @param string $etage
-     * @return self
-     */
-    public function addEtage(string $etage): self
-    {
-        if (!in_array($etage, $this->etages, true)) {
-            $this->etages[] = $etage;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove an etage (name) from the list.
-     *
-     * @param string $etage
-     * @return self
-     */
-    public function removeEtage(string $etage): self
-    {
-        $this->etages = array_filter($this->etages, fn($e) => $e !== $etage);
-
-        return $this;
-    }
 
     public function getId(): ?int
     {
@@ -127,43 +88,16 @@ class Batiment
     {
         $this->nbEtages = $nbEtages;
         for($i = 0; $i < $nbEtages; $i++) {
-            $this->etages[] = (string)$i;
+            $etage = new Etage();
+            $etage->setBatiment($this);
+            $etage->setNiveau($i);
+            $etage->setNom((string)$i);
+            $this->addEtage($etage);
         }
 
         return $this;
     }
 
-
-
-
-    /**
-     * @return Collection<int, Salle>
-     */
-    public function getSalles(): Collection
-    {
-        return $this->salles;
-    }
-
-    public function addSalle(Salle $salle): static
-    {
-        if (!$this->salles->contains($salle)) {
-            $this->salles->add($salle);
-            $salle->setBatiment($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSalle(Salle $salle): static
-    {
-        if ($this->salles->removeElement($salle)) {
-            if ($salle->getBatiment() === $this) {
-                $salle->setBatiment(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getPlan(): ?Plan
     {
@@ -173,6 +107,36 @@ class Batiment
     public function setPlan(?Plan $plan): static
     {
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etage>
+     */
+    public function getEtages(): Collection
+    {
+        return $this->etages;
+    }
+
+    public function addEtage(Etage $etage): static
+    {
+        if (!$this->etages->contains($etage)) {
+            $this->etages->add($etage);
+            $etage->setBatiment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtage(Etage $etage): static
+    {
+        if ($this->etages->removeElement($etage)) {
+            // set the owning side to null (unless already changed)
+            if ($etage->getBatiment() === $this) {
+                $etage->setBatiment(null);
+            }
+        }
 
         return $this;
     }

@@ -96,13 +96,12 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $salle->setNom($nom);
         $salle->setFenetre($fen);
         $salle->setRadiateur($rad);
-        $salle->setEtage($e);
-        $salle->setBatiment($b);
+        $salle->setEtage($b->getEtages()[$e]);
         return $salle;
     }
     public function getDependencies() : array{
         return array(
-            BatimentFixtures::class
+            EtageFixtures::class
         );
     }
 }
