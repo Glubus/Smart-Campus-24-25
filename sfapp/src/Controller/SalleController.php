@@ -2,16 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Batiment;
 use App\Entity\Salle;
 use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
+use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,7 +76,6 @@ class SalleController extends AbstractController
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
-        $batiment = $salle->getBatiment();
         $end = new \DateTime();
         $start = (clone $end)->modify('-1 days'); // 7 jours avant
         $arr=[];
@@ -217,20 +220,36 @@ class SalleController extends AbstractController
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
-        $form = $this->createForm(AjoutSalleType::class, $salle);
+
+        $selection = $request->query->get('batiment');
+        $batiments = $batimentRepository->findAll();
+        $form = $this->createFormBuilder()
+            ->add('Batiment', EntityType::class,[
+        'class' => Batiment::class, // Class of the entity
+        'choice_label' => 'nom',   // Field to be displayed for each option (the name of the building)
+        'label' => 'Bâtiments',  // Label for the field
+        'placeholder' => 'Selectionner un batiment',
+        'attr' => [
+            'class' => 'form-control sa-searchable', // Optional: Add custom styles
+            'data-live-search' => 'true', // Optional: Add live search
+            'style' => 'margin-left: 10px; display: flex; flex-direction: column;',
+            'id' => 'batiment_select',
+        ]
+    ])
+            ->add('salle', AjoutSalleType::class, [
+                'batiment' => $selection,
+            ])
+        ->getForm();
 
         $form->handleRequest($request);
-        $batiments = $batimentRepository->findAll();
+
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $salle = $form->getData()['salle'];
             $salleExistante = $salleRepository->findOneBy(
                 ['nom' => $salle->getNom()]);
             if($salleExistante) {
                 $this->addFlash('error', 'Cette salle existe déjà');
-            }
-            elseif($salle->getEtage() > $salle->getBatiment()->getNbEtages()) {
-                $this->addFlash('error', 'Il n y a que '.$salle->getBatiment()->getNbEtages().' etages dans ce batiment');
             }
             else {
                 $entityManager->persist($salle);
@@ -239,15 +258,19 @@ class SalleController extends AbstractController
             }
         }
 
+        if($selection) {
+            $form->get('Batiment')->setData($batimentRepository->find($selection));
+        }
         return $this->render('salle/ajout.html.twig', [
-            'controller_name' => 'SalleController',
             'form' => $form->createView(),
-            'salle' => $salle,
-            'batiment' => $batiments,
+            'css' => 'common',
+            'classItem' => "salle",
+            'routeItem'=> "app_salle_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 
-    #[Route('/salle/modifier/{id}', name: 'app_salle_update')]
+    #[Route('/salle/modifier/{id}', name: 'app_salle_modifier')]
     public function modifier(int $id,Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
         $salle = $salleRepository->find($id);
