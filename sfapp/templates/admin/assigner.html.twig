@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Nouvelle Intervention
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center">Créer une Nouvelle Intervention</h1>
+
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h3>Formulaire de Création</h3>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description', { 'label_attr': { 'class': 'form-label' } }) }}
+                    {{ form_widget(form.description, { 'attr': { 'class': 'form-control' } }) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.technicien, 'Technicien', { 'label_attr': { 'class': 'form-label' } }) }}
+                    {{ form_widget(form.technicien, { 'attr': { 'class': 'form-control' } }) }}
+                    {{ form_errors(form.technicien) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.salle, 'Salle', { 'label_attr': { 'class': 'form-label' } }) }}
+                    {{ form_widget(form.salle, { 'attr': { 'class': 'form-control' } }) }}
+                    {{ form_errors(form.salle) }}
+                </div>
+
+                <button type="submit" class="btn btn-success">Créer</button>
+                <a href="{{ path('app_admin') }}" class="btn btn-secondary">Annuler</a>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
