@@ -28,30 +28,58 @@ body {
     margin-bottom: 20px;
 }
 
-.search-bar {
-    width: 300px;
-    padding: 8px 10px;
-    border: none;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-.search-button {
-    background: #0041B5;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
+.search {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 
 .sort-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
     background: #fff;
     color: #0041B5;
     border: none;
-    padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.sidebar {
+    color: black;
+    position: fixed;
+    top: 0;
+    right: -300px; /* Masquer la sidebar hors de l'écran par défaut */
+    width: 300px;
+    height: 100%;
+    background-color: #f4f4f4;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    transition: right 0.3s ease; /* Animation pour un effet fluide */
+    z-index: 1000;
+    padding: 20px;
+}
+
+/* Lorsque la sidebar est active, elle s'affiche */
+.sidebar.active {
+    right: 0;
+}
+
+/* Le bouton pour afficher/masquer la sidebar */
+.toggle-btn {
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.toggle-btn:hover {
+    background-color: #0056b3;
 }
 
 .title {
