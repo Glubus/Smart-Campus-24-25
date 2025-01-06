@@ -256,29 +256,33 @@ class SAController extends AbstractController
     {
         $offset = (int) $request->query->get('offset', 0);
 
-        // Récupérer les commentaires associés
-        $commentaires = $commentairesRepository->findBy(
-            ['sa' => $SA],
-            ['dateAjout' => 'DESC'],
-            5,
-            $offset
-        );
+        try {
+            // Fetch comments associated with the SA
+            $commentaires = $commentairesRepository->findBy(
+                ['SA' => $SA], ['dateAjout' => 'DESC'], 5, $offset
+            );
 
-        // Si aucun commentaire n'est trouvé
-        if (!$commentaires) {
-            return new JsonResponse([], 200);
+            // Check if comments exist
+            if (!$commentaires) {
+                return new JsonResponse(['message' => 'No comments found.'], 404);
+            }
+
+            // Prepare JSON data
+            $data = array_map(fn($commentaire) => [
+                'id' => $commentaire->getId(),
+                'nomTech' => $commentaire->getNomTech(),
+                'dateAjout' => $commentaire->getDateAjout()?->format('Y-m-d H:i'),
+                'description' => $commentaire->getDescription(),
+            ], $commentaires);
+
+            return new JsonResponse($data, 200);
+        } catch (\Exception $e) {
+            // Log error for debugging
+            error_log('Error fetching comments: ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Une erreur est survenue.'], 500);
         }
-
-        // Préparer les données pour JSON
-        $data = array_map(fn($commentaire) => [
-            'id' => $commentaire->getId(),
-            'nomTech' => $commentaire->getNomTech(),
-            'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
-            'description' => $commentaire->getDescription(),
-        ], $commentaires);
-
-        return new JsonResponse($data, 200);
     }
+
 
 
     #[Route('/sa/supprimer-selection', name: 'app_sa_supprimer_selection', methods: ['POST', 'GET'])]
