@@ -24,17 +24,6 @@ class AjoutSAType extends AbstractType
             ->add('nom', TextType::class, [
                 'label' => 'Nom du SA',
                 'attr' => ['class' => 'form-control'],
-            ])
-            ->add('salle', EntityType::class, [
-                'class' => Salle::class,
-                'choice_label' => 'nom', // Affiche le nom des salles dans la liste déroulante
-                'label' => 'Salle',
-                'required' => true, // Rendre la sélection obligatoire
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('s')
-                        ->orderBy('s.nom', 'ASC');
-                },
-                'placeholder' => 'Sélectionnez une salle',
             ]);
     }
     public function configureOptions(OptionsResolver $resolver): void

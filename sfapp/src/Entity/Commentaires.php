@@ -20,8 +20,9 @@ class Commentaires
     #[ORM\Column(length: 50)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
+
 
     #[ORM\Column(length: 25)]
     private ?string $nomTech = null;
@@ -77,7 +78,6 @@ class Commentaires
     {
         return $this->nomTech;
     }
-
     public function setNomTech(string $nomTech): static
     {
         $this->nomTech = $nomTech;

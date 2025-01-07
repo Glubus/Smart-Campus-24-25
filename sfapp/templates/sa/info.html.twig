@@ -54,10 +54,6 @@
                     <h3>Ajouter un commentaire</h3>
                     <form method="post" action="{{ path('app_sa_commentaire', {'id': SA.id}) }}">
                         <div class="mb-3">
-                            <label for="nomTech" class="form-label">Nom Tech</label>
-                            <input type="text" id="nomTech" name="nomTech" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
                         </div>
@@ -72,7 +68,7 @@
                     {% for commentaire in commentaires[:5] %}
                         <div style="border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
                             <div >
-                                {{ commentaire.nomTech }}, {{ commentaire.dateAjout|date('d/m/Y') }}<div style=" padding: 10px">
+                                {{ commentaire.nomTech }}, {{ commentaire.dateAjout|date('Y-m-d H:i') }}<div style=" padding: 10px">
                                     {{ commentaire.description }}
                                 </div>
                             </div>
@@ -104,16 +100,12 @@
 
             fetch(`/sa/${id}/commentaires-ajax?offset=${offset+5}`)
                 .then(response => {
-
-                    console.log('Raw response:', response,{id});
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Server response:', data);
-
                     if (!Array.isArray(data) || data.length === 0) {
                         alert('Aucun commentaire à afficher.');
                         return;
@@ -122,19 +114,27 @@
                     const commentsContainer = document.getElementById('comments-container');
                     data.forEach(comment => {
                         const row = document.createElement('div');
-                        row.setAttribute('style', ' border-bottom: 1px solid #ddd   ; padding: 5px; display: flex; justify-content: space-between; align-items: center;');
+                        row.setAttribute('style', 'border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;');
+
+                        // Formattage de la date et de l'heure au format français
+                        const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+                            dateStyle: 'short',
+                            timeStyle: 'short'
+                        }).format(new Date(comment.dateAjout));
+
                         row.innerHTML = `
-        <div >
-            ${comment.nomTech}, ${new Date(comment.dateAjout).toLocaleDateString()}<div style=" padding: 10px">
-            ${comment.description}
+        <div>
+            ${comment.nomTech}, ${formattedDate}
+            <div style="padding: 10px">
+                ${comment.description}
             </div>
         </div>
         <form method="post" action="/sa/${id}/commentaire-supprimer/${comment.id}"
-                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
-                                      style="margin-left: 15px;">
-                                    <input type="hidden" name="_token" value="{ comment.id }">
-                                    <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
-                                </form>
+              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+              style="margin-left: 15px;">
+            <input type="hidden" name="_token" value="${comment.id}">
+            <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+        </form>
     `;
                         commentsContainer.appendChild(row);
                     });
@@ -148,7 +148,6 @@
                     alert('Une erreur est survenue lors du chargement des commentaires.');
                 });
         });
-
     </script>
 
 {% endblock %}
