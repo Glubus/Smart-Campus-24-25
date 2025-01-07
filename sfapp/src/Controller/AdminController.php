@@ -11,6 +11,7 @@ use App\Repository\DetailInterventionRepository;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -48,7 +49,7 @@ class AdminController extends AbstractController
         ]);
     }
     #[Route('/admin/assigner/{id}', name: 'app_admin_assigner', methods: ['GET', 'POST'])]
-    public function new(Request $request, UtilisateurRepository $utilisateurRepository, DetailInterventionRepository $repository, EntityManagerInterface $entityManager,$id): Response
+    public function assigner(Request $request, UtilisateurRepository $utilisateurRepository, DetailInterventionRepository $repository, EntityManagerInterface $entityManager,$id): Response
     {
 
         $intervention = new DetailIntervention();
@@ -74,6 +75,37 @@ class AdminController extends AbstractController
             'form' => $form->createView(),
 
         ]);
+    }
+    #[Route('/admin/{id}', name: 'app_admin_infos')]
+    public function infos($id, UtilisateurRepository $utilisateurRepository): Response
+    {
+        $technicien = $utilisateurRepository->find($id);
+
+        return $this->render('admin/info.html.twig', [
+            'technicien' => $technicien,
+        ]);
+    }
+    #[Route('/admin/intervention/delete/{id}', name: 'delete_intervention', methods: ['GET'])]
+    public function deleteIntervention(int $id, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        // Recherchez l'intervention
+        $intervention = $entityManager->getRepository(DetailIntervention::class)->find($id);
+
+        if (!$intervention) {
+            // Ajouter un message d'erreur si l'intervention n'existe pas
+            $this->addFlash('error', 'Intervention introuvable.');
+            return $this->redirectToRoute('app_admin');
+        }
+
+        // Supprimez l'intervention
+        $entityManager->remove($intervention);
+        $entityManager->flush();
+
+        // Ajouter un message de succès
+        $this->addFlash('success', 'Intervention supprimée avec succès.');
+
+        // Redirigez vers la liste des techniciens ou une autre page
+        return $this->redirectToRoute('app_admin');
     }
 
 }
