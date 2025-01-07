@@ -10,6 +10,7 @@ use App\Form\AssociationSASalle;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
+use App\Repository\EtageRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use DateTime;
@@ -74,7 +75,7 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/lier/{id}', name: 'app_lier_liste')]
-    public function list(SalleRepository $salleRepo, PlanRepository $planRepo, Request $request, int $id): Response
+    public function list(PlanRepository $planRepo, Request $request, int $id): Response
     {
         $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
@@ -93,16 +94,17 @@ class DetailPlanController extends AbstractController
             }
 
             if ($selected_etage == null) {
-                $salles = $salleRepo->findBy(['batiment' => $batiment]);
-                } else {
-                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
+                $salles = array_merge(...array_map(fn($etage) => $etage->getSalles()->toArray(),
+                    $batiment->getEtages()->toArray()));
+            } else {
+                $salles = $batiment->getEtages()[$selected_etage]->getSalles()->toArray();
             }
         }
 
         foreach ($plan->getBatiments() as $b) {
             $etageNames = [];
             foreach ($b->getEtages() as $etage) {
-                $etageNames[] = $etage;
+                $etageNames[] = $etage->getNom();
             }
 
             $batimentsArray[] = [
@@ -118,7 +120,7 @@ class DetailPlanController extends AbstractController
             'batiments' => $batimentsArray,
             'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
-            'id' => $id
+            'plan_select' => $plan
         ]);
     }
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]

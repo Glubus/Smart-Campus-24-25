@@ -19,8 +19,8 @@
 {% endblock  %}
 
 {% block entry %}
-    <p>Batiment {{ item.batiment.nom }}</p>
-    <p>Etage {{ item.etage }}</p>
+    <p>Batiment {{ item.etage.batiment.nom }}</p>
+    <p>Etage {{ item.etage.nom }}</p>
 {% endblock %}
 
 {% block modif %}

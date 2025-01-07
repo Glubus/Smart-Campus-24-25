@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
+    <header>
+        <h1>Tableau de Bord - Gestion Écologique</h1>
+    </header>
+    <main>
+        <section class="statistiques-globales">
+            <h2>Statistiques Globales</h2>
+            <h3>Température Dehors : {{ tempOutside }}°C</h3>
+            <div class="cards">
+                <div class="card">
+                    <h3>CO₂ (ppm)</h3>
+                    <p><strong>Moyenne :</strong> {{ co2.mean}} </p>
+                    <p><strong>Écart Type :</strong> {{ co2.ecarttype}}</p>
+                    {% if co2.ecarttype > 100 %}
+                        Attention ! le CO2 varie beaucoup. ecart type > 100
+                    {% endif %}
+                </div>
+                <div class="card">
+                    <h3>Température (°C)</h3>
+                    <p><strong>Moyenne :</strong> {{ temp.mean}} </p>
+                    <p><strong>Écart Type :</strong> {{ temp.ecarttype}}</p>
+                    {% if temp.ecarttype > 2 %}
+                        Attention ! la température varie beaucoup. ecart type > 2
+                    {% endif %}
+                </div>
+                <div class="card">
+                    <h3>Humidité (%)</h3>
+                    <p><strong>Moyenne :</strong>{{ hum.mean}} </p>
+                    <p><strong>Écart Type :</strong> {{ hum.ecarttype}}</p>
+                    {% if hum.ecarttype > 5 %}
+                        Attention ! l'humidité varie beaucoup. ecart type > 5
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <div class="container mt-5">
+            <h1 class="mb-4">Liste des SA Bizarres</h1>
+
+            {% if weirdData is empty %}
+                <div class="alert alert-success" role="alert">
+                    Toutes les salles sont normales, aucune anomalie détectée !
+                </div>
+            {% else %}
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Salle</th>
+                        <th>Raison</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for salle, raison in weirdData %}
+                        <tr>
+                            <td>{{ salle }}</td>
+                            <td>{{ raison }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+        <!-- Options de période -->
+        <section class="period-options">
+            <h2>Afficher les données</h2>
+            <select id="timePeriod" onchange="updateCharts()">
+                <option value="1">Dernier Jour</option>
+                <option value="7" selected>Derniers 7 Jours</option>
+                <option value="30">Derniers 30 Jours</option>
+            </select>
+        </section>
+
+        <!-- Graphiques -->
+        <section class="graphiques">
+            <h2>Visualisation des Données</h2>
+            <canvas id="co2Chart" data-chart-data="{{ co2_data }}"></canvas>
+            <canvas id="tempChart" data-chart-data="{{ temp_data }}"></canvas>
+            <canvas id="humChart" data-chart-data="{{ hum_data }}"></canvas>
+        </section>
+
+        <!-- Élément contenant les données JSON -->
+    </main>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+{% endblock %}
