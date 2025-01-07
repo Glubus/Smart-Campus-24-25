@@ -13,6 +13,8 @@ use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
+use App\Service\ApiWrapper;
+use App\Service\Conseils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -128,14 +130,14 @@ class SalleController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/salle/user', name: 'app_salle_user_liste')]
-    public function indexUser(Request $request, SalleRepository $salleRepository): Response
+    public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository): Response
     {
         $form = $this->createForm(RechercheSalleType::class);
-        $salles = $salleRepository->findAll();
+        $arr = $wrapper->requestAllSalleLastValue();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        /*if ($form->isSubmitted() && $form->isValid()) {
             $salleNom = $form->get('salleNom')->getData();
             if ($salleNom) {
                 // Filtrer les salles dont le nom contient la chaîne $salleNom, peu importe où
@@ -144,48 +146,23 @@ class SalleController extends AbstractController
                 });
                 $salles = array_values($salles);
             }
-        }
+        }*/
 
         $col1 = [];
         $col2 = [];
         $col3 = [];
 
-        for ($i=0; $i<count($salles); $i++) {
-            $salle = $salles[$i];
-
-            $tempValue = null;
-            $humValue = null;
-            $co2Value = null;
-
-            $response = $salleRepository->requestSalle($salle->getNom(), 1);
-
-            $data = json_decode($response->getContent(), true);
-            foreach ($data as $item) {
-                if ($item['nom'] === 'temp') {
-                    $tempValue = $item['valeur'];
-                    $tempValue = (float)$tempValue;
-                } elseif ($item['nom'] === 'hum') {
-                    $humValue = $item['valeur'];
-                    $humValue = (float)$humValue;
-                } elseif ($item['nom'] === 'co2') {
-                    $co2Value = $item['valeur'];
-                    $co2Value = (float)$co2Value;
-                }
+        $index = 0;
+        foreach ($arr as $key => $value) {
+            $salle = $salleRepository->findOneBy(['nom' => $key]);
+            if($index % 3 == 0){
+                $col1[] = ['salle' => $salle, 'data' => $value];
+            } elseif($index % 3 == 1){
+                $col2[] = ['salle' => $salle, 'data' => $value];
+            } elseif($index % 3 == 2){
+                $col3[] = ['salle' => $salle, 'data' => $value];
             }
-
-            $tempValue = round($tempValue, 1);
-            $co2Value = round($co2Value, 0);
-            $humValue = round($humValue, 1);
-
-            if($i % 3 == 0){
-                $col1[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
-            }
-            elseif($i % 3 == 1){
-                $col2[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
-            }
-            elseif($i % 3 == 2){
-                $col3[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
-            }
+            $index++;
         }
 
         return $this->render('salle/user_liste.html.twig', [
@@ -197,37 +174,22 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
-    public function infosUser(int $id, SalleRepository $salleRepository)
+    public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository)
     {
         $salle = $salleRepository->find($id);
 
-        $tempValue = null;
-        $humValue = null;
-        $co2Value = null;
+        $tempValue = $wrapper->requestSalleByType($salle->getNom(), "temp");
+        $co2Value = $wrapper->requestSalleByType($salle->getNom(), "co2");
+        $humValue = $wrapper->requestSalleByType($salle->getNom(), "hum");
 
-        $response = $salleRepository->requestSalle($salle->getNom(), 1);
-        $data = json_decode($response->getContent(), true);
-        foreach ($data as $item) {
-            if ($item['nom'] === 'temp') {
-                $tempValue = $item['valeur'];
-                $tempValue = (float)$tempValue;
-            } elseif ($item['nom'] === 'hum') {
-                $humValue = $item['valeur'];
-                $humValue = (float)$humValue;
-            } elseif ($item['nom'] === 'co2') {
-                $co2Value = $item['valeur'];
-                $co2Value = (float)$co2Value;
-            }
-        }
+        $conseil = new Conseils();
+        $conseil = $conseil->getConseils($wrapper, $tempValue[0]["valeur"], $co2Value[0]["valeur"], $humValue[0]["valeur"]);
 
-        $tempValue = round($tempValue, 1);
-        $co2Value = round($co2Value, 0);
-        $humValue = round($humValue, 1);
-
-        $infos = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+        $infos = ['salle' => $salle, 'temp' => $tempValue[0]["valeur"], 'co2' => $co2Value[0]["valeur"], 'humi' => $humValue[0]["valeur"]];
 
         return $this->render('salle/user_infos.html.twig', [
-            'infos' => $infos
+            'infos' => $infos,
+            'conseils' => $conseil,
         ]);
     }
 

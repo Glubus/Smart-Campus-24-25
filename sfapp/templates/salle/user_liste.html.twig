@@ -35,24 +35,24 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
-                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
-                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
                                 <div class="metrics">
                                     <div class="metric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
-                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
                                     <div class="metric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="metric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
-                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>
@@ -81,24 +81,24 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
-                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
-                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
                                 <div class="metrics">
                                     <div class="metric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
-                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
                                     <div class="metric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="metric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
-                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>
@@ -127,24 +127,24 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
-                            <p class="location">Bâtiment {{ item.salle.batiment.nom }} - Etage {{ item.salle.etage }}</p>
-                            {% if (item.temp is null or item.temp == 0) and (item.co2 is null or item.co2 == 0) and (item.humi is null or item.humi == 0) %}
+                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
                                 <div class="metrics">
                                     <div class="metric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
-                                        <h3 class="value">{{ item.temp }}</h3>
+                                        <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
                                     <div class="metric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.co2 }}</h3>
+                                        <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="metric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
-                                        <h3 class="value">{{ item.humi }}</h3>
+                                        <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>

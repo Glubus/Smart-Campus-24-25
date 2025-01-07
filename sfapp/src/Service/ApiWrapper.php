@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\SalleRepository;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -84,9 +85,7 @@ class ApiWrapper
         return $externalValue;
     }
 
-
-
-        public function requestSalleByType(string $salle, string $type, int $page = 1, int $limit = 1): array
+    public function requestSalleByType(string $salle, string $type, int $page = 1, int $limit = 1): array
         {
         if ($limit > 20) {
             $limit = 20;
@@ -124,17 +123,16 @@ class ApiWrapper
     {
         $externalValue = $this->cache->get('all_salle_last_value', function (ItemInterface $item) {
             $item->expiresAfter(3600); // 1 heure
-
             $arr = [];
             $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
-
             foreach (self::ASSOCIATIONS as $salle => $esp) {
+
                 $arr[$salle] = [];
 
                 foreach ($types as $type) {
                     $result = $this->requestSalleByType($salle, $type, 1, 1);
 
-                    $arr[$salle][$type] = empty($result) ? null : reset($result)['valeur'];
+                    $arr[$salle][$type] = (int)(empty($result) ? null : reset($result)['valeur']);
 
                     $date = (empty($result) ? null : (reset($result)['dateCapture']));
                     if (empty($arr[$salle]["dateCapture"]) || (strtotime($arr[$salle]['dateCapture']) < strtotime($date))) {
@@ -326,7 +324,6 @@ class ApiWrapper
 
         return $dailyAverages;
     }
-
 
     public function detectBizarreStations(): array
     {
