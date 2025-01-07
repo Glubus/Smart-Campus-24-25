@@ -47,15 +47,20 @@ class AdminController extends AbstractController
             'form' => $form->createView()
         ]);
     }
-    #[Route('/new', name: 'app_detail_intervention_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, DetailInterventionRepository $repository, EntityManagerInterface $entityManager): Response
+    #[Route('/admin/assigner/{id}', name: 'app_admin_assigner', methods: ['GET', 'POST'])]
+    public function new(Request $request, UtilisateurRepository $utilisateurRepository, DetailInterventionRepository $repository, EntityManagerInterface $entityManager,$id): Response
     {
+
         $intervention = new DetailIntervention();
         $form = $this->createForm(DetailInterventionType::class, $intervention);
         $form->handleRequest($request);
 
+
+        $technicien = $utilisateurRepository->find($id);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $intervention->setDateAjout(new \DateTime());
+            $intervention->setTechnicien($technicien);
             $intervention->setEtat(EtatIntervention::EN_ATTENTE);
             $entityManager->persist($intervention); // Prépare l'entité pour la persistance
             $entityManager->flush();
@@ -65,7 +70,9 @@ class AdminController extends AbstractController
 
         return $this->render('admin/assigner.html.twig', [
             'intervention' => $intervention,
+            'technicien' => $technicien,
             'form' => $form->createView(),
+
         ]);
     }
 
