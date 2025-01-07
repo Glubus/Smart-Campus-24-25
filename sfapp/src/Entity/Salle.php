@@ -3,13 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\SalleRepository;
-use App\Entity\Batiment;
 use ContainerWYV09s8\getTranslation_ProviderFactory_NullService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\EtageSalle;
-use Symfony\Component\HttpClient\HttpClient;
 
 #[ORM\Entity(repositoryClass: SalleRepository::class)]
 class Salle
@@ -19,12 +16,6 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 1)]
-    private ?int $etage = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Batiment $batiment = null;
 
     #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
     private Collection $detailPlans;
@@ -48,6 +39,10 @@ class Salle
      */
     #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'salle')]
     private Collection $detailInterventions;
+
+    #[ORM\ManyToOne(inversedBy: 'salles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etage $etage = null;
     public function __construct()
     {
         $this->plans = new ArrayCollection();
@@ -81,30 +76,6 @@ class Salle
     public function setId(int $id): static
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    public function getEtage(): int
-    {
-        return $this->etage;
-    }
-
-    public function setEtage(int $etage): static
-    {
-        $this->etage = $etage;
-
-        return $this;
-    }
-
-    public function getBatiment(): ?Batiment
-    {
-        return $this->batiment;
-    }
-
-    public function setBatiment(?Batiment $batiment): static
-    {
-        $this->batiment = $batiment;
 
         return $this;
     }
@@ -231,6 +202,18 @@ class Salle
                 $detailIntervention->setSalle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEtage(): ?Etage
+    {
+        return $this->etage;
+    }
+
+    public function setEtage(?Etage $etage): static
+    {
+        $this->etage = $etage;
 
         return $this;
     }

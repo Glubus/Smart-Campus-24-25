@@ -2,22 +2,31 @@
 
 namespace App\Controller;
 
+use App\Entity\Batiment;
 use App\Entity\Salle;
 use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
+use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AjoutSalleType;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class SalleController extends AbstractController
 {
@@ -28,25 +37,20 @@ class SalleController extends AbstractController
         $form = $this->createForm(RechercheSalleType::class);
         $associations = $detailPlanRepository->findAll();
 
-        // Traitement du formulaire de recherche
         $form->handleRequest($request);
         $salles = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
             $salleNom = $form->get('salleNom')->getData();
 
-            // Si un nom a été saisi, on filtre les salles par le nom du bâtiment ou l'étage
             if ($salleNom) {
-                // Chercher les salles dont le nom du bâtiment ou l'étage ou le numéro pourrait correspondre
                 $salles = $salleRepository->findAll();
 
-                // Filtrer les résultats avec getSalleNom() en PHP
                 $salles = array_filter($salles, function($salle) use ($salleNom) {
                     return stripos($salle->getNom(), $salleNom) !== false;
                 });
             }
         } else {
-            // Si aucun nom n'est saisi, afficher toutes les salles
             $salles = $salleRepository->findAll();
         }
 
@@ -68,40 +72,10 @@ class SalleController extends AbstractController
         }
     }
 
-    #[Route('/salle/user', name: 'app_salle_user_liste')]
-    public function indexUser(SalleRepository $salleRepository): Response
-    {
-        $salles = $salleRepository->findAll();
-
-        $col1 = array();
-        $col2 = array();
-        $col3 = array();
-
-        for($i = 0; $i < count($salles); $i++) {
-            if($i % 3 == 0){
-                array_push($col1, $salles[$i]);
-            }
-            elseif($i % 3 == 1){
-                array_push($col2, $salles[$i]);
-            }
-            elseif($i % 3 == 2){
-                array_push($col3, $salles[$i]);
-            }
-        }
-
-        return $this->render('salle/listeUser.html.twig', [
-            'salles' => $salles,
-            'col1' => $col1,
-            'col2' => $col2,
-            'col3' => $col3,
-        ]);
-    }
-
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
-        $batiment = $salle->getBatiment();
         $end = new \DateTime();
         $start = (clone $end)->modify('-1 days'); // 7 jours avant
         $arr=[];
@@ -147,23 +121,135 @@ class SalleController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    #[Route('/salle/user', name: 'app_salle_user_liste')]
+    public function indexUser(SalleRepository $salleRepository): Response
+    {
+        $salles = $salleRepository->findAll();
+
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
+
+        for ($i=0; $i<count($salles); $i++) {
+            $salle = $salles[$i];
+
+            $tempValue = null;
+            $humValue = null;
+            $co2Value = null;
+
+            $response = $salleRepository->requestSalle($salle->getNom(), 1);
+
+            $data = json_decode($response->getContent(), true);
+            foreach ($data as $item) {
+                if ($item['nom'] === 'temp') {
+                    $tempValue = $item['valeur'];
+                    $tempValue = (float)$tempValue;
+                } elseif ($item['nom'] === 'hum') {
+                    $humValue = $item['valeur'];
+                    $humValue = (float)$humValue;
+                } elseif ($item['nom'] === 'co2') {
+                    $co2Value = $item['valeur'];
+                    $co2Value = (float)$co2Value;
+                }
+            }
+            $tempValue = round($tempValue, 1);
+            $co2Value = round($co2Value, 0);
+            $humValue = round($humValue, 1);
+
+            if($i % 3 == 0){
+                $col1[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+            }
+            elseif($i % 3 == 1){
+                $col2[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+            }
+            elseif($i % 3 == 2){
+                $col3[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+            }
+        }
+
+        return $this->render('salle/user_liste.html.twig', [
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+        ]);
+    }
+
+    #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
+    public function infosUser(int $id, SalleRepository $salleRepository)
+    {
+        $salle = $salleRepository->find($id);
+
+        $tempValue = null;
+        $humValue = null;
+        $co2Value = null;
+
+        $response = $salleRepository->requestSalle($salle->getNom(), 1);
+        $data = json_decode($response->getContent(), true);
+        foreach ($data as $item) {
+            if ($item['nom'] === 'temp') {
+                $tempValue = $item['valeur'];
+                $tempValue = (float)$tempValue;
+            } elseif ($item['nom'] === 'hum') {
+                $humValue = $item['valeur'];
+                $humValue = (float)$humValue;
+            } elseif ($item['nom'] === 'co2') {
+                $co2Value = $item['valeur'];
+                $co2Value = (float)$co2Value;
+            }
+        }
+
+        $tempValue = round($tempValue, 1);
+        $co2Value = round($co2Value, 0);
+        $humValue = round($humValue, 1);
+
+        $infos = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+
+        return $this->render('salle/user_infos.html.twig', [
+            'infos' => $infos
+        ]);
+    }
+
+
     #[Route('/salle/ajouter', name: 'app_salle_ajouter')]
     public function ajouter(Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, EntityManagerInterface $entityManager): Response
     {
         $salle = new Salle();
-        $form = $this->createForm(AjoutSalleType::class, $salle);
+
+        $selection = $request->query->get('batiment');
+        $batiments = $batimentRepository->findAll();
+        $form = $this->createFormBuilder()
+            ->add('Batiment', EntityType::class,[
+        'class' => Batiment::class, // Class of the entity
+        'choice_label' => 'nom',   // Field to be displayed for each option (the name of the building)
+        'label' => 'Bâtiments',  // Label for the field
+        'placeholder' => 'Selectionner un batiment',
+        'attr' => [
+            'class' => 'form-control sa-searchable', // Optional: Add custom styles
+            'data-live-search' => 'true', // Optional: Add live search
+            'style' => 'margin-left: 10px; display: flex; flex-direction: column;',
+            'id' => 'batiment_select',
+        ]
+    ])
+            ->add('salle', AjoutSalleType::class, [
+                'batiment' => $selection,
+            ])
+        ->getForm();
 
         $form->handleRequest($request);
-        $batiments = $batimentRepository->findAll();
+
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $salle = $form->getData()['salle'];
             $salleExistante = $salleRepository->findOneBy(
                 ['nom' => $salle->getNom()]);
             if($salleExistante) {
                 $this->addFlash('error', 'Cette salle existe déjà');
-            }
-            elseif($salle->getEtage() > $salle->getBatiment()->getNbEtages()) {
-                $this->addFlash('error', 'Il n y a que '.$salle->getBatiment()->getNbEtages().' etages dans ce batiment');
             }
             else {
                 $entityManager->persist($salle);
@@ -172,15 +258,19 @@ class SalleController extends AbstractController
             }
         }
 
+        if($selection) {
+            $form->get('Batiment')->setData($batimentRepository->find($selection));
+        }
         return $this->render('salle/ajout.html.twig', [
-            'controller_name' => 'SalleController',
             'form' => $form->createView(),
-            'salle' => $salle,
-            'batiment' => $batiments,
+            'css' => 'common',
+            'classItem' => "salle",
+            'routeItem'=> "app_salle_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 
-    #[Route('/salle/modifier/{id}', name: 'app_salle_update')]
+    #[Route('/salle/modifier/{id}', name: 'app_salle_modifier')]
     public function modifier(int $id,Request $request, EntityManagerInterface $entityManager, SalleRepository $salleRepository, Salle $salle): Response
     {
         $salle = $salleRepository->find($id);
@@ -315,3 +405,5 @@ class SalleController extends AbstractController
         ]);
     }
 }
+
+?>

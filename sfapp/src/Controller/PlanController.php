@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Batiment;
 use App\Entity\Plan;
 use App\Form\AjoutPlanType;
 use App\Form\SuppressionType;
+use App\Repository\BatimentRepository;
 use App\Repository\PlanRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,10 +36,14 @@ class PlanController extends AbstractController
     public function ajouter(EntityManagerInterface $em, Request $request): Response
     {
         $plan = new Plan();
+
         $form=$this->createForm(AjoutPlanType::class,$plan);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $plan->setDate(new DateTime());
+            foreach ($plan->getBatiments() as $batiment) {
+                $batiment->setPlan($plan); // Set the `plan` for each Batiment
+            }
             $em->persist($plan);
             $em->flush();
 
@@ -46,6 +52,22 @@ class PlanController extends AbstractController
 
         return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'plan',
+            'classItem' => "plan",
+            'routeItem'=> "app_plan_ajouter",
+            'classSpecifique' => ""
+        ]);
+    }
+
+    #[Route('/plan/modifier/{id}', name: 'app_plan_modifier')]
+    public function modifier(int $id, EntityManagerInterface $em, Request $request): Response
+    {
+        return $this->render('plan/ajouter.html.twig', [
+            'form' => $form->createView(),
+            'css' => 'plan',
+            'classItem' => "plan",
+            'routeItem'=> "app_plan_ajouter",
+            'classSpecifique' => ""
         ]);
     }
 

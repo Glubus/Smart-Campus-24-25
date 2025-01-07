@@ -20,7 +20,7 @@ class DetailPlanFixtures extends Fixture implements DependentFixtureInterface
         $detail_plan=$this->ajouterDetail($plan,$sa, $salle);
         $manager->persist($detail_plan);
 
-        $salle=$this->getReference(SalleFixtures::D003, Salle::class);
+        $salle=$this->getReference(SalleFixtures::D205, Salle::class);
         $sa=$this->getReference(SAFixtures::test01, SA::class);
         $detail_plan=$this->ajouterDetail($plan,$sa, $salle);
         $manager->persist($detail_plan);

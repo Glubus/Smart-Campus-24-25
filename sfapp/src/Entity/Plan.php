@@ -26,11 +26,15 @@ class Plan
     #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'plan', cascade: ['remove'])]
     private Collection $detailPlans;
 
-    #[ORM\ManyToOne(inversedBy: 'plans')]
-    private ?Batiment $Batiment = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
+
+    /**
+     * @var Collection<int, Batiment>
+     */
+    #[ORM\OneToMany(targetEntity: Batiment::class, mappedBy: 'plan')]
+    private Collection $batiments;
 
     public function getCountSA(): ?int{
         if(is_null($this->detailPlans))
@@ -57,6 +61,7 @@ class Plan
     public function __construct()
     {
         $this->detailPlans = new ArrayCollection();
+        $this->batiments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,17 +111,6 @@ class Plan
         return $this;
     }
 
-    public function getBatiment(): ?Batiment
-    {
-        return $this->Batiment;
-    }
-
-    public function setBatiment(?Batiment $Batiment): static
-    {
-        $this->Batiment = $Batiment;
-
-        return $this;
-    }
 
     public function getDate(): ?\DateTimeInterface
     {
@@ -126,6 +120,36 @@ class Plan
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Batiment>
+     */
+    public function getBatiments(): Collection
+    {
+        return $this->batiments;
+    }
+
+    public function addBatiment(Batiment $batiment): static
+    {
+        if (!$this->batiments->contains($batiment)) {
+            $this->batiments->add($batiment);
+            $batiment->setPlan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBatiment(Batiment $batiment): static
+    {
+        if ($this->batiments->removeElement($batiment)) {
+            // set the owning side to null (unless already changed)
+            if ($batiment->getPlan() === $this) {
+                $batiment->setPlan(null);
+            }
+        }
 
         return $this;
     }

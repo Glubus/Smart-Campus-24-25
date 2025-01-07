@@ -11,7 +11,6 @@ COPY ./build/sfapp/conf/default.ini /usr/local/etc/php/conf.d/default.ini
 
 # Set working directory
 WORKDIR /app/sfapp
-
 # Arguments defined in compose.yml
 ARG USER_NAME
 ARG USER_ID

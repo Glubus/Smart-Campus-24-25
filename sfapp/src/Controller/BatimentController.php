@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function PHPUnit\Framework\isNull;
 
 class BatimentController extends AbstractController
 {
@@ -64,7 +65,22 @@ class BatimentController extends AbstractController
         ]);
     }
 
-    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
+    #[Route('/batiment/modifier/{id}', name: 'app_batiment_modifier')]
+    public function modifier(int $id, Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
+    {
+        $batiment = $batimentRepository->find($id);
+
+        return $this->render('batiment/ajouter.html.twig', [
+            'css' => 'batiment',
+            'classItem' => "batiment",
+            'item' => $batiment,
+            'routeItem'=> "app_batiment_modifier",
+            'classSpecifique' => ""
+        ]);
+    }
+
+
+        #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
         $req=$request->get('batiment');
@@ -83,22 +99,36 @@ class BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $batimentExistante = $batimentRepository->findBy(
-                ['nom' => $batiment->getNom()]);
-            if($batimentExistante
-            ) {
-                $this->addFlash('error', 'Ce batiment existe déjà');
-            }
-            else{
-                $em->persist($batiment);
-                $em->flush();
-
-                // Redirection vers la liste des bâtiments après ajout
-                return $this->redirectToRoute('app_batiment_liste');
+            // Access dynamically added "etages" data
+            $etages = $request->request->all('form')['etages']; // Safely retrieve
+            foreach ($etages as $key => $etageName) {
+                if($etageName != null){
+                    $batiment->renameEtage($key, $etageName);
                 }
+            }
+
+            if (count($etages) !== count(array_unique($etages))) {
+                $this->addFlash('error', 'Chaque étage doit avoir un nom unique.');
+            }
+
+            else {
+                $batimentExistante = $batimentRepository->findBy(
+                    ['nom' => $batiment->getNom()]
+                );
+                if($batimentExistante) {
+                    $this->addFlash('error', 'Ce batiment existe déjà');
+                }
+                else{
+                    $em->persist($batiment);
+                    $em->flush();
+
+                    // Redirection vers la liste des bâtiments après ajout
+                    return $this->redirectToRoute('app_batiment_liste');
+                }
+            }
         }
 
-        return $this->render('template/ajouter.html.twig', [
+        return $this->render('batiment/ajouter.html.twig', [
             'form' => $form->createView(),
             'css' => 'batiment',
             'classItem' => "batiment",

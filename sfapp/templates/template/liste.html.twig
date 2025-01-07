@@ -49,7 +49,7 @@
                             {% block modif %}
 
                             {% endblock %}
-                            <a href="/"><button class="btnModif">Modifier</button></a>
+                            <a href="{{ path("app_"~classItem~"_modifier", { 'id' : item.id }) }}"><button class="btnModif">Modifier</button></a>
                         </div>
                         </a>
                     </div>

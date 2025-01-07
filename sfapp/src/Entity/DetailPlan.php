@@ -27,6 +27,9 @@ class DetailPlan
     #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Plan $plan = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?EtatSA $etatSA = null;
+
 
 
     public function getId(): ?int
@@ -78,6 +81,18 @@ class DetailPlan
     public function setPlan(?Plan $plan): static
     {
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function getEtatSA(): ?EtatSA
+    {
+        return $this->etatSA;
+    }
+
+    public function setEtatSA(?string $etatSA): static
+    {
+        $this->etatSA = $etatSA;
 
         return $this;
     }

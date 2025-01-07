@@ -10,6 +10,7 @@ use App\Form\AssociationSASalle;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
+use App\Repository\EtageRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use DateTime;
@@ -64,7 +65,7 @@ class DetailPlanController extends AbstractController
             $em->flush();
 
             return $this->redirectToRoute('app_lier_liste', [
-                'plan' =>  $id
+                'id' =>  $id
             ]);// Redirection après soumission
         }
 
@@ -73,40 +74,53 @@ class DetailPlanController extends AbstractController
         ]);
     }
 
-    #[Route('/lier', name: 'app_lier_liste')]
-    public function list(SalleRepository $salleRepo, PlanRepository $planRepo, Request $request): Response
+    #[Route('/lier/{id}', name: 'app_lier_liste')]
+    public function list(PlanRepository $planRepo, Request $request, int $id): Response
     {
-        $selected_plan = $request->query->get('plan');
+        $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
 
+        $plan = $planRepo->findOneBy(['id' => $id]);
+
         $salles = null;
-        if($selected_plan) {
-            $batiment = $planRepo->findOneBy(['id' => $selected_plan])->getBatiment();
+        if($selected_batiment) {
+            $batiment = null;
+            foreach ($plan->getBatiments() as $b) {
+                if ($b->getId() == $selected_batiment) {
+                    $batiment = $b;
+
+                    break; // Exit the loop once found
+                }
+            }
+
             if ($selected_etage == null) {
-                $salles = $salleRepo->findBy(['batiment' => $batiment]);
-                } else {
-                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
+                $salles = array_merge(...array_map(fn($etage) => $etage->getSalles()->toArray(),
+                    $batiment->getEtages()->toArray()));
+            } else {
+                $salles = $batiment->getEtages()[$selected_etage]->getSalles()->toArray();
             }
         }
 
+        foreach ($plan->getBatiments() as $b) {
+            $etageNames = [];
+            foreach ($b->getEtages() as $etage) {
+                $etageNames[] = $etage->getNom();
+            }
 
-        $plansArray = [];
-        $plans = $planRepo->findAll();
-        foreach ($plans as $plan) {
-            $plansArray[] = [
-                'id' => $plan->getId(),
-                'nom' => $plan->getNom(),
-                'nbEtages' => $plan->getBatiment()->getNbEtages(),
-                'batNom' => $plan->getBatiment()->getNom()
+            $batimentsArray[] = [
+                'id' => $b->getId(),
+                'nom' => $b->getNom(),
+                'nomEtages' => $etageNames,
             ];
         }
 
         // Afficher la liste des plans dans le template
         return $this->render('detail_plan/liste.html.twig', [
             'salles' => $salles,
-            'plans' => $plansArray,
-            'selected_plan' => $selected_plan,
+            'batiments' => $batimentsArray,
+            'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
+            'plan_select' => $plan
         ]);
     }
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
@@ -119,7 +133,7 @@ class DetailPlanController extends AbstractController
                 $em->remove($detail_plan);
                 $em->flush();
                 return $this->redirectToRoute('app_lier_liste', [
-                    'plan' => $detail_plan->getPlan()->getId()
+                    'id' => $detail_plan->getPlan()->getId()
                 ]);
             }
         }
