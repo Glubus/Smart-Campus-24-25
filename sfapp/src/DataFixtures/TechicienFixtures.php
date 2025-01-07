@@ -40,10 +40,32 @@ class TechicienFixtures extends Fixture
         $technicien->generateUsername(); // Génération automatique du username
         $manager->persist($technicien);
 
+        $technicien = new Utilisateur();
+        $technicien->setNom('Dupond');
+        $technicien->setPrenom('Maxime');
+        $technicien->setEmail('maxime.dupond@example.com');
+        $technicien->setAdresse('1 rue de la petite etoile lorgnac ');
+        $technicien->setRoles(['ROLE_TECHNICIEN']);
+        $technicien->setPassword($this->passwordHasher->hashPassword($technicien, '1234'));
+        $technicien->generateUsername(); // Génération automatique du username
+        $manager->persist($technicien);
+
+
+        $technicien = new Utilisateur();
+        $technicien->setNom('Benito');
+        $technicien->setPrenom('Benoit');
+        $technicien->setEmail('benoit.benito@example.com');
+        $technicien->setAdresse('2 rue de la petite etoile lorgnac ');
+        $technicien->setRoles(['ROLE_TECHNICIEN']);
+        $technicien->setPassword($this->passwordHasher->hashPassword($technicien, '12345'));
+        $technicien->generateUsername(); // Génération automatique du username
+        $manager->persist($technicien);
+
         // Créer un détail d'intervention pour le technicien et la salle
         $detailIntervention = new DetailIntervention();
         $detailIntervention->setTechnicien($technicien);
         $detailIntervention->setSalle($d307);
+        $detailIntervention->setDescription("le Sa ne marche plus ");
         $detailIntervention->setEtat(EtatIntervention::EN_COURS); // Exemple : état "en cours"
         $detailIntervention->setDateAjout(new \DateTime());
         $manager->persist($detailIntervention);
@@ -51,6 +73,7 @@ class TechicienFixtures extends Fixture
         $detailIntervention = new DetailIntervention();
         $detailIntervention->setTechnicien($technicien);
         $detailIntervention->setSalle($d307);
+        $detailIntervention->setDescription("plus de données de capteur");
         $detailIntervention->setEtat(EtatIntervention::EN_ATTENTE); // Exemple : état "en cours"
         $detailIntervention->setDateAjout(new \DateTime());
         $manager->persist($detailIntervention);

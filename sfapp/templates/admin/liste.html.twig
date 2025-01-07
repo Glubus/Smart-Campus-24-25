@@ -1,0 +1,58 @@
+{# templates/admin/liste.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Administration - Liste des Techniciens
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <a href="{{ path('app_register') }}" class="btn btn-secondary">Ajouter un technicien</a>
+            </div>
+            <div class="col-md-4 text-center">
+                <h1 class="mb-0">Administration - Liste des Techniciens</h1>
+            </div>
+            <div class="col-md-4"></div> <!-- Espace vide pour équilibrer -->
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                {{ form_start(form, {'attr': {'class': 'd-flex'}}) }}
+                <div class="form-group mr-2">
+                    {{ form_row(form.nom) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="row">
+            {% for technicien in techniciens %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title">{{ technicien.nom }} {{ technicien.prenom }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Email :</strong> {{ technicien.email }}</p>
+                            <p><strong>Adresse :</strong> {{ technicien.adresse }}</p>
+                            {% if technicien.detailInterventions|length > 0 %}
+                                <p><strong>Interventions :</strong></p>
+                                <ul>
+                                    {% for intervention in technicien.detailInterventions[:5] %}
+                                        <li>{{ intervention.salle.nom }} : {{ intervention.description }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>Aucune intervention assignée.</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="#" class="btn btn-primary">assigner une tache</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
