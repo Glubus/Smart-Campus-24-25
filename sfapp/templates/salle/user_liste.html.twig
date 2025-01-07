@@ -17,13 +17,6 @@
                 <img src="{{ asset('/img/filtrer.png') }}" style="width: 20px">
                 <p>Filtrer</p>
             </button>
-            <div class="sidebar" id="mySidebar">
-                <h2>Filtres</h2>
-                <p>Option 1</p>
-                <p>Option 2</p>
-                <p>Option 3</p>
-                <button class="toggle-btn" id="closeSidebar">Fermer</button>
-            </div>
         </div>
 
         <div class="listeSalles">
@@ -170,20 +163,6 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const sidebar = document.getElementById('mySidebar');
-
-        // Ajouter un événement pour afficher/masquer la sidebar
-        toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-
-        // Ajouter un bouton pour fermer la sidebar
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-        });
-
         document.addEventListener("DOMContentLoaded", function () {
             // Sélectionner toutes les cartes
             const cards = document.querySelectorAll(".card");
