@@ -4,12 +4,10 @@
 
 {% block body %}
     {# Link to the CSS file#}
-    <link rel="stylesheet" href="{{ asset("styles/plan/index.css") }}">
+    <link rel="stylesheet" href="{{ asset("styles/detail_plan/liste.scss") }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
-
-    <div class="page-content">
         <div id="sidebar">
             <select id="batiment_selection" onchange="updateEtages()">
                 <option value="" disabled selected>selectionner un batiment</option>
@@ -30,70 +28,54 @@
                         </ul>
                     </span>
                 </div>
-
         </div>
 
-        <table id="plan">
-            <thead id="table-header">
-                <tr>
-                    <th>Salle</th>
-                    <th>Attribution</th>
-                    <th>SA</th>
-                </tr>
-            </thead>
-            <tbody id="table-content">
+    <div class="page-content">
+        <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
+
+        <div id="detail_plan">
                 {% for salle in salles %}
-                    <tr class="ligne-attribution">
-                        <td class="salleDiv">{{ salle.nom }}</td>
-                        <td class="tdAttribuer">
-                            <div class="horizontal-line"></div>
-                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
-                            <div class="flex">
+                    <div class="block-salle-container">
+                        <div class="block-salle">
+                            <div class="circle-niveau">{{ salle.etage.niveau }}</div>
+                            <div class="nom-salle">{{ salle.nom }}</div>
+                            <div class="SAattribue">
+                                <div class = "nbrSAattribue">
                                 {% if salle.detailPlans|length == 0 %}
-                                    <div class="line-stop"><i class="fa fa-close"></i></div>
+                                    Aucun SA attribue
+                                {% elseif salle.detailPlans|length == 1%}
+                                    {% set plan = salle.detailPlans[0] %}
+                                    {{ plan.sa.nom }} attribue
                                 {% else %}
-                                    <div class="horizontal-line"></div>
+                                    {{ salle.detailPlans|length }} SA attribuesBlue
                                 {% endif %}
+                                </div>
+                                <div class="actions">
+                                    <i class="toggle caseBleu fas fa-eye" data-salle-id="{{ salle.id }}"></i>
+                                    <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu material-icons" role="button">add_circle</a>
+                                </div>
                             </div>
-                        </td>
-                        {% if salle.detailPlans|length == 0 %}
-                            <td class = "SAattribue AucunSA">Aucun SA attribue</td>
-                    </tr>
-                        {% elseif salle.detailPlans|length == 1%}
-                            <td class = "SAattribue">
-                            {% set plan = salle.detailPlans[0] %}
-                                <span class="infoSA">
-                                    <div>{{ plan.sa.nom }}</div>
-                                    <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
-                                </span>
-                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
-                            </td>
-                    </tr>
-                    {% else %}
-                        <td class="SAattribue">
-                                {{ salle.detailPlans|length }} SA attribues
-                                <i class="toggle caseBleu fa fa-arrow-circle-down" data-salle-id="{{ salle.id }}"></i>
-                            </td>
-                        </tr>
-                        {% for plan in salle.detailPlans %}
-                            <tr class="ligne-attribution hidden afficher-{{ salle.id }}">
-                                <td></td>
-                                <td class="flex-2">
-                                    <div class="line-aggregate"></div>
-                                </td>
-                                <td class="SAattribue">
-                                    <span class="infoSA">
-                                        <div>{{ plan.sa.nom }}</div>
-                                        <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
-                                    </span>
-                                    <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
+                            <div class="afficher-{{ salle.id }} gray-container">
+                                {% for plan in salle.detailPlans %}
+                                    <div class="ligne-attribue">
+                                        {% if plan.etatSA == 'pret' %}
+                                            <div style="background: green">OK</div>
+                                        {% elseif plan.etatSA == 'installation' %}
+
+                                        {% else %}
+                                        {% endif %}
+                                            <span class="infoSA">
+                                                <div>{{ plan.sa.nom }}</div>
+                                                <div style="font-size: 16px">Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
+                                            </span>
+                                        <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 {% endfor %}
-            </tbody>
-        </table>
+        </div>
     </div>
 
     <script>
@@ -169,8 +151,8 @@
                     const details = document.querySelectorAll(`.afficher-${salleId}`);
 
                     details.forEach(detail => { detail.classList.toggle('hidden'); });
-                    this.classList.toggle("fa-arrow-circle-up");
-                    this.classList.toggle("fa-arrow-circle-down");
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
                 });
             });
         });

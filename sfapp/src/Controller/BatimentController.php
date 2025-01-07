@@ -83,7 +83,7 @@ class BatimentController extends AbstractController
         #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
     public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
-        $req=$request->get('batiment');
+        /*$req=$request->get('batiment');
         $batiment=null;
         if ($req) {
             $batiment = $batimentRepository->find($req);
@@ -91,7 +91,8 @@ class BatimentController extends AbstractController
         if (!$batiment) {
             // Initialisation d'un nouveau bâtiment
             $batiment = new Batiment();
-        }
+        }*/
+        $batiment = new Batiment();
         // Création du formulaire
         $form = $this->createForm(AjoutBatimentType::class, $batiment);
 
@@ -105,9 +106,11 @@ class BatimentController extends AbstractController
                 if($etageName != null){
                     $batiment->renameEtage($key, $etageName);
                 }
+                else
+                    $etages[$key] = $key;
             }
 
-            if (count($etages) !== count(array_unique($etages))) {
+            if (count($etages) != count(array_unique($etages))) {
                 $this->addFlash('error', 'Chaque étage doit avoir un nom unique.');
             }
 

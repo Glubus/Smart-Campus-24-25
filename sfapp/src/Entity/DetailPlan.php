@@ -28,7 +28,10 @@ class DetailPlan
     private ?Plan $plan = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?EtatSA $etatSA = null;
+    private ?EtatInstallation $etatSA = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dateEnleve = null;
 
 
 
@@ -85,14 +88,26 @@ class DetailPlan
         return $this;
     }
 
-    public function getEtatSA(): ?EtatSA
+    public function getEtatSA(): string
     {
-        return $this->etatSA;
+        return $this->etatSA->value;
     }
 
-    public function setEtatSA(?string $etatSA): static
+    public function setEtatSA(?EtatInstallation $etatSA): static
     {
         $this->etatSA = $etatSA;
+
+        return $this;
+    }
+
+    public function getDateEnleve(): ?\DateTimeImmutable
+    {
+        return $this->dateEnleve;
+    }
+
+    public function setDateEnleve(?\DateTimeImmutable $dateEnleve): static
+    {
+        $this->dateEnleve = $dateEnleve;
 
         return $this;
     }

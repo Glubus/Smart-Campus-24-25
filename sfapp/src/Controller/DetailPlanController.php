@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\DetailPlan;
+use App\Entity\EtatInstallation;
 use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
@@ -61,6 +62,7 @@ class DetailPlanController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $detail_plan->setDateAjout(new DateTime());
+            $detail_plan->setEtatSA(EtatInstallation::INSTALLATION);
             $em->persist( $detail_plan);
             $em->flush();
 

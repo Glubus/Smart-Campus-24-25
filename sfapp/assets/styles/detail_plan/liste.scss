@@ -1,0 +1,214 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    position:relative;
+    background-image: linear-gradient(to top right, #001932, #0041B5);
+    height: 100%;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    color: #fff;
+}
+
+.page-content{
+    border-top: 1px solid black;
+}
+
+#sidebar {
+    float: left;
+    margin-top: 20px;
+    margin-left: 15px;
+    width: 25%;
+    position: sticky; /* Fix the sidebar in place */
+    top: 2vh;
+    height: 98vh; /* Make the sidebar full height */
+    display: flex;
+    flex-direction: column;
+    background-color: #D9D9D9;
+    border: 1px solid #000;
+}
+
+#sidebar .vertical-line{
+    height: 100%;
+    width: 2px;
+    background-color: #1A5ED4;
+}
+
+#sidebar .horizontal-line{
+    width: 20%;
+    height: 2px;
+    background-color: #1A5ED4;
+}
+
+/* Sidebar styling */
+#batiment_selection {
+    padding: 10px;
+    margin: 10px 10px 0 10px;
+    background-color: #289EFF;
+    color: white;
+    border-radius: 10px;
+    border: 0;
+    font-size: large;
+}
+
+#etagesDiv {
+    margin: 0 30px;
+    display: flex;
+}
+
+#etagesDiv > span{
+    flex: 1;
+}
+
+#etagesList {
+    margin: 0;
+    padding: 0;
+}
+
+#etagesList > li{
+    display: flex;
+    align-items: center;
+}
+
+.etage-affiche-toutes{
+    font-size: large;
+    margin: 10px 5px;
+}
+
+.etage-list-item{
+    flex:1;
+    margin: 10px;
+}
+
+#etagesList li a, .etage-affiche-toutes{
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 5px 10px;
+}
+
+#etagesList li a:hover, .etage-affiche-toutes:hover, .darken{
+    background-color: #d0e2f5;
+}
+
+/* detail_plan styling */
+#detail_plan {
+    width: 70%;
+    float: right;
+    margin: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.block-salle-container{
+    flex-basis: 50%;
+    padding: 10px 50px 10px 50px;
+}
+
+.block-salle{
+    position: relative;
+    font-size: 24px;
+}
+
+.nom-salle{
+    border: 5px solid #33CBEA;
+    background-color: #008CFF;
+    border-radius: 0 50px 50px 0;
+    color: white;
+    padding: 5px 0 5px 20px;
+}
+
+.circle-niveau{
+    background-color: #33CBEA;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    height: 50px;
+    width: 50px;
+    font-size: 40px;
+    font-weight: bold;
+    position: absolute;
+    left: -30px;
+    top: -5px;
+}
+
+
+.SAattribue {
+    border: 5px solid #33CBEA;
+    border-top: 0;
+    border-top-right-radius: 20px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.actions{
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.nbrSAattribue{
+    margin-left: 10px;
+}
+
+.gray-container{
+    min-height: 70px;
+    background-color: #D9D9D9;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Buttons and links */
+.caseBleu, .supprAttr {
+    text-decoration: none;
+}
+
+.caseBleu{
+    color: #33CBEA;
+    background-color: white;
+    padding-left: 5px;
+}
+
+.supprAttr {
+    color: red;
+    background-color: #D9D9D9;
+    margin-right: 15px;
+}
+
+.ligne-attribue{
+    display: flex;
+}
+
+.infoSA{
+    margin: 0;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.caseBleu:hover, .supprAttr:hover {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Hidden content */
+.hidden {
+    display: none;
+}
+
+
+.green-circle {
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.toggle {
+    cursor: pointer;
+}
+
