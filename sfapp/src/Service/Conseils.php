@@ -6,7 +6,7 @@ use App\Service\ApiWrapper;
 class Conseils
 {
     public const seuilDepasse = false;
-    public const seuil=
+    public const seuil = 21;
 
     public function getConseils(ApiWrapper $wrapper, float $tempInt, float $co2Int, float $humiInt){
         $tempExt = $wrapper->getTempOutsideByAPI();
