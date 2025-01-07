@@ -6,6 +6,7 @@ use App\Entity\EtageSalle;
 use App\Entity\Salle;
 use App\Entity\TypeCapteur;
 use App\Entity\ValeurCapteur;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -88,6 +89,51 @@ class SalleRepository extends ServiceEntityRepository
         }
 
         return $response;
+    }
+
+    public function mostRecentDateCapture(array $data): array
+    {
+        if ($data['nom'] === 'temp') {
+            $tempValue = $data['valeur'];
+            $dateTemp = new DateTime($data['dateCapture']);
+            $tempValue = (float)$tempValue;
+        } elseif ($data['nom'] === 'hum') {
+            $humValue = $data['valeur'];
+            $dateHum = new DateTime($data['dateCapture']);
+            $humValue = (float)$humValue;
+        } elseif ($data['nom'] === 'co2') {
+            $co2Value = $data['valeur'];
+            $dateCo2 = new DateTime($data['dateCapture']);
+            $co2Value = (float)$co2Value;
+        }
+
+        $lastDataTime = null;
+
+        if ($dateTemp && (!$lastDataTime || $dateTemp > $lastDataTime)) {
+            $lastDataTime = $dateTemp;
+        } if ($dateHum && (!$lastDataTime || $dateHum > $lastDataTime)) {
+        $lastDataTime = $dateHum;
+        } if ($dateCo2 && (!$lastDataTime || $dateCo2 > $lastDataTime)) {
+            $lastDataTime = $dateCo2;
+        }
+
+        $jours = null;
+        $heures = null;
+        $minutes = null;
+
+        $currentDateTime = new DateTime('now');
+
+        if($lastDataTime != null){
+            $interval = $lastDataTime->diff($currentDateTime);
+
+            $jours = $interval->days; // Total des jours
+            $heures = $interval->h;   // Heures restantes (après division par jours)
+            $minutes = $interval->i; // Minutes restantes (après division par heures)
+        }
+
+        $result = ['derniereDate' => ['j' => $jours, 'h' => $heures, 'm' => $minutes]];
+
+        return $result;
     }
 
 //    /**

@@ -13,6 +13,7 @@ use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -53,7 +54,6 @@ class SalleController extends AbstractController
         } else {
             $salles = $salleRepository->findAll();
         }
-
 
         if ($salles) {
             return $this->render('salle/liste.html.twig', [
@@ -128,9 +128,23 @@ class SalleController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/salle/user', name: 'app_salle_user_liste')]
-    public function indexUser(SalleRepository $salleRepository): Response
+    public function indexUser(Request $request, SalleRepository $salleRepository): Response
     {
+        $form = $this->createForm(RechercheSalleType::class);
         $salles = $salleRepository->findAll();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $salleNom = $form->get('salleNom')->getData();
+            if ($salleNom) {
+                // Filtrer les salles dont le nom contient la chaîne $salleNom, peu importe où
+                $salles = array_filter($salles, function($salle) use ($salleNom) {
+                    return stripos($salle->getNom(), $salleNom) !== false;
+                });
+                $salles = array_values($salles);
+            }
+        }
 
         $col1 = [];
         $col2 = [];
@@ -158,6 +172,7 @@ class SalleController extends AbstractController
                     $co2Value = (float)$co2Value;
                 }
             }
+
             $tempValue = round($tempValue, 1);
             $co2Value = round($co2Value, 0);
             $humValue = round($humValue, 1);
@@ -177,6 +192,7 @@ class SalleController extends AbstractController
             'col1' => $col1,
             'col2' => $col2,
             'col3' => $col3,
+            'form' => $form->createView(),
         ]);
     }
 

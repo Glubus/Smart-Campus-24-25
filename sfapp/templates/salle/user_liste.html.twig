@@ -6,12 +6,17 @@
     <link rel="stylesheet" href="{{ asset('/styles/user_liste.css') }}">
     <div class="container">
         <div class="header">
+            {{ form_start(form) }}
             <div class="search">
-                <input type="text" placeholder="Rechercher..." class="search-bar">
-                <button class="search-button">🔍</button>
+                {{ form_widget(form.salleNom) }}
+                {{ form_widget(form.rechercher) }}
             </div>
+            {{ form_end(form) }}
             <h1 class="title">Salles</h1>
-            <button class="sort-button">Trier ⬇</button>
+            <button class="sort-button" id="toggleSidebar">
+                <img src="{{ asset('/img/filtrer.png') }}" style="width: 20px">
+                <p>Filtrer</p>
+            </button>
         </div>
 
         <div class="listeSalles">
