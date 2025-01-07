@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Loi Normale des Températures{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Loi Normale des Températures</h1>
+        <canvas id="loiNormaleChart" width="800" height="400"></canvas>
+
+        <div class="mt-4">
+            <p><strong>Moyenne : </strong>{{ mean }}°C</p>
+            <p><strong>Écart-type : </strong>{{ stdDev }}°C</p>
+            <p><strong>Données manquantes : </strong>{{ missingCount }}</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Données envoyées depuis Symfony
+        const labels = {{ temperatureRange|json_encode|raw }}; // Températures (X)
+        const normalDistribution = {{ normalDistribution|json_encode|raw }}; // Probabilités (Y)
+
+        // Initialiser le graphique Chart.js
+        const ctx = document.getElementById('loiNormaleChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line', // Graphique en ligne
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Loi Normale',
+                        data: normalDistribution,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true, // Remplissage en dessous de la courbe
+                        tension: 0.4, // Rend la courbe lisse
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Courbe de la Loi Normale des Températures'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Températures (°C)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Densité de Probabilité'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

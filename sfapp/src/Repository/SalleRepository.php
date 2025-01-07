@@ -8,6 +8,7 @@ use App\Entity\TypeCapteur;
 use App\Entity\ValeurCapteur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -22,11 +23,11 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 class SalleRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Salle::class);
     }
-
     public function requestSalle(string $salle, int $page = 0): ResponseInterface
     {
         $client = HttpClient::create();
