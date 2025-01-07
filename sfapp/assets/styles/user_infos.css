@@ -79,25 +79,11 @@ h2 {
     align-items: center;
 }
 
-.etatCap {
-    width: 15px;
-    height: 15px;
-    border-radius: 10px;
-    background-color: red;
-}
-
-.etatCapFonctionne {
-    width: 15px;
-    height: 15px;
-    border-radius: 10px;
-    background-color: green;
-}
-
 .nomCap {
     margin-left: 5px;
     margin-top: auto;
     margin-bottom: auto;
-    font-weight: 20;
+    width: 30px;
 }
 
 .data {
@@ -116,10 +102,12 @@ h2 {
 
 .conseils {
     text-align: center;
-    font-size: 10px;
-    color: black;
-    background-color: white;
-    height: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 20px;
+    color: white;
+    background: rgba(255, 255, 255, 0.5);
     width: 100%;
     margin-bottom: 40px;
+    border-radius: 10px;
 }
