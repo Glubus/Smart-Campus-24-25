@@ -39,7 +39,7 @@
                                 <span>
                                     <strong>{{ intervention.salle.nom }}</strong> : {{ intervention.description }}
                                 </span>
-                                <a href="/admin/intervention/delete/{{intervention.id}}" class="btn btn-danger p-1 d-inline-flex align-items-center">
+                                <a href="{{ path('delete_intervention', {'id': intervention.id})  }}" class="btn btn-danger p-1 d-inline-flex align-items-center">
                                     🗑️
                                 </a>
                             </div>
