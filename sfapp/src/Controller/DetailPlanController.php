@@ -17,6 +17,7 @@ use App\Repository\SalleRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -77,7 +78,7 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/lier/{id}', name: 'app_lier_liste')]
-    public function list(PlanRepository $planRepo, Request $request, int $id): Response
+    public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request, int $id): Response
     {
         $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
@@ -116,8 +117,31 @@ class DetailPlanController extends AbstractController
             ];
         }
 
+        $form = $this->createFormBuilder()
+            ->add('nom', TextType::class, [
+                'label' => false,
+                'attr' => ['placeholder' => 'Rechercher par nom de salle'],
+               ])
+        ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $salleFiltrer = $salleRepo->findByNomRessemblant($data['nom']);
+            $salles = array_intersect_key(
+                $salles,
+                array_intersect(
+                    array_map(fn($s):string => $s->getNom(), $salles),
+                    array_map(fn($s):string => $s->getNom(), $salleFiltrer)
+                )
+            );
+        }
+
+
         // Afficher la liste des plans dans le template
         return $this->render('detail_plan/liste.html.twig', [
+            'form' => $form->createView(),
             'salles' => $salles,
             'batiments' => $batimentsArray,
             'selected_batiment' => $selected_batiment,

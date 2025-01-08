@@ -9,16 +9,63 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
         <div id="sidebar">
-            <select id="batiment_selection" onchange="updateEtages()">
-                <option value="" disabled selected>selectionner un batiment</option>
-                {% for batiment in batiments %}
-                    <option value="{{ batiment.id }}"
-                            {% if batiment.id == selected_batiment %}
-                    selected
-                            {% endif %}>
-                        {{ batiment.nom }}</option>
-                {% endfor %}
-            </select>
+            <div class="switch-menu"><i class="fa fa-exchange"></i></div>
+            <div id="toolbox" class="hidden">
+                <div><i class="fa fa-search"></i>
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    {{ form_end(form) }}
+                </div>
+                <h2>Filtrer par</h2>
+                <fieldset>
+                    <legend>Nombre de SA attribue</legend>
+                    <div>
+                        <input type="checkbox" name="nbSA" checked />
+                        <label>0</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="nbSA" checked />
+                        <label>1</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="nbSA" checked />
+                        <label>>1</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Etat d'installation</legend>
+                    <div>
+                        <input type="checkbox" id="coding" name="etat" value="coding" checked />
+                        <label for="coding"><i class="fa fa-check pret"></i>Installe</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="music" name="etat" value="music" checked />
+                        <label for="music"><i class="material-icons installation">timelapse</i>A installer</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="music" name="etat" value="music" checked />
+                        <label for="music"><i class="material-icons deinstallation">timelapse</i>A desinstaller</label>
+                    </div>
+                </fieldset>
+
+                <h2>Actions</h2>
+                <div>
+                    <div><i class="fas fa-eye" id="deplier" style="cursor: pointer">Tout deplier</i></div>
+                    <div><i class="fas fa-eye-slash" id="plier" style="cursor: pointer">Tout plier</i></div>
+                </div>
+            </div>
+            <div id="filter-etage" class="filter-etage">
+                <select id="batiment_selection" onchange="updateEtages()">
+                    <option value="" disabled selected>selectionner un batiment</option>
+                    {% for batiment in batiments %}
+                        <option value="{{ batiment.id }}"
+                                {% if batiment.id == selected_batiment %}
+                        selected
+                                {% endif %}>
+                            {{ batiment.nom }}</option>
+                    {% endfor %}
+                </select>
                 <div id="etagesDiv">
                     <div class="vertical-line"></div>
                     <span>
@@ -28,6 +75,7 @@
                         </ul>
                     </span>
                 </div>
+            </div>
         </div>
 
     <div class="page-content">
@@ -58,15 +106,26 @@
                             <div class="afficher-{{ salle.id }} gray-container">
                                 {% for plan in salle.detailPlans %}
                                     <div class="ligne-attribue">
+                                        <div>
                                         {% if plan.etatSA == 'pret' %}
-                                            <div style="background: green">OK</div>
+                                            <i class="fa fa-check pret"></i>
                                         {% elseif plan.etatSA == 'installation' %}
-
+                                            <i class="material-icons installation">timelapse</i>
                                         {% else %}
+                                            <i class="material-icons deinstallation">timelapse</i>
                                         {% endif %}
+                                        </div>
                                             <span class="infoSA">
                                                 <div>{{ plan.sa.nom }}</div>
-                                                <div style="font-size: 16px">Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
+                                                <div style="font-size: 16px">
+                                                    {% if plan.etatSA == 'pret' %}
+                                                        installe le {{ plan.dateAjout|date('d/m/Y') }}
+                                                    {% elseif plan.etatSA == 'installation' %}
+                                                        demande d'installation faite le {{ plan.dateAjout|date('d/m/Y') }}
+                                                    {% else %}
+                                                        demande de deinstallation faite le {{ plan.dateAjout|date('d/m/Y') }}
+                                                    {% endif %}
+                                                </div>
                                             </span>
                                         <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
                                     </div>
@@ -144,6 +203,10 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             const toggleButtons = document.querySelectorAll(".toggle");
+            const b1 = document.getElementById('filter-etage');
+            const b2 = document.getElementById('toolbox');
+            const deplier = document.getElementById('deplier');
+            const plier = document.getElementById('plier');
 
             toggleButtons.forEach((button) => {
                 button.addEventListener("click", function () {
@@ -154,6 +217,23 @@
                     this.classList.toggle("fa-eye");
                     this.classList.toggle("fa-eye-slash");
                 });
+            });
+
+            const switchMenu = document.querySelector(".switch-menu");
+
+            switchMenu.addEventListener("click", function () {
+                    b1.classList.toggle('hidden');
+                    b2.classList.toggle('hidden');
+            });
+
+            deplier.addEventListener("click", function () {
+                const details = document.querySelectorAll(`.toggle.fa-eye-slash`);
+                details.forEach(detail => { detail.click(); });
+            });
+
+            plier.addEventListener("click", function () {
+                const details = document.querySelectorAll(`.toggle.fa-eye`);
+                details.forEach(detail => { detail.click(); });
             });
         });
     </script>
