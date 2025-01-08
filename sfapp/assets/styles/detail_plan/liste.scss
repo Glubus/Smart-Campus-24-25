@@ -49,6 +49,27 @@ h1 {
 }
 
 /* Sidebar styling */
+.research{
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.research form{
+    flex-grow: 1;
+}
+
+.research i{
+    font-size: 40px;
+}
+
+.white-container{
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
 #batiment_selection {
     padding: 10px;
     margin: 10px 10px 0 10px;
@@ -107,6 +128,12 @@ h1 {
 
 .switch-menu>i{
     cursor: pointer;
+}
+
+.toolbox{
+    padding: 0 30px;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -177,6 +204,18 @@ h1 {
     min-height: 70px;
     background-color: #D9D9D9;
     border-radius: 0 0 20px 20px;
+}
+
+.aucunResultat{
+    display: flex;
+}
+
+.aucunResultat h2{
+    background-color: rgba(0, 140, 255, 0.5);
+    color: white;
+    padding: 30px;
+    margin: 30px 60px;
+    flex-grow: 1;
 }
 
 /* Buttons and links */

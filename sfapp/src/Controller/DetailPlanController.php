@@ -120,7 +120,10 @@ class DetailPlanController extends AbstractController
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class, [
                 'label' => false,
-                'attr' => ['placeholder' => 'Rechercher par nom de salle'],
+                'attr' => [
+                    'placeholder' => 'Rechercher par nom de salle',
+                    'class' => 'form-control',
+                    ],
                ])
         ->getForm();
 
@@ -146,7 +149,7 @@ class DetailPlanController extends AbstractController
             'batiments' => $batimentsArray,
             'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
-            'plan_select' => $plan
+            'plan_select' => $plan,
         ]);
     }
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]

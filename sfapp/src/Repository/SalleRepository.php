@@ -136,7 +136,7 @@ class SalleRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function findByNomRessemblant(string $str): array
+    public function findByNomRessemblant(?string $str): array
     {
         return $this->createQueryBuilder('s')
             ->setParameter('str', '%'.$str.'%')
