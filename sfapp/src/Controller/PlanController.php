@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\ActionLog;
 use App\Entity\Batiment;
 use App\Entity\Plan;
+use App\Entity\SALog;
 use App\Form\AjoutPlanType;
+use App\Form\AjoutSAType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
 use App\Repository\PlanRepository;
+use App\Repository\SARepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,18 +54,6 @@ class PlanController extends AbstractController
             return $this->redirectToRoute('app_plan_liste'); // Redirection après soumission
         }
 
-        return $this->render('plan/ajouter.html.twig', [
-            'form' => $form->createView(),
-            'css' => 'plan',
-            'classItem' => "plan",
-            'routeItem'=> "app_plan_ajouter",
-            'classSpecifique' => ""
-        ]);
-    }
-
-    #[Route('/plan/modifier/{id}', name: 'app_plan_modifier')]
-    public function modifier(int $id, EntityManagerInterface $em, Request $request): Response
-    {
         return $this->render('plan/ajouter.html.twig', [
             'form' => $form->createView(),
             'css' => 'plan',
@@ -123,6 +115,7 @@ class PlanController extends AbstractController
     public function suppSelection(
         Request $request,
         PlanRepository $planRepository,
+        BatimentRepository $batimentRepository,
         EntityManagerInterface $entityManager,
         SessionInterface $session
     ): Response {
@@ -203,5 +196,12 @@ class PlanController extends AbstractController
             'items' => $batiments,
             'classItem'=> "batiment"
         ]);
+    }
+    #[Route('/plan/modifier', name: 'app_plan_modifier')]
+    public function modifier(int $id, SARepository $SARepository, EntityManagerInterface $entityManager,Request $request): Response
+    {
+
+        // Affichage du formulaire
+        return $this->render('accueil/index.html.twig', []);
     }
 }

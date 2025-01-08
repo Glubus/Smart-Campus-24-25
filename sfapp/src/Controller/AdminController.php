@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\DetailIntervention;
-use App\Entity\DetailPlan;
 use App\Entity\EtatIntervention;
 use App\Form\DetailInterventionType;
 use App\Form\RechercheSaType;
@@ -14,41 +13,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Entity\Utilisateur;
 
-class AdminController extends AbstractController
+class  AdminController extends AbstractController
 {
+    private const ROLE_TECHNICIEN = 'ROLE_TECHNICIEN';
+
     #[Route('/admin', name: 'app_admin')]
     public function index(Request $request, UtilisateurRepository $utilisateurRepository): Response
     {
-
         $form = $this->createForm(RechercheSaType::class);
         $form->handleRequest($request);
 
-        // Check if the form is submitted and valid, then filter results
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-
-            dump($data);
-            // Filter the `SA` entities based on the search term
-            if (!empty($data['nom'])) {
-                // Recherche avec filtre par nom
-                $techniciens = $utilisateurRepository->findTechniciensByRoleAndNom('ROLE_TECHNICIEN', $data['nom']);
-            }
-        } else {
-            // If no filtering, get all entities
-            $techniciens = $utilisateurRepository->findByRole('ROLE_TECHNICIEN');
-        }
+        $formData = $form->isSubmitted() && $form->isValid() ? $form->getData() : null;
+        $filteredTechniciens = $this->getTechnicians($utilisateurRepository, $formData['nom'] ?? null);
 
         return $this->render('admin/liste.html.twig', [
             'controller_name' => 'AdminController',
-            'techniciens' => $techniciens,
-            'form' => $form->createView()
+            'techniciens' => $filteredTechniciens,
+            'form' => $form->createView(),
         ]);
     }
+
     #[Route('/new', name: 'app_detail_intervention_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, DetailInterventionRepository $repository, EntityManagerInterface $entityManager): Response
+    public function new(
+        Request                      $request,
+        DetailInterventionRepository $repository,
+        EntityManagerInterface       $entityManager
+    ): Response
     {
         $intervention = new DetailIntervention();
         $form = $this->createForm(DetailInterventionType::class, $intervention);
@@ -57,7 +48,7 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $intervention->setDateAjout(new \DateTime());
             $intervention->setEtat(EtatIntervention::EN_ATTENTE);
-            $entityManager->persist($intervention); // Prépare l'entité pour la persistance
+            $entityManager->persist($intervention);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_admin');
@@ -69,4 +60,10 @@ class AdminController extends AbstractController
         ]);
     }
 
+    private function getTechnicians(UtilisateurRepository $repository, ?string $name): array
+    {
+        return $name
+            ? $repository->findTechniciensByRoleAndNom(self::ROLE_TECHNICIEN, $name)
+            : $repository->findByRole(self::ROLE_TECHNICIEN);
+    }
 }

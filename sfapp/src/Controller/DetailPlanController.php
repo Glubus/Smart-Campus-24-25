@@ -41,16 +41,6 @@ class DetailPlanController extends AbstractController
             if (!$sa) {
                 throw $this->createNotFoundException('Système d\'acquisition non trouvé.');
             }
-            /*
-            // Utiliser findBy pour récupérer tous les plans associés à ce SA
-            $planExist = $em->getRepository(DetailPlan::class)->findOneBy([
-                'sa' => $sa  // On filtre les plans par l'objet SA
-            ]);
-
-            if (!$plan)
-            {
-                $plan->setSa($sa);
-            }*/
 
             $detail_plan->setSA($sa);
         }

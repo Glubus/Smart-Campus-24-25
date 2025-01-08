@@ -62,9 +62,10 @@ class ApiWrapper
             $item->expiresAfter(3600); // 1 heure
 
             $client = HttpClient::create();
+
             $headers = [
                 'accept' => ' application/ld+json',
-                'dbname' => ''.self::DB[self::ASSOCIATIONS[$salle]].'',
+                'dbname' => self::DB[self::ASSOCIATIONS[$salle]],
                 'username' => 'k2eq3',
                 'userpass' => 'nojsuk-kegfyh-3cyJmu',
             ];
@@ -119,7 +120,67 @@ class ApiWrapper
         });
         return $externalValue;
     }
+    public function requestSalleLastValueByDateAndInterval(string $salle) : array
+    {
+        $end = (new \DateTime('now'))->modify('+1 hour');
+        $start= (clone $end)->modify('-1 hour');
+        $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
+        $temporaryArr=[];
+        foreach ($types as $type) {
+        $results = $this->requestSalleByType($salle, $type, 1, 1);
 
+        foreach ($results as $result) {
+            // Vérifie que la date est présente et valide
+            if (isset($result['dateCapture'])) {
+                try {
+                    $date = new \DateTime($result['dateCapture']);
+
+                    if ($date >= $start && $date <= $end) {
+                        $temporaryArr[] = ($result); // Ajoute uniquement si elle est valide
+                    }
+                } catch (\Exception $e) {
+                    // Ignorer si la date n'est pas valide
+                }
+            }
+        }
+
+        }
+        return $temporaryArr;
+    }
+    public function requestAllSalleLastValueByDateAndInterval() : array{
+        $externalValue = $this->cache->get('all_salle_last_value_by_date', function (ItemInterface $item){
+            $item->expiresAfter(3600); // 1 heure
+            $end = (new \DateTime('now'))->modify('+1 hour');
+            $start= (clone $end)->modify('-1 hour');
+            $temporaryArr = [];
+            $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
+            foreach (self::ASSOCIATIONS as $salle => $esp) {
+                foreach ($types as $type) {
+                    // Récupère les résultats pour le type demandé
+                    $results = $this->requestSalleByType($salle, $type, 1, 1);
+                    foreach ($results as $result) {
+                        // Vérifie que la date est présente et valide
+                        if (isset($result['dateCapture'])) {
+                            try {
+                                $date = new \DateTime($result['dateCapture']);
+
+                                if ($date >= $start && $date <= $end) {
+                                    $temporaryArr[] = ($result); // Ajoute uniquement si elle est valide
+                                }
+                            } catch (\Exception $e) {
+                                // Ignorer si la date n'est pas valide
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return $temporaryArr;
+        });
+
+        return $externalValue;
+    }
     public function requestAllSalleLastValue(): array
     {
         $externalValue = $this->cache->get('all_salle_last_value', function (ItemInterface $item) {
@@ -148,9 +209,12 @@ class ApiWrapper
         return $externalValue;
     }
 
+    /**
+     * @deprecated Utiliser la méthode requestAllSalleByIntervalV2 à la place.
+     */
     public function requestAllSalleByInterval(
         \DateTimeInterface $start,
-        \DateTimeInterface $end)
+        \DateTimeInterface $end) : array
     {
         $i=0;
         $formattedStart = $start->format('Y-m-d'); // YYYY-MM-DD
@@ -170,6 +234,8 @@ class ApiWrapper
         return $temporaryArr;
 
     }
+
+
     public function transform($data):array
     {
         $result = [];
@@ -387,9 +453,6 @@ class ApiWrapper
         return $bizarreSalles;
     }
 
-    /**
-     * Vérifie si une température est normale. TODO: Ajouter la logique avec une API météo.
-     */
 
     public function getTempOutsideByAPI(){
         // Cache la température extérieure toutes les 6 heures
@@ -424,5 +487,73 @@ class ApiWrapper
     public function isTemperatureNormal(float $temperature): bool
     {
         return $temperature > 25 && $this->getTempOutsideByAPI() < $temperature;
+    }
+
+    public function requestAllSalleByIntervalv2(
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): array {
+        $now = new \DateTime('now'); // Date actuelle
+        $formattedStart = $start->format('Y-m-d'); // YYYY-MM-DD
+        $formattedEnd = $end->format('Y-m-d');
+        $temporaryArr = [];
+
+        // Si la plage demandée est entièrement dans le passé
+        if ($end < $now) {
+            // Génération d'une clé cache pour la période passée
+            $cacheKeyPast = sprintf('salle_interval_past_%s_%s', $formattedStart, $formattedEnd);
+
+            // Récupérer ou générer les données depuis le cache
+            return $this->cache->get($cacheKeyPast, function (ItemInterface $item) use ($start, $end) {
+                $item->expiresAfter(2592000); // 1 mois (en secondes)
+                $temporaryResults = [];
+                foreach (self::ASSOCIATIONS as $salle => $esp) {
+                    $result = $this->transform($this->requestSalleByInterval(
+                        $salle,
+                        1,
+                        $start->format('Y-m-d'),
+                        $end->format('Y-m-d')
+                    ));
+                    if (!empty($result)) {
+                        $temporaryResults = [...$temporaryResults, ...$result];
+                    }
+                }
+                uksort($temporaryResults, fn($a, $b) => strtotime($a) <=> strtotime($b));
+                return $temporaryResults;
+            });
+        }
+
+        // Si la plage demandée comprend des éléments passés et futurs
+        if ($start < $now) {
+            $pastEnd = (clone $now)->modify('-1 second'); // Juste avant "now"
+            // Génération d'une clé cache pour la partie passée
+            $cacheKeyPast = sprintf('salle_interval_past_%s_%s', $formattedStart, $pastEnd->format('Y-m-d'));
+
+            // Récupérer les données passées depuis le cache
+            $pastData = $this->cache->get($cacheKeyPast, function (ItemInterface $item) use ($start, $pastEnd) {
+                $item->expiresAfter(2592000); // 1 mois
+                $temporaryResults = [];
+                foreach (self::ASSOCIATIONS as $salle => $esp) {
+                    $result = $this->transform($this->requestSalleByInterval(
+                        $salle,
+                        1,
+                        $start->format('Y-m-d'),
+                        $pastEnd->format('Y-m-d')
+                    ));
+                    if (!empty($result)) {
+                        $temporaryResults = [...$temporaryResults, ...$result];
+                    }
+                }
+                uksort($temporaryResults, fn($a, $b) => strtotime($a) <=> strtotime($b));
+                return $temporaryResults;
+            });
+
+            $temporaryArr = [...$temporaryArr, ...$pastData];
+        }
+
+        // Trier les données finales par date
+        uksort($temporaryArr, fn($a, $b) => strtotime($a) <=> strtotime($b));
+
+        return $temporaryArr;
     }
 }
