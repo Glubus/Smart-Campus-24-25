@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\DetailPlan;
+use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -36,3 +37,4 @@ class DetailPlanType extends AbstractType
         ]);
     }
 }
+

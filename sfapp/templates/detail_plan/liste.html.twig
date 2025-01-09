@@ -50,9 +50,9 @@
                 </fieldset>
 
                 <h2>Actions</h2>
-                <div class="white-container">
-                    <div><i class="fas fa-eye" id="deplier" style="cursor: pointer">Tout deplier</i></div>
-                    <div><i class="fas fa-eye-slash" id="plier" style="cursor: pointer">Tout plier</i></div>
+                <div>
+                    <div class="white-container" style="cursor: pointer" id="deplier"><i class="fas fa-eye action-button"></i>Tout deplier</div>
+                    <div class="white-container" style="cursor: pointer" id="plier"><i class="fas fa-eye-slash action-button"></i>Tout plier</div>
                 </div>
             </div>
 
@@ -142,11 +142,17 @@
                                                     {% elseif plan.etatSA == 'installation' %}
                                                         demande d'installation faite le {{ plan.dateAjout|date('d/m/Y') }}
                                                     {% else %}
-                                                        demande de deinstallation faite le {{ plan.dateAjout|date('d/m/Y') }}
+                                                        demande de deinstallation faite le {{ plan.dateEnleve|date('d/m/Y') }}
                                                     {% endif %}
                                                 </div>
                                             </span>
-                                        <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
+                                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
+                                        {% elseif is_granted('ROLE_TECHNICIEN') %}
+                                            {% if plan.etatSA != 'pret' %}
+                                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="material-icons">check_circle</a>
+                                            {% endif %}
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>

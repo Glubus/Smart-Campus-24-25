@@ -320,9 +320,6 @@ class SAController extends AbstractController
             if ($submittedString=='CONFIRMER'){
 
                 foreach ($sa as $sas) {
-                    foreach ($sas->getPlans() as $plan) {
-                        $entityManager->remove($plan);
-                    }
                     // Remove related SALog entries
                     foreach ($sas->getSALogs() as $log) {
                         $entityManager->remove($log);

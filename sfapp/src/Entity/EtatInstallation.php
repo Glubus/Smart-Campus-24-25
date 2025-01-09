@@ -6,7 +6,7 @@ enum EtatInstallation: string
 {
     case INSTALLATION= 'installation';
 
-    case DEINSTALLATION= 'deinstallation';
+    case DESINSTALLATION= 'desinstallation';
 
     case PRET = 'pret';
 }

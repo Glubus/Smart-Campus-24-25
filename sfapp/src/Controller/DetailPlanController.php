@@ -8,10 +8,7 @@ use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use App\Form\AssociationSASalle;
-use App\Form\SuppressionType;
-use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
-use App\Repository\EtageRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use DateTime;
@@ -21,7 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function PHPUnit\Framework\isNull;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DetailPlanController extends AbstractController
 {
@@ -78,6 +76,7 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/lier/{id}', name: 'app_lier_liste')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request, int $id): Response
     {
         $selected_batiment = $request->query->get('batiment');
@@ -152,6 +151,7 @@ class DetailPlanController extends AbstractController
             'plan_select' => $plan,
         ]);
     }
+
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
@@ -159,8 +159,16 @@ class DetailPlanController extends AbstractController
 
         if ($request->isMethod('POST')) {
             if ($detail_plan) {
-                $em->remove($detail_plan);
-                $em->flush();
+                if($detail_plan->getEtatSA() == EtatInstallation::PRET){
+                    $detail_plan->setEtatSA(EtatInstallation::DESINSTALLATION);
+                    $detail_plan->setDateEnleve(new DateTime());
+                }
+                else{
+                    $em->remove($detail_plan);
+                    $em->flush();
+                }
+
+
                 return $this->redirectToRoute('app_lier_liste', [
                     'id' => $detail_plan->getPlan()->getId()
                 ]);

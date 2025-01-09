@@ -52,7 +52,7 @@ h1 {
 .research{
     display: flex;
     align-items: center;
-    margin: 0 20px;
+    margin: 20px 0;
 }
 
 .research form{
@@ -68,6 +68,11 @@ h1 {
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 20px;
+}
+
+.action-button{
+    margin-right: 10px;
+    font-size: 20px;
 }
 
 #batiment_selection {
