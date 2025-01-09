@@ -4,21 +4,17 @@
 
 {% block body %}
     <link rel="stylesheet" href="{{ asset('/styles/user_liste.css') }}">
+    <h1 class="title">Salles</h1>
+
     <div class="container">
-        <div class="header">
+        <div style="width: 70%">
             {{ form_start(form) }}
             <div class="search">
                 {{ form_widget(form.salleNom) }}
                 {{ form_widget(form.rechercher) }}
             </div>
             {{ form_end(form) }}
-            <h1 class="title">Salles</h1>
-            <button class="sort-button" id="toggleSidebar">
-                <img src="{{ asset('/img/filtrer.png') }}" style="width: 20px">
-                <p>Filtrer</p>
-            </button>
         </div>
-
         <div class="listeSalles">
             <div class="col1">
                 {% for item in col1 %}
@@ -27,11 +23,22 @@
                             <div class="card-top">
                                 <p class="room-name">{{ item.salle.nom }}</p>
                                 <div class="etat">
-                                    <p class="status" id="status">En intervention</p>
-                                    <div class="pastilleStatus"></div>
+                                    <p class="status" id="status">{{ item.etat.texte }}</p>
+                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <p id="last-update">Aucune donnée enregistrée</p>
+                            {% else %}
+                                <p id="last-update">Dernière donnée enregistrée il y a
+                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                    {{ item.time.minutes }} minutes.</p>
+                                {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                    {{ item.time.heures }} heures.</p>
+                                {% else %}
+                                    {{ item.time.jours }} jours.</p>
+                                {% endif %}
+                            {% endif %}
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -73,11 +80,22 @@
                             <div class="card-top">
                                 <p class="room-name">{{ item.salle.nom }}</p>
                                 <div class="etat">
-                                    <p class="status" id="status">En intervention</p>
-                                    <div class="pastilleStatus"></div>
+                                    <p class="status" id="status">{{ item.etat.texte }}</p>
+                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <p id="last-update">Aucune donnée enregistrée</p>
+                            {% else %}
+                                <p id="last-update">Dernière donnée enregistrée il y a
+                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                    {{ item.time.minutes }} minutes.</p>
+                                {% elseif item.time.jours is null or item.time.jours != 0 %}
+                                    {{ item.time.heures }} heures.</p>
+                                {% else %}
+                                    {{ item.time.jours }} jours.</p>
+                                {% endif %}
+                            {% endif %}
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -119,11 +137,22 @@
                             <div class="card-top">
                                 <p class="room-name">{{ item.salle.nom }}</p>
                                 <div class="etat">
-                                    <p class="status" id="status">En intervention</p>
-                                    <div class="pastilleStatus"></div>
+                                    <p class="status" id="status">{{ item.etat.texte }}</p>
+                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <p id="last-update">Aucune donnée enregistrée</p>
+                            {% else %}
+                                <p id="last-update">Dernière donnée enregistrée il y a
+                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                    {{ item.time.minutes }} minutes.</p>
+                                {% elseif item.time.jours is null or item.time.jours != 0 %}
+                                    {{ item.time.heures }} heures.</p>
+                                {% else %}
+                                    {{ item.time.jours }} jours.</p>
+                                {% endif %}
+                            {% endif %}
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -186,152 +215,3 @@
         });
     </script>
 {% endblock %}
-
-{# fichier listeUser
-    {% extends 'base.html.twig' %}
-
-{% block title %}Détails de la salle{% endblock %}
-
-{% block body %}
-  <link rel="stylesheet" href="{{ asset('/styles/listeUser.css') }}">
-  <div class="container">
-    <div class="header">
-      <div class="search">
-        <input type="text" placeholder="Rechercher..." class="search-bar">
-        <button class="search-button">🔍</button>
-      </div>
-      <h1 class="title">Salles</h1>
-      <button class="sort-button">Trier ⬇</button>
-    </div>
-
-    <div class="listeSalles">
-        <div class="col1">
-      {% for salle in col1 %}
-              <div class="card" id="card">
-                <div class="cardMainInfos">
-                  <div class="card-top">
-                    <p class="room-name">{{ salle.nom }}</p>
-                    <p class="status" id="status">En intervention</p>
-                    <span class="pastilleStatus"></span>
-                  </div>
-                  <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
-                </div>
-                <!-- Contenu caché qui s'affichera au clic -->
-                <div class="card-content" id="card-content">
-                  <p class="location">Bâtiment D - 3ème étage</p>
-                  <div class="metrics">
-                    <div class="metric m1">
-                      <span class="value">31</span>
-                      <span class="unit">C°</span>
-                    </div>
-                    <div class="metric m2">
-                      <span class="value">400</span>
-                      <span class="unit">ppm</span>
-                    </div>
-                    <div class="metric m3">
-                      <span class="value">50</span>
-                      <span class="unit">%</span>
-                    </div>
-                  </div>
-                  <div class="warning">
-                    ⚠ Attention ! Température excessive... Ouvrez vos fenêtres.
-                  </div>
-                </div>
-              </div>
-        {% endfor %}
-                </div>
-      <div class="col2">
-      {% for salle in col2 %}
-            <div class="card" id="card">
-              <div class="cardMainInfos">
-                <div class="card-top">
-                  <p class="room-name">{{ salle.nom }}</p>
-                  <p class="status" id="status">En intervention</p>
-                  <span class="pastilleStatus"></span>
-                </div>
-                <p id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
-              </div>
-              <!-- Contenu caché qui s'affichera au clic -->
-              <div class="card-content" id="card-content">
-                <p class="location">Bâtiment D - 3ème étage</p>
-                <div class="metrics">
-                  <div class="metric m1">
-                    <span class="value">31</span>
-                    <span class="unit">C°</span>
-                  </div>
-                  <div class="metric m2">
-                    <span class="value">400</span>
-                    <span class="unit">ppm</span>
-                  </div>
-                  <div class="metric m3">
-                    <span class="value">50</span>
-                    <span class="unit">%</span>
-                  </div>
-                </div>
-                <div class="warning">
-                  ⚠ Attention ! Température excessive... Ouvrez vos fenêtres.
-                </div>
-              </div>
-            </div>
-        {% endfor %}
-    </div>
-                <div class="col3">
-      {% for salle in col3 %}
-
-            <div class="card" id="card">
-              <div class="cardMainInfos">
-                <div class="card-top">
-                  <p class="room-name">{{ salle.nom }}</p>
-                  <p id="status">En intervention</p>
-                  <span class="pastilleStatus"></span>
-                </div>
-                <p class="last-update" id="last-update">Dernière donnée enregistrée il y a 10 minutes</p>
-              </div>
-              <!-- Contenu caché qui s'affichera au clic -->
-              <div class="card-content" id="card-content">
-                <p class="location">Bâtiment D - 3ème étage</p>
-                <div class="metrics">
-                  <div class="metric m1">
-                    <span class="value">31</span>
-                    <span class="unit">C°</span>
-                  </div>
-                  <div class="metric m2">
-                    <span class="value">400</span>
-                    <span class="unit">ppm</span>
-                  </div>
-                  <div class="metric m3">
-                    <span class="value">50</span>
-                    <span class="unit">%</span>
-                  </div>
-                </div>
-                <div class="warning">
-                  ⚠ Attention ! Température excessive... Ouvrez vos fenêtres.
-                </div>
-              </div>
-            </div>
-        {% endfor %}
-    </div>
-      </div>
-  </div>
-{% endblock %}
-{% block javascripts %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const card = document.getElementById("card");
-      const cardContent = document.getElementById("card-content");
-
-      card.addEventListener("click", function () {
-        // Toggle la classe "expanded" pour agrandir/rétrécir
-        card.classList.toggle("expanded");
-
-        // Afficher/masquer le contenu
-        if (cardContent.style.display === "block") {
-          cardContent.style.display = "none";
-        } else {
-          cardContent.style.display = "block";
-        }
-      });
-    });
-  </script>
-{% endblock %}
-#}

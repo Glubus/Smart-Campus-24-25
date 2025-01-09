@@ -6,40 +6,58 @@
     <link rel="stylesheet" href="{{ asset("styles/user_infos.css") }}">
     <div class="all">
         <h1 style="font-weight: bold">{{ infos.salle.nom }}</h1>
-        <h2>Metriques de la salle</h2>
-
+        <h2>Recommandations</h2>
         <div class="conseils" style="margin-bottom: 40px">
-            <p>{{ conseils.general }}</p>
+            <p>{{ conseil.general }}</p>
         </div>
 
+        <h2>Metriques de la salle</h2>
         <div class="metriques">
-            <div class="dataBlock temp" title="{{ conseils.temp }}">
-                <h4 class="textData">Temperature</h4>
+            <div class="dataBlock temp" title="{{ conseil.temp.texte }}">
+                <div style="display: flex; gap: 15px">
+                    <h4 class="textData">Temperature</h4>
+                    <img src="{{ asset(infos.temp.variation) }}" style="width: 18px; height: 18px">
+                </div>
                 <div class="bottomMet">
                     <div class="etatNomCap">
                         <img class="nomCap" src="{{ asset("/img/temp.png") }}">
                     </div>
-                    <h3 style="font-size: 40px; font-weight: bold">{{ infos.temp }}°C</h3>
+                    <div style="display: flex; gap: 15px">
+                        <img src="{{ asset(conseil.temp.img) }}" style="width: 50px; height: 50px">
+                        <h3 style="font-size: 40px; font-weight: bold; color: {{ conseil.temp.color }}">{{ infos.temp.valeur }}°C</h3>
+                    </div>
                 </div>
             </div>
 
-            <div class="dataBlock co2" title="{{ conseils.co2 }}">
-                <h4 class="textData">CO2</h4>
+            <div class="dataBlock co2" title="{{ conseil.co2.texte }}">
+                <div style="display: flex; gap: 15px">
+                    <h4 class="textData">CO2</h4>
+                    <img src="{{ asset(infos.co2.variation) }}" style="width: 18px; height: 18px">
+                </div>
                 <div class="bottomMet">
                     <div class="etatNomCap">
                         <img class="nomCap" src="{{ asset("/img/co2.png") }}">
                     </div>
-                    <h3 style="font-size: 40px; font-weight: bold">{{ infos.co2 }}ppm</h3>
+                    <div style="display: flex; gap: 15px">
+                        <img src="{{ asset(conseil.co2.img) }}" style="width: 40px; height: 40px">
+                        <h3 style="font-size: 40px; font-weight: bold; color: {{ conseil.co2.color }}">{{ infos.co2.valeur }}ppm</h3>
+                    </div>
                 </div>
             </div>
 
-            <div class="dataBlock humidite" title="{{ conseils.humi }}">
-                <h4 class="textData">Humidite</h4>
+            <div class="dataBlock humidite" title="{{ conseil.humi.texte }}">
+                <div style="display: flex; gap: 15px">
+                    <h4 class="textData">Humidite</h4>
+                    <img src="{{ asset(infos.humi.variation) }}" style="width: 18px; height: 18px">
+                </div>
                 <div class="bottomMet">
                     <div class="etatNomCap">
                         <img class="nomCap" src="{{ asset("/img/humi.png") }}">
                     </div>
-                    <h3 style="font-size: 40px; font-weight: bold">{{ infos.humi }}%</h3>
+                    <div style="display: flex; gap: 15px">
+                        <img src="{{ asset(conseil.humi.img) }}" style="width: 40px; height: 40px">
+                        <h3 style="font-size: 40px; font-weight: bold; color: {{ conseil.humi.color }}">{{ infos.humi.valeur }}%</h3>
+                    </div>
                 </div>
             </div>
         </div>
