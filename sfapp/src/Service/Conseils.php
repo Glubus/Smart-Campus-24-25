@@ -6,12 +6,14 @@ use App\Service\ApiWrapper;
 class Conseils
 {
     public const seuilDepasse = false;
-    public const seuilTemp = ['min' => 18, 'max' => 26];
-    public const seuilCo2 = ['min' => 250, 'attention' => 800, 'max' => 1200];
-    public const seuilHumi = ['min' => 40, 'max' => 60];
+    public const seuilTemp = ['min' => 18, 'max' => 25];
+    public const seuilCo2 = ['min' => 250, 'attention' => 800, 'max' => 1000];
+    public const seuilHumi = ['min' => 50, 'max' => 70];
 
     public function getConseils(ApiWrapper $wrapper, float $tempInt, float $co2Int, float $humiInt){
         $tempExt = $wrapper->getTempOutsideByAPI();
+
+        $danger = false;
 
         $colTemp = null;
         $colCo2 = null;
@@ -36,6 +38,14 @@ class Conseils
         switch ($humiInt) {
             case $humiInt < self::seuilHumi['min'] : $colHumi = "#009BCF"; break;
             case $humiInt > self::seuilHumi['max'] : $colHumi = "#00940A"; break;}
+
+        if($tempInt > self::seuilTemp['max']
+            || $tempInt < self::seuilTemp['min']
+            || $co2Int > self::seuilCo2['max']
+            || $humiInt > self::seuilHumi['max']
+            || $humiInt < self::seuilHumi['min']){
+            $danger = true;
+        }
 
         // Conseils sur la température
 
@@ -105,6 +115,7 @@ class Conseils
             'temp' => ['texte' => $conseilTemp, 'img' => $imgTemp, 'color' => $colTemp],
             'co2' => ['texte' => $conseilCo2, 'img' => $imgCo2, 'color' => $colCo2],
             'humi' => ['texte' => $conseilHumi, 'img' => $imgHumi, 'color' => $colHumi],
+            'danger' => $danger
         ];
     }
 }
