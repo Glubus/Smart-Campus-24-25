@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class BatimentFixtures extends Fixture
 {
-    public const BATIMENT_A = 'Batiment A';
+
     public const BATIMENT_C = 'Batiment C';
     public const BATIMENT_D = 'Batiment D';
 
@@ -16,14 +16,12 @@ class BatimentFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-        $A=$this->make_batiment("A",3);
         $C=$this->make_batiment("C",3);
         $D=$this->make_batiment("D",4);
 
-        $manager->persist($A);
         $manager->persist($C);
         $manager->persist($D);
-        $this->addReference(self::BATIMENT_A, $A);
+
         $this->addReference(self::BATIMENT_C, $C);
         $this->addReference(self::BATIMENT_D, $D);
 

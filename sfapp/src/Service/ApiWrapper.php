@@ -2,21 +2,20 @@
 
 namespace App\Service;
 
+use App\Entity\Batiment;
+use App\Entity\Salle;
 use App\Repository\SalleRepository;
+use DateTime;
+use DateTimeInterface;
+use Exception;
+use RuntimeException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-use Symfony\Contracts\HttpClient\ResponseInterface;
-
 class ApiWrapper
 {
-    private CacheInterface $cache; // Injecté via le constructeur ou autowiring
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-    public const ASSOCIATIONS = [
+        public const ASSOCIATIONS = [
         "D205" => "ESP-004",
         "D206" => "ESP-008",
         "D207" => "ESP-006",
@@ -27,13 +26,12 @@ class ApiWrapper
         "C101" => "ESP-007",
         "D109" => "ESP-024",
         "Secrétariat" => "ESP-026",
-        "D001" => "ESP-030",
+        "D001" => "ESP-0getSA30",
         "D002" => "ESP-028",
         "D004" => "ESP-020",
         "C004" => "ESP-021",
         "C007" => "ESP-022"
-    ];
-
+    ]; // Injecté via le constructeur ou autowiring
     public const DB = [
         "ESP-004" => "sae34bdk1eq1",
         "ESP-008" => "sae34bdk1eq2",
@@ -51,67 +49,82 @@ class ApiWrapper
         "ESP-021" => "sae34bdm1eq2",
         "ESP-022" => "sae34bdm1eq3"
     ];
+private CacheInterface $cache;
 
-
-
-    public function requestSalleByInterval(string $salle, int $page, string $dateStart, string $dateEnd): array
+    public function __construct(CacheInterface $cache)
     {
-        // Construire une clé unique pour ce cache
-        $cacheKey = sprintf('salle_interval_%s_%s_%s_%d', $salle, $dateStart, $dateEnd, $page);
-
-        $externalValue= $this->cache->get($cacheKey, function (ItemInterface $item) use ($salle, $page, $dateStart, $dateEnd) {
-            $item->expiresAfter(3600); // 1 heure
-
-            $client = HttpClient::create();
-            $headers = [
-                'accept' => ' application/ld+json',
-                'dbname' => ''.self::DB[self::ASSOCIATIONS[$salle]].'',
-                'username' => 'k2eq3',
-                'userpass' => 'nojsuk-kegfyh-3cyJmu',
-            ];
-
-            $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/interval?date1='.$dateStart.'&date2='.$dateEnd.'&page='.$page;
-
-            $response = $client->request('GET', $url, [
-                'headers' => $headers,
-            ]);
-
-            if ($response->getStatusCode() != 200) {
-                throw new \RuntimeException(sprintf('Erreur API pour l\'URL : %s', $url));
-            }
-
-            return $response->toArray(); // Renvoie les données sous forme d'array
-        });
-        return $externalValue;
+        $this->cache = $cache;
     }
 
-    public function requestSalleByType(string $salle, string $type, int $page = 1, int $limit = 1): array
-        {
+    public function requestSalleLastValueByDateAndInterval(Salle $salle): array
+    {
+        $end = (new DateTime('now'))->modify('+1 hour');
+        $start = (clone $end)->modify('-1 hour');
+        $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
+        $temporaryArr = [];
+        $sas = $this->getSA($salle);
+        foreach ($types as $type) {
+            foreach ($sas as $sa) {
+                $results = $this->requestSalleByType($sa, $type, 1, 1);
+
+                foreach ($results as $result) {
+                    // Vérifie que la date est présente et valide
+                    if (isset($result['dateCapture'])) {
+                        try {
+                            $date = new DateTime($result['dateCapture']);
+
+                            if ($date >= $start && $date <= $end) {
+                                $temporaryArr[] = ($result); // Ajoute uniquement si elle est valide
+                            }
+                        } catch (Exception $e) {
+                            // Ignorer si la date n'est pas valide
+                        }
+                    }
+                }
+            }
+
+        }
+        return $temporaryArr;
+    }
+
+    public function getSA(Salle $salle): array
+    {
+        $dp = $salle->getDetailPlans();
+        $arr = [];
+        foreach ($dp as $key => $value) {
+            $arr[] = $value->getSA()->getNom();
+        }
+
+        return $arr;
+    }
+
+    public function requestSalleByType(string $sa, string $type, int $page = 1, int $limit = 1): array
+    {
         if ($limit > 20) {
             $limit = 20;
         }
 
         // Génération d'une clé de cache unique basée sur les paramètres
-        $cacheKey = sprintf('salle_by_type_%s_%s_%d_%d', $salle, $type, $page, $limit);
+        $cacheKey = sprintf('salle_by_type_%s_%s_%d_%d', $sa, $type, $page, $limit);
 
-        $externalValue = $this->cache->get($cacheKey, function (ItemInterface $item) use ($salle, $type, $page, $limit) {
+        $externalValue = $this->cache->get($cacheKey, function (ItemInterface $item) use ($sa, $type, $page, $limit) {
             $item->expiresAfter(3600); // Expiration après 1 heure
 
             $client = HttpClient::create();
             $headers = [
                 'accept' => 'application/ld+json',
-                'dbname' => self::DB[self::ASSOCIATIONS[$salle]] ?? '',
+                'dbname' => self::DB[$sa] ?? '',
                 'username' => 'k2eq3',
                 'userpass' => 'nojsuk-kegfyh-3cyJmu',
             ];
-            $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last?nom='.$type.'&limit='.$limit.'&page='.$page;
+            $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last?nom=' . $type . '&limit=' . $limit . '&page=' . $page;
 
             $response = $client->request('GET', $url, [
                 'headers' => $headers,
             ]);
 
             if (200 !== $response->getStatusCode()) {
-                throw new \RuntimeException(sprintf('Erreur API. URL : %s', $url));
+                throw new RuntimeException(sprintf('Erreur API. URL : %s', $url));
             }
 
             return $response->toArray(); // Renvoie les données sous forme d'array
@@ -119,38 +132,58 @@ class ApiWrapper
         return $externalValue;
     }
 
-    public function requestAllSalleLastValue(): array
+    public function requestAllSalleLastValueByDateAndInterval(Batiment $batiment, SalleRepository $salleRepository): array
     {
-        $externalValue = $this->cache->get('all_salle_last_value', function (ItemInterface $item) {
+        $externalValue = $this->cache->get('all_salle_last_value_by_date', function (ItemInterface $item) use ($salleRepository, $batiment) {
             $item->expiresAfter(3600); // 1 heure
-            $arr = [];
+            $end = (new DateTime('now'))->modify('+1 hour');
+            $start = (clone $end)->modify('-1 hour');
+            $temporaryArr = [];
             $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
-            foreach (self::ASSOCIATIONS as $salle => $esp) {
+            $allSalle = $batiment->getAllSalle();
+            $sas=[];
+            foreach ($allSalle as $salle) {
+                $sas = [...$sas, ...$this->getSA($salle)];
+            }
+            foreach ($sas as $sa) {
+                    foreach ($types as $type) {
+                        // Récupère les résultats pour le type demandé
+                        $results = $this->requestSalleByType($sa, $type, 1, 1);
+                        foreach ($results as $result) {
+                            // Vérifie que la date est présente et valide
+                            if (isset($result['dateCapture'])) {
+                                try
+                                {
+                                    $date = new DateTime($result['dateCapture']);
 
-                $arr[$salle] = [];
+                                    if ($date >= $start && $date <= $end)
+                                    {
+                                        $temporaryArr[] = ($result); // Ajoute uniquement si elle est valide
+                                    }
+                                }
+                                catch (Exception $e)
+                                {
 
-                foreach ($types as $type) {
-                    $result = $this->requestSalleByType($salle, $type, 1, 1);
-
-                    $arr[$salle][$type] = (int)(empty($result) ? null : reset($result)['valeur']);
-
-                    $date = (empty($result) ? null : (reset($result)['dateCapture']));
-                    if (empty($arr[$salle]["dateCapture"]) || (strtotime($arr[$salle]['dateCapture']) < strtotime($date))) {
-                        $arr[$salle]["date"] = $date;
+                                }
+                            }
+                        }
                     }
                 }
-            }
 
-            return $arr;
+            return $temporaryArr;
         });
+
         return $externalValue;
     }
 
+    /**
+     * @deprecated Utiliser la méthode requestAllSalleByIntervalV2 à la place.
+     */
     public function requestAllSalleByInterval(
-        \DateTimeInterface $start,
-        \DateTimeInterface $end)
+        DateTimeInterface $start,
+        DateTimeInterface $end): array
     {
-        $i=0;
+        $i = 0;
         $formattedStart = $start->format('Y-m-d'); // YYYY-MM-DD
         $formattedEnd = $end->format('Y-m-d'); //
         $temporaryArr = [];
@@ -160,7 +193,7 @@ class ApiWrapper
             $result = $this->transform($this->requestSalleByInterval($salle, 1, $formattedStart, $formattedEnd));
 
             if (!empty($result)) {
-                $temporaryArr= [...$temporaryArr, ...$result];
+                $temporaryArr = [...$temporaryArr, ...$result];
             }
         }
         uksort($temporaryArr, fn($a, $b) => strtotime($a) <=> strtotime($b));
@@ -168,7 +201,8 @@ class ApiWrapper
         return $temporaryArr;
 
     }
-    public function transform($data):array
+
+    public function transform($data): array
     {
         $result = [];
         foreach ($data as $item) {
@@ -185,112 +219,70 @@ class ApiWrapper
         return $result;
     }
 
-    public function calculateAverageByDateFor1D(array $data): array
+    public function requestSalleByInterval(Salle $salle, int $page, string $dateStart, string $dateEnd): array
     {
-        $hourlyData = [];
+        // Construire une clé unique pour ce cache
+        $cacheKey = sprintf('salle_interval_%s_%s_%s_%d', $salle->getNom(), $dateStart, $dateEnd, $page);
 
-        // Parcourir chaque entrée et les grouper par heure
-        foreach ($data as $datetime => $values) {
-            // Extraire la date et l'heure (YYYY-MM-DD HH)
-            $hour = substr($datetime, 0, 13);
+        $externalValue = $this->cache->get($cacheKey, function (ItemInterface $item) use ($salle, $page, $dateStart, $dateEnd) {
+            $item->expiresAfter(3600); // 1 heure
+            $result=[];
+            $sas = $this->getSA($salle);
+            foreach($sas as $sa ){
+            $client = HttpClient::create();
 
-            if (!isset($hourlyData[$hour])) {
-                $hourlyData[$hour] = [
-                    'temp' => [],
-                    'hum'  => [],
-                    'co2'  => [],
-                    'pres' => [],
-                    'lum'  => [],
-                ];
+            $headers = [
+                'accept' => ' application/ld+json',
+                'dbname' => self::DB[$sa],
+                'username' => 'k2eq3',
+                'userpass' => 'nojsuk-kegfyh-3cyJmu',
+            ];
+
+            $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/interval?date1=' . $dateStart . '&date2=' . $dateEnd . '&page=' . $page;
+
+            $response = $client->request('GET', $url, [
+                'headers' => $headers,
+            ]);
+
+            if ($response->getStatusCode() != 200) {
+                throw new RuntimeException(sprintf('Erreur API pour l\'URL : %s', $url));
             }
-
-            // Regrouper les valeurs par heure
-            foreach ($values as $key => $value) {
-                if (!empty($value)) {
-                    $hourlyData[$hour][$key][] = $value;
-                }
+            $result= [...$result, ...$response->toArray()];
             }
-        }
-
-        // Calculer les moyennes pour chaque heure
-        $hourlyAverages = [];
-        foreach ($hourlyData as $hour => $measurements) {
-            $averages = [];
-            foreach ($measurements as $key => $values) {
-                if (!empty($values)) {
-                    // Moyenne uniquement si des valeurs existent
-                    $averages[$key] = array_sum($values) / count($values);
-                } else {
-                    $averages[$key] = null; // Pas de données
-                }
-            }
-            $hourlyAverages[$hour] = $averages;
-        }
-
-        return $hourlyAverages;
-    }
-    public function calculateAverageByDateFor7D(array $data): array
-    {
-        $twelveHourData = [];
-
-        // Parcourir chaque entrée et les grouper par tranches de 12 heures
-        foreach ($data as $datetime => $values) {
-            // Extraire la date et déterminer si on est dans la première ou deuxième tranche de 12h
-            $date = substr($datetime, 0, 10); // Récupère 'YYYY-MM-DD'
-            $hour = (int)substr($datetime, 11, 2); // Récupère l'heure (0-23)
-
-            // Déterminer si c'est 0-11 (premier bloc de 12h) ou 12-23 (second bloc de 12h)
-            $period = $hour < 12 ? '00-11' : '12-23';
-            $timePeriod = $date . ' ' . $period;
-
-            if (!isset($twelveHourData[$timePeriod])) {
-                $twelveHourData[$timePeriod] = [
-                    'temp' => [],
-                    'hum'  => [],
-                    'co2'  => [],
-                    'pres' => [],
-                    'lum'  => [],
-                ];
-            }
-
-            // Regrouper les valeurs par tranche de 12 heures
-            foreach ($values as $key => $value) {
-                if (!empty($value)) {
-                    $twelveHourData[$timePeriod][$key][] = $value;
-                }
-            }
-        }
-
-        // Calculer les moyennes pour chaque tranche de 12 heures
-        $twelveHourAverages = [];
-        foreach ($twelveHourData as $period => $measurements) {
-            $averages = [];
-            foreach ($measurements as $key => $values) {
-                if (!empty($values)) {
-                    // Moyenne uniquement si des valeurs existent
-                    $averages[$key] = array_sum($values) / count($values);
-                } else {
-                    $averages[$key] = null; // Pas de données
-                }
-            }
-            $twelveHourAverages[$period] = $averages;
-        }
-
-        return $twelveHourAverages;
+            return $result; // Renvoie les données sous forme d'array
+        });
+        return $externalValue;
     }
 
-    public function calculateAveragesByDateFor30D(array $data): array
+
+    public function calculateAveragesByPeriod(array $data, string $period): array
     {
-
-        $dailyData = [];
-
-        // Parcourir chaque entrée et les grouper par jour
+        $groupedData = [];
+        // Parcourir chaque entrée et les grouper en fonction de la période choisie
         foreach ($data as $datetime => $values) {
-            // Extraire uniquement la date (YYYY-MM-DD)
-            $day = substr($datetime, 0, 10);
+            switch ($period) {
+                case '1D': // Grouper par heure
+                    $key = substr($datetime, 0, 13); // YYYY-MM-DD HH
+                    break;
 
-            if (!isset($dailyData[$day])) {
-                $dailyData[$day] = [
+                case '7D': // Grouper par tranche de 12 heures
+                    $date = substr($datetime, 0, 10); // YYYY-MM-DD
+                    $hour = (int)substr($datetime, 11, 2); // Heure (0-23)
+                    $periodHalf = ($hour < 12) ? '00-11' : '12-23';
+                    $key = $date . ' ' . $periodHalf;
+                    break;
+
+                case '30D': // Grouper par jour
+                    $key = substr($datetime, 0, 10); // YYYY-MM-DD
+                    break;
+
+                default:
+                    throw new InvalidArgumentException(sprintf("Période invalide : %s. Utilisez '1D', '7D' ou '30D'.", $period));
+            }
+
+            // Initialiser la clé si elle n'existe pas encore
+            if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
                     'temp' => [],
                     'hum' => [],
                     'co2' => [],
@@ -299,38 +291,35 @@ class ApiWrapper
                 ];
             }
 
-            // Regrouper les valeurs par jour
-            foreach ($values as $key => $value) {
+            // Regrouper les valeurs
+            foreach ($values as $keyData => $value) {
                 if (!empty($value)) {
-                    $dailyData[$day][$key][] = $value;
+                    $groupedData[$key][$keyData][] = $value;
                 }
             }
         }
 
-        // Maintenant, calculer les moyennes pour chaque jour
-        $dailyAverages = [];
-        foreach ($dailyData as $day => $measurements) {
+        // Calculer les moyennes pour chaque groupe
+        $averagesData = [];
+        foreach ($groupedData as $timeGroup => $measurements) {
             $averages = [];
-            foreach ($measurements as $key => $values) {
+            foreach ($measurements as $keyData => $values) {
                 if (!empty($values)) {
-                    // Moyenne uniquement si des valeurs existent
-                    $averages[$key] = array_sum($values) / count($values);
+                    $averages[$keyData] = array_sum($values) / count($values);
                 } else {
-                    $averages[$key] = null; // Pas de données
+                    $averages[$keyData] = null; // Pas de données
                 }
             }
-            $dailyAverages[$day] = $averages;
+            $averagesData[$timeGroup] = $averages;
         }
-
-        return $dailyAverages;
+        return $averagesData;
     }
 
-    public function detectBizarreStations(): array
+    public function detectBizarreStations(Batiment $bat): array
     {
         $bizarreSalles = [];
-        $currentTime = new \DateTime();
-        $allData = $this->requestAllSalleLastValue(); // Récupère toutes les dernières données des salles
-
+        $currentTime = new DateTime();
+        $allData = $this->requestAllSalleLastValue($bat); // Récupère toutes les dernières données des salles
         // Définir les seuils pour CO2 et humidité
         $co2Threshold = 1200; // Seuil en ppm pour le CO2
         $humThreshold = 85;   // Seuil en pourcentage pour l'humidité
@@ -346,13 +335,13 @@ class ApiWrapper
                 // 2. Vérification de la date des données
                 if (isset($data['date'])) {
                     try {
-                        $lastDate = new \DateTime($data['date']);
+                        $lastDate = new DateTime($data['date']);
                         $dateDifference = $currentTime->getTimestamp() - $lastDate->getTimestamp();
 
                         if ($dateDifference > 3600) { // Plus d'une heure
                             $issues[] = "Aucun envoi depuis plus d'une heure.";
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $issues[] = "Données erronées.";
                     }
                 } else {
@@ -384,13 +373,58 @@ class ApiWrapper
         return $bizarreSalles;
     }
 
-    /**
-     * Vérifie si une température est normale. TODO: Ajouter la logique avec une API météo.
-     */
+    public function requestAllSalleLastValue(Batiment $batiment): array
+    {
+        // Clé de cache unique
+        $externalValue = $this->cache->get('all_salle_last_value', function (ItemInterface $item) use ($batiment) {
+            $item->expiresAfter(3600); // Expiration du cache 1 heure
 
-    public function getTempOutsideByAPI(){
+            $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
+            $temporaryArr = []; // Tableau temporaire pour stocker les résultats par salle
+
+            // Récupérer toutes les salles associées au bâtiment via getAllSalle
+            $allSalle = $batiment->getAllSalle();
+            foreach ($allSalle as $salle) {
+                // Récupérer toutes les "SA" associées à la salle
+                $sas = $this->getSA($salle);
+
+                foreach ($sas as $sa) {
+                    foreach ($types as $type) {
+                        // Appel de l'API pour obtenir les données du type demandé
+                        $results = $this->requestSalleByType($sa, $type, 1, 1);
+
+                        foreach ($results as $result) {
+                            // Vérifie que la date est présente et récupère les résultats valides
+                            if (isset($result['dateCapture'])) {
+                                try {
+                                    // Convertit en objet DateTime pour effectuer des comparaisons
+                                    $date = new DateTime($result['dateCapture']);
+                                    $name=$salle->getNom();
+                                    // Ajoute les résultats dans le tableau temporaire
+                                    $temporaryArr[$name][] = $result;
+                                } catch (Exception $e) {
+                                    // Ignorer les résultats invalides
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return $temporaryArr;
+        });
+
+        return $externalValue;
+    }
+
+    public function isTemperatureNormal(float $temperature): bool
+    {
+        return $temperature > 25 && $this->getTempOutsideByAPI() < $temperature;
+    }
+
+    public function getTempOutsideByAPI()
+    {
         // Cache la température extérieure toutes les 6 heures
-        $externalValue= $this->cache->get('weather_external_temp', function (ItemInterface $item) {
+        $externalValue = $this->cache->get('weather_external_temp', function (ItemInterface $item) {
             $item->expiresAfter(21600); // 21600 secondes = 6 heures
 
             // Appel de l'API OpenWeather
@@ -405,21 +439,119 @@ class ApiWrapper
             $response = $client->request('GET', $url);
 
             if (200 !== $response->getStatusCode()) {
-                throw new \RuntimeException(sprintf('Erreur lors de l\'appel à OpenWeatherAPI : %s', $response->getContent(false)));
+                throw new RuntimeException(sprintf('Erreur lors de l\'appel à OpenWeatherAPI : %s', $response->getContent(false)));
             }
 
             $data = $response->toArray();
 
             if (!isset($data['main']['temp'])) {
-                throw new \RuntimeException('Température extérieure non disponible via l\'API.');
+                throw new RuntimeException('Température extérieure non disponible via l\'API.');
             }
 
             return $data['main']['temp'];
         });
         return $externalValue;
     }
-    public function isTemperatureNormal(float $temperature): bool
-    {
-        return $temperature > 25 && $this->getTempOutsideByAPI() < $temperature;
+    public function requestAllSalleByIntervalv2(
+        Batiment $batiment,
+        SalleRepository $salleRepository,
+        DateTimeInterface $start,
+        DateTimeInterface $end
+    ): array {
+        $now = new DateTime('now'); // Date actuelle
+        $temporaryArr = [];
+        $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
+
+        // Si la plage demandée est entièrement dans le passé
+        if ($end < $now) {
+            $cacheKeyPast = sprintf('salle_interval_past_%s_%s', $start->format('Ymd'), $end->format('Ymd'));
+
+            return $this->cache->get($cacheKeyPast, function (ItemInterface $item) use ($start, $end, $batiment, $salleRepository, $types) {
+                $item->expiresAfter(2592000); // 1 mois
+                $temporaryResults = [];
+
+                // Récupère toutes les salles associées au bâtiment
+                $allSalle = $batiment->getAllSalle();
+
+                foreach ($allSalle as $salle) {
+                    $sas = $this->getSA($salle);
+
+                    foreach ($sas as $sa) {
+                        foreach ($types as $type) {
+                            // Appelle l'API pour la période définie
+                            $results = $this->requestSalleByInterval($sa, 1, $start->format('Y-m-d'), $end->format('Y-m-d'));
+
+                            foreach ($results as $result) {
+                                // Vérifie que la date est présente et valide
+                                if (isset($result['dateCapture'])) {
+                                    try {
+                                        $date = new DateTime($result['dateCapture']);
+
+                                        // Vérifie que la donnée correspond bien à l'intervalle
+                                        if ($date >= $start && $date <= $end) {
+                                            $temporaryResults[] = $result;
+                                        }
+                                    } catch (Exception $e) {
+                                        // Ignore les dates erronées
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Trie les résultats par date
+                uksort($temporaryResults, fn($a, $b) => strtotime($a) <=> strtotime($b));
+                return $temporaryResults;
+            });
+        }
+
+        // Si la plage demandée inclut du passé et du futur
+        if ($start < $now) {
+            $pastEnd = (clone $now)->modify('-1 second'); // Juste avant "now"
+            $cacheKeyPast = sprintf('salle_interval_past_%s_%s', $start->format('Ymd'), $pastEnd->format('Ymd'));
+
+            // Récupère les données cachées pour la partie passée
+            $pastData = $this->cache->get($cacheKeyPast, function (ItemInterface $item) use ($start, $pastEnd, $batiment, $salleRepository, $types) {
+                $item->expiresAfter(2592000); // 1 mois
+                $temporaryResults = [];
+
+                $allSalle = $batiment->getAllSalle();
+
+                foreach ($allSalle as $salle) {
+
+                        foreach ($types as $type) {
+                            // Récupère toutes les valeurs
+                            $results = $this->requestSalleByInterval($salle, 1, $start->format('Y-m-d'), $pastEnd->format('Y-m-d'));
+
+                            foreach ($results as $result) {
+                                if (isset($result['dateCapture'])) {
+                                    try {
+                                        $date = new DateTime($result['dateCapture']);
+
+                                        if ($date >= $start && $date <= $pastEnd) {
+                                            $temporaryResults[] = $result;
+                                        }
+                                    } catch (Exception $e) {
+                                        // Ignore les dates illégales
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                // Trie les résultats
+                uksort($temporaryResults, fn($a, $b) => strtotime($a) <=> strtotime($b));
+                return $temporaryResults;
+            });
+
+            $temporaryArr = [...$temporaryArr, ...$pastData];
+        }
+
+        // Trier les résultats finaux par date
+        uksort($temporaryArr, fn($a, $b) => strtotime($a) <=> strtotime($b));
+
+        return $temporaryArr;
     }
 }

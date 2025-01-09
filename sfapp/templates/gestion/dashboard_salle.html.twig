@@ -3,7 +3,7 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
     <header>
-        <h1>Outil de Diagnostic - {{ batiment }}</h1>
+        <h1>Outil de Diagnostic - Salle {{ salle }}</h1>
     </header>
     <main>
         <section class="statistiques-globales">
@@ -62,32 +62,11 @@
             </div>
 
             <!-- Colonne des SA bizarres -->
-            <div class="right-column"><div class="data-header">
-
-                    <h1>SA avec des verifications necessaires</h1>
+            <div class="right-column">
+                <div class="data-header">
+                    <h1>Commentaires</h1>
                 </div>
-                {% if weirdData is empty %}
-                    <div class="alert alert-success" role="alert">
-                        Toutes les salles sont normales, aucune anomalie détectée !
-                    </div>
-                {% else %}
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th>Salle</th>
-                            <th>Raison</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for salle, raison in weirdData %}
-                            <tr>
-                                <td><a href="{{ path('app_dashboard_salle', {'batiment' : batiment, 'salle' : salle } ) }}">{{ salle }}</a></td>
-                                <td>{{ raison }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
+
             </div>
         </section>
         <!-- Élément contenant les données JSON -->
