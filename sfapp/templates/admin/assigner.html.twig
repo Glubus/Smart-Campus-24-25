@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Nouvelle Intervention
+    Nouvelle Intervention pour le technicien {{ technicien.nom }}
 {% endblock %}
 
 {% block body %}
@@ -21,11 +21,6 @@
                     {{ form_errors(form.description) }}
                 </div>
 
-                <div class="mb-3">
-                    {{ form_label(form.technicien, 'Technicien', { 'label_attr': { 'class': 'form-label' } }) }}
-                    {{ form_widget(form.technicien, { 'attr': { 'class': 'form-control' } }) }}
-                    {{ form_errors(form.technicien) }}
-                </div>
 
                 <div class="mb-3">
                     {{ form_label(form.salle, 'Salle', { 'label_attr': { 'class': 'form-label' } }) }}

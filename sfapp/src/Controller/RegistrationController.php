@@ -44,4 +44,46 @@ class RegistrationController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/user/edit/{id}', name: 'app_user_edit')]
+    public function edit(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $userPasswordHasher
+    ): Response {
+        // Récupération de l'utilisateur depuis la base de données
+        $user = $entityManager->getRepository(Utilisateur::class)->find($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
+        // Création du formulaire pré-rempli avec les données existantes
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $roleSelected = $form->get('roles')->getData();
+            $user->setRoles([$roleSelected]);
+
+            // Vérifiez si un nouveau mot de passe a été défini
+            $plainPassword = $form->get('plainPassword')->getData();
+            if ($plainPassword) {
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword($user, $plainPassword)
+                );
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur modifié avec succès.');
+
+            return $this->redirectToRoute('app_page_acceuil');
+        }
+
+        return $this->render('registration/edit.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
 }

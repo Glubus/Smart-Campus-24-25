@@ -8,11 +8,14 @@ use App\Entity\TypeCapteur;
 use App\Form\RechercheSalleType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
+use App\Repository\DetailInterventionRepository;
 use App\Repository\DetailPlanRepository;
 use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
 use App\Repository\ValeurCapteurRepository;
+use App\Service\ApiWrapper;
+use App\Service\Conseils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -128,9 +131,13 @@ class SalleController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/salle/user', name: 'app_salle_user_liste')]
-    public function indexUser(Request $request, SalleRepository $salleRepository): Response
+    public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository): Response
     {
+        $currentDateTime = new \DateTime('now');
+        $currentDateTime->modify('+1 hour');
+
         $form = $this->createForm(RechercheSalleType::class);
+        $arr = $wrapper->requestAllSalleLastValue();
         $salles = $salleRepository->findAll();
 
         $form->handleRequest($request);
@@ -150,42 +157,72 @@ class SalleController extends AbstractController
         $col2 = [];
         $col3 = [];
 
-        for ($i=0; $i<count($salles); $i++) {
-            $salle = $salles[$i];
+        $index = 0;
+        foreach ($salles as $salle) {
+            $etat = "Hors-Service"; $colEtat = "#F30408";
+            $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
+            $lastDataTime = null;
+            $dp = null;
+            $conseils = new Conseils();
+            $jours = null; $heures = null; $minutes = null;
+            $isInDanger = false;
 
-            $tempValue = null;
-            $humValue = null;
-            $co2Value = null;
+            // Trouve la salle dans le repertory en fonction du nom renvoyé par l'API wrapper
+            foreach ($arr as $key => $value) {
+                if ($salle->getNom() === $key) {
+                    $dp = $detailInterventionRepository->findOneBy(['salle' => $salle]);
 
-            $response = $salleRepository->requestSalle($salle->getNom(), 1);
+                    // Calcule la durée depuis le dernier envoi de données
+                    $lastDataTime = new DateTime($value['date']);
+                    $interval = $lastDataTime->diff($currentDateTime);
+                    $jours = $interval->days; // Total des jours
+                    $heures = $interval->h;   // Heures restantes (après division par jours)
+                    $minutes = $interval->i; // Minutes restantes (après division par heures)
 
-            $data = json_decode($response->getContent(), true);
-            foreach ($data as $item) {
-                if ($item['nom'] === 'temp') {
-                    $tempValue = $item['valeur'];
-                    $tempValue = (float)$tempValue;
-                } elseif ($item['nom'] === 'hum') {
-                    $humValue = $item['valeur'];
-                    $humValue = (float)$humValue;
-                } elseif ($item['nom'] === 'co2') {
-                    $co2Value = $item['valeur'];
-                    $co2Value = (float)$co2Value;
+                    $data = $value;
+                    if ($data['temp'] != null && $data['co2'] != null && $data['hum'] != null) {
+                        $etat = "Fonctionnelle";
+                        $colEtat = "#00D01F";
+                    }
+
+                    // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
+                    $isInDanger = $conseils->getConseils($wrapper, $data['temp'], $data['co2'], $data['hum'])['danger'];
+                    break;
                 }
             }
 
-            $tempValue = round($tempValue, 1);
-            $co2Value = round($co2Value, 0);
-            $humValue = round($humValue, 1);
+            if($dp)
+            {
+                $etat = "En intervention";
+                $colEtat = "#FF9000";
+            }
 
-            if($i % 3 == 0){
-                $col1[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+            if($index % 3 == 0){
+                $col1[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
+            } elseif($index % 3 == 1){
+                $col2[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
+            } elseif($index % 3 == 2){
+                $col3[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
             }
-            elseif($i % 3 == 1){
-                $col2[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
-            }
-            elseif($i % 3 == 2){
-                $col3[] = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
-            }
+            $index++;
         }
 
         return $this->render('salle/user_liste.html.twig', [
@@ -197,37 +234,43 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
-    public function infosUser(int $id, SalleRepository $salleRepository)
+    public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository)
     {
         $salle = $salleRepository->find($id);
+        $tempVar = null;
+        $co2Var = null;
+        $humVar = null;
 
-        $tempValue = null;
-        $humValue = null;
-        $co2Value = null;
+        $tempValue = $wrapper->requestSalleByType($salle->getNom(), "temp", 1, 2);
+        $co2Value = $wrapper->requestSalleByType($salle->getNom(), "co2", 1, 2);
+        $humValue = $wrapper->requestSalleByType($salle->getNom(), "hum", 1, 2);
 
-        $response = $salleRepository->requestSalle($salle->getNom(), 1);
-        $data = json_decode($response->getContent(), true);
-        foreach ($data as $item) {
-            if ($item['nom'] === 'temp') {
-                $tempValue = $item['valeur'];
-                $tempValue = (float)$tempValue;
-            } elseif ($item['nom'] === 'hum') {
-                $humValue = $item['valeur'];
-                $humValue = (float)$humValue;
-            } elseif ($item['nom'] === 'co2') {
-                $co2Value = $item['valeur'];
-                $co2Value = (float)$co2Value;
-            }
+        switch ($tempValue) {
+            case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
+            case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
+            case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
+        } switch ($co2Value) {
+            case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
+            case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
+            case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
+        } switch ($humValue) {
+            case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
+            case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
+            case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
         }
 
-        $tempValue = round($tempValue, 1);
-        $co2Value = round($co2Value, 0);
-        $humValue = round($humValue, 1);
+        $conseil = new Conseils();
+        $conseil = $conseil->getConseils($wrapper, $tempValue[0]["valeur"], $co2Value[0]["valeur"], $humValue[0]["valeur"]);
 
-        $infos = ['salle' => $salle, 'temp' => $tempValue, 'co2' => $co2Value, 'humi' => $humValue];
+        $infos = ['salle' => $salle,
+            'temp' => ['valeur' => $tempValue[0]["valeur"], 'variation' => $tempVar],
+            'co2' => ['valeur' => $co2Value[0]["valeur"], 'variation' => $co2Var],
+            'humi' => ['valeur' => $humValue[0]["valeur"], 'variation' => $humVar]
+        ];
 
         return $this->render('salle/user_infos.html.twig', [
-            'infos' => $infos
+            'infos' => $infos,
+            'conseil' => $conseil,
         ]);
     }
 

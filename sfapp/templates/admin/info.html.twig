@@ -1,0 +1,103 @@
+{# templates/admin/liste.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Administration - Infos Technicien
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="main-container rounded p-4">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="header">Infos {{ technicien.nom }}</h1>
+            </div>
+
+            <!-- Bouton Retour -->
+            <div class="mb-3">
+                <a href="{{ path('app_admin') }}" class="btn btn-secondary">retours à la liste</a>
+            </div>
+
+            <!-- Info Section -->
+            <div class="row info-section border-bottom py-3">
+                <div class="col-md-6">
+                    <p><strong>Email :</strong> {{ technicien.email }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Adresse :</strong> {{ technicien.adresse }}</p>
+                </div>
+            </div>
+
+            <!-- Liste des Tâches -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h2 class="tasks-title">Toutes les tâches</h2>
+                    <div class="tasks-container d-flex flex-wrap gap-2">
+                        {% for intervention in technicien.detailInterventions %}
+                            <div class="task-item bg-primary text-white p-2 rounded shadow-sm">
+                                <span>
+                                    <strong>{{ intervention.salle.nom }}</strong> : {{ intervention.description }}
+                                </span>
+                                <a href="{{ path('delete_intervention', {'id': intervention.id})  }}" class="btn btn-danger p-1 d-inline-flex align-items-center">
+                                    🗑️
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="mt-4 text-center">
+                <a href="{{ path('app_admin_assigner', {'id': technicien.id})  }}" class="btn btn-success btn-custom">Assigner une tâche</a>
+                <a href="{{ path('app_user_edit', {'id': technicien.id})  }}" class="btn btn-info btn-custom">Modifier</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-image: linear-gradient(to top right, #001932, #0041B5);
+            background-attachment: fixed;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            background-color: #007bff;
+        }
+        .header {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .info-section {
+            font-size: 1.1rem;
+        }
+        .tasks-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0056b3;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            width: 100%; /* Full width, change as needed */
+        }
+        .task-item a {
+            margin-left: 0; /* No margin */
+        }
+        .btn-custom {
+            width: 200px;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
