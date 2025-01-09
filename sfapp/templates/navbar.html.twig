@@ -7,9 +7,13 @@
             </div>
         </a>
 
-        {% if is_granted('ROLE_USER') %}
+        {% if not  is_granted('ROLE_TECHNICIEN') and not is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_salle_user_liste') }}" style="text-decoration: none;">
-                <h3 class="elNav">liste des salles</h3>
+                <h3 class="elNav">toutes les salles</h3>
+            </a>
+            <a href="{{ path('app_login') }}" style="text-decoration: none;">
+                <h3 class="elNav">connexion</h3>
+                <img src="{{ asset('img/connexion.png') }}" class="logo">
             </a>
         {% endif %}
 
@@ -23,10 +27,13 @@
             <a href="{{ path('app_technicien_taches') }}" style="text-decoration: none;">
                 <h3 class="elNav">taches</h3>
             </a>
+            <a href="{{ path('app_logout') }}" style="text-decoration: none;">
+                <h3 class="elNav">se deconnecter</h3>
+            </a>
 
         {% endif %}
 
-        {% if is_granted('ROLE_ADMIN') %}
+        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
             <a href="{{ path('app_guide') }}" style="text-decoration: none;">
                 <h3 class="elNav">Guide</h3>
             </a>
@@ -43,7 +50,10 @@
                 <h3 class="elNav">Bâtiment</h3>
             </a>
             <a href="{{ path('app_gestion') }}" style="text-decoration: none;">
-                <h3 class="elNav">Bâtiment</h3>
+                <h3 class="elNav">gestion de </h3>
+            </a>
+            <a href="{{ path('app_logout') }}" style="text-decoration: none;">
+                <h3 class="elNav">se deconnecter</h3>
             </a>
         {% endif %}
     </nav>
