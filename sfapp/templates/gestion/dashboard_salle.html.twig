@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+    <header>
+        <h1>Outil de Diagnostic - Salle {{ salle }}</h1>
+    </header>
+    <main>
+        <section class="statistiques-globales">
+            <h2>Statistiques Globales</h2>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>CO₂ du batiment (ppm)</h3>
+                    <p><strong>Actuellement : </strong>{{ co2.lastData }} ppm</p>
+                    <p><strong>Mobatimentyenne :</strong> {{ co2.mean}} ppm</p>
+                    <p><strong>Ecart Type :</strong> {{ co2.ecarttype}} ppm</p>
+                    {% if co2.ecarttype > 100 %}
+                        Attention ! le CO2 varie beaucoup. ecart type > 100
+                    {% endif %}
+                </div>
+                <div class="card">
+                    <h3>Temperature du batiment (°C)</h3>
+                    <p><strong>Actuellement : </strong>{{ temp.lastData }} °C</p>
+                    <p><strong>Moyenne sur la période :</strong> {{ temp.mean}} °C</p>
+                    <p><strong>Écart Type sur la période :</strong> {{ temp.ecarttype}} °C</p>
+                    <p><strong>Temperature Exterieur : </strong>{{ tempOutside }}°C</p>
+                    {% if temp.ecarttype > 2 %}
+                        Attention ! la temperature varie beaucoup. ecart type > 2
+                    {% endif %}
+                </div>
+                <div class="card">
+                    <h3>Humidite du batiment (%)</h3>
+                    <p><strong>Actuellement : </strong>{{ hum.lastData }}%</p>
+                    <p><strong>Moyenne : </strong>{{ hum.mean}}%</p>
+                    <p><strong>Écart Type :</strong> {{ hum.ecarttype}}%</p>
+                    {% if hum.ecarttype > 5 %}
+                        Attention ! l'humidite varie beaucoup. ecart type > 5
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Options de période -->
+
+        <!-- Graphiques et liste des SA -->
+        <section class="dashboard-content">
+            <!-- Colonne des graphiques (vertical) -->
+            <div class="left-column">
+                <div class="data-header">
+                    <h1>Visualisation des Données</h1>
+
+                        <select id="timePeriod" onchange="updateCharts()">
+                            <option value="1">Dernier Jour</option>
+                            <option value="7" selected>Derniers 7 Jours</option>
+                            <option value="30">Derniers 30 Jours</option>
+                        </select>
+                </div>
+                <canvas id="co2Chart" data-chart-data="{{ co2_data }}"></canvas>
+                <canvas id="tempChart" data-chart-data="{{ temp_data }}"></canvas>
+                <canvas id="humChart" data-chart-data="{{ hum_data }}"></canvas>
+            </div>
+
+            <!-- Colonne des SA bizarres -->
+            <div class="right-column">
+                <div class="data-header">
+                    <h1>Commentaires</h1>
+                </div>
+
+            </div>
+        </section>
+        <!-- Élément contenant les données JSON -->
+    </main>
+{% endblock %}
+
+{% block stylesheet %}
+    <style>
+
+    </style>
+{% endblock %}
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script>
+        const batimentName = "{{ batiment }}"; // Transmet dynamiquement le nom du bâtiment au script externe
+    </script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+{% endblock %}
