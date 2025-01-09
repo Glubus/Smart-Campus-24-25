@@ -159,7 +159,8 @@ class SalleController extends AbstractController
 
         $index = 0;
         foreach ($salles as $salle) {
-            $data = null;
+            $etat = "Hors-Service"; $colEtat = "#F30408";
+            $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
             $lastDataTime = null;
             $dp = null;
             $conseils = new Conseils();
@@ -179,6 +180,11 @@ class SalleController extends AbstractController
                     $minutes = $interval->i; // Minutes restantes (après division par heures)
 
                     $data = $value;
+                    if ($data['temp'] != null && $data['co2'] != null && $data['hum'] != null) {
+                        $etat = "Fonctionnelle";
+                        $colEtat = "#00D01F";
+                    }
+
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
                     $isInDanger = $conseils->getConseils($wrapper, $data['temp'], $data['co2'], $data['hum'])['danger'];
                     break;
@@ -189,14 +195,6 @@ class SalleController extends AbstractController
             {
                 $etat = "En intervention";
                 $colEtat = "#FF9000";
-            }
-            elseif ($data['temp'] == null && $data['co2'] == null && $data['hum'] == null) {
-                $etat = "Hors-Service";
-                $colEtat = "#F30408";
-            }
-            else {
-                $etat = "Fonctionnelle";
-                $colEtat = "#00D01F";
             }
 
             if($index % 3 == 0){
