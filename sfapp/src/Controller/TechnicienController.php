@@ -17,6 +17,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TechnicienController extends AbstractController
 {
+
+    #[Route('/technicien/accueil', name: 'app_technicien_acceuil')]
+    #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
+    public function accueil(): Response
+    {
+        $technicien = $this->getUser();
+
+        return $this->render('technicien/accueil.html.twig', [
+            'technicien' => $technicien
+        ]);
+    }
+
     #[Route('/technicien/taches', name: 'app_technicien_taches')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
     public function viewTaches(Request $request,
