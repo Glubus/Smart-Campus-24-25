@@ -41,6 +41,18 @@ class Batiment
         $this->etages = new ArrayCollection();
     }
 
+    public function getAllSalle(){
+        $arr=[];
+        foreach ($this->etages as $etage)
+        {
+            foreach ($etage->getSalles() as $salle)
+            {
+                $arr[]=$salle;
+            }
+        }
+        return $arr;
+    }
+
     public function renameEtage(int $index, string $newName): self
     {
         $etage = $this->etages[$index];
