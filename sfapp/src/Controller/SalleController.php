@@ -156,45 +156,77 @@ class SalleController extends AbstractController
         $col1 = [];
         $col2 = [];
         $col3 = [];
-        $dp = null;
-        $lastDataTime = null;
 
         $index = 0;
-        foreach ($arr as $key => $value) {
-            foreach ($salles as $s) {
-                if ($s->getNom() === $key) {
-                    $salle = $s;
+        foreach ($salles as $salle) {
+            $data = null;
+            $lastDataTime = null;
+            $dp = null;
+            $conseils = new Conseils();
+            $jours = null; $heures = null; $minutes = null;
+            $isInDanger = false;
+
+            // Trouve la salle dans le repertory en fonction du nom renvoyé par l'API wrapper
+            foreach ($arr as $key => $value) {
+                if ($salle->getNom() === $key) {
                     $dp = $detailInterventionRepository->findOneBy(['salle' => $salle]);
+
+                    // Calcule la durée depuis le dernier envoi de données
                     $lastDataTime = new DateTime($value['date']);
+                    $interval = $lastDataTime->diff($currentDateTime);
+                    $jours = $interval->days; // Total des jours
+                    $heures = $interval->h;   // Heures restantes (après division par jours)
+                    $minutes = $interval->i; // Minutes restantes (après division par heures)
+
+                    $data = $value;
+                    // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
+                    $isInDanger = $conseils->getConseils($wrapper, $data['temp'], $data['co2'], $data['hum'])['danger'];
+                    break;
                 }
             }
 
-            $interval = $lastDataTime->diff($currentDateTime);
-
-            $jours = $interval->days; // Total des jours
-            $heures = $interval->h;   // Heures restantes (après division par jours)
-            $minutes = $interval->i; // Minutes restantes (après division par heures)
-
-            if($dp) {
+            if($dp)
+            {
                 $etat = "En intervention";
                 $colEtat = "#FF9000";
-            } elseif ($value['temp'] == null && $value['co2'] == null && $value['hum'] == null) {
+            }
+            elseif ($data['temp'] == null && $data['co2'] == null && $data['hum'] == null) {
                 $etat = "Hors-Service";
                 $colEtat = "#F30408";
-            } else {
+            }
+            else {
                 $etat = "Fonctionnelle";
                 $colEtat = "#00D01F";
             }
 
             if($index % 3 == 0){
-                $col1[] = ['salle' => $salle, 'data' => $value, 'etat' => ['texte' => $etat, 'color' => $colEtat], 'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes]];
+                $col1[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
             } elseif($index % 3 == 1){
-                $col2[] = ['salle' => $salle, 'data' => $value, 'etat' => ['texte' => $etat, 'color' => $colEtat], 'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes]];
+                $col2[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
             } elseif($index % 3 == 2){
-                $col3[] = ['salle' => $salle, 'data' => $value, 'etat' => ['texte' => $etat, 'color' => $colEtat], 'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes]];
+                $col3[] = [
+                    'salle' => $salle,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
             }
             $index++;
         }
+
         return $this->render('salle/user_liste.html.twig', [
             'col1' => $col1,
             'col2' => $col2,
