@@ -27,18 +27,23 @@
                                     <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                <p id="last-update">Aucune donnée enregistrée</p>
-                            {% else %}
-                                <p id="last-update">Dernière donnée enregistrée il y a
-                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
-                                    {{ item.time.minutes }} minutes.</p>
-                                {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
-                                    {{ item.time.heures }} heures.</p>
+                            <div style="display: flex; justify-content: space-between">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="last-update">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    {{ item.time.jours }} jours.</p>
+                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
+                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
+                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                {% endif %}
+                            </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -62,10 +67,6 @@
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
-                                </div>
-                                <div class="conseils">
-                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
-                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
                                 </div>
                             {% endif %}
                             <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
@@ -84,18 +85,23 @@
                                     <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                <p id="last-update">Aucune donnée enregistrée</p>
-                            {% else %}
-                                <p id="last-update">Dernière donnée enregistrée il y a
-                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
-                                    {{ item.time.minutes }} minutes.</p>
-                                {% elseif item.time.jours is null or item.time.jours != 0 %}
-                                    {{ item.time.heures }} heures.</p>
+                            <div style="display: flex; justify-content: space-between">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="last-update">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    {{ item.time.jours }} jours.</p>
+                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
+                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
+                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                {% endif %}
+                            </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -119,10 +125,6 @@
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
-                                </div>
-                                <div class="conseils">
-                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
-                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
                                 </div>
                             {% endif %}
                             <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
@@ -141,18 +143,23 @@
                                     <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
-                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                <p id="last-update">Aucune donnée enregistrée</p>
-                            {% else %}
-                                <p id="last-update">Dernière donnée enregistrée il y a
-                                {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
-                                    {{ item.time.minutes }} minutes.</p>
-                                {% elseif item.time.jours is null or item.time.jours != 0 %}
-                                    {{ item.time.heures }} heures.</p>
+                            <div style="display: flex; justify-content: space-between">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="last-update">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    {{ item.time.jours }} jours.</p>
+                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
+                                    {% if item.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
+                            </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="card-content" id="card-content">
@@ -176,10 +183,6 @@
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
-                                </div>
-                                <div class="conseils">
-                                    <img src="{{ asset('img/attention.png') }}" class="iconDanger">
-                                    <p class="text">Température excessive... Ouvrez vos fenêtres.</p>
                                 </div>
                             {% endif %}
                             <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
