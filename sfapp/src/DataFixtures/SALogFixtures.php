@@ -15,7 +15,7 @@ class SALogFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-        $sa=$this->getReference(SAFixtures::ESP_001, SA::class);
+        $sa=$this->getReference("ESP-005", SA::class);
 
         $salog = $this->make_salog($sa,new \DateTime(), ActionLog::AJOUTER);
         $salog1 = $this->make_salog($sa,new \DateTime(), ActionLog::MODIFIER);
