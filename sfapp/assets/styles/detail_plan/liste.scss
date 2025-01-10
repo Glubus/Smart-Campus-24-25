@@ -3,7 +3,6 @@ body {
     font-family: Arial, sans-serif;
     position:relative;
     background-image: linear-gradient(to top right, #001932, #0041B5);
-    height: 100%;
 }
 
 h1 {
@@ -15,9 +14,10 @@ h1 {
 
 .page-content{
     border-top: 1px solid black;
+    overflow: auto;
 }
 
-#sidebar {
+#sidebar-wrapper {
     float: left;
     margin-top: 20px;
     margin-left: 15px;
@@ -25,9 +25,27 @@ h1 {
     position: sticky; /* Fix the sidebar in place */
     top: 2vh;
     height: 98vh; /* Make the sidebar full height */
+}
+
+#sidebar {
+    width: 100%;
+    height: 100%; /* Make the sidebar full height */
     background-color: #D9D9D9;
     border: 1px solid #000;
+    z-index: 1;
 }
+
+#deco-sidebar {
+    height: 98%;
+    width: 100%;
+    position: absolute; /* Fix the sidebar in place */
+    top: -10px;
+    left: 10px;
+    background-color: #B0B0B0;
+    border: 1px solid #000;
+    z-index: -1;
+}
+
 
 .filter-etage{
     height: 100%;
@@ -145,7 +163,7 @@ h1 {
 
 /* detail_plan styling */
 #detail_plan {
-    width: 70%;
+    width: 95%;
     float: right;
     margin: 20px;
     display: flex;
@@ -224,7 +242,7 @@ h1 {
 }
 
 /* Buttons and links */
-.caseBleu, .supprAttr {
+.caseBleu, .supprAttr, .validerDemande{
     text-decoration: none;
 }
 
@@ -236,6 +254,12 @@ h1 {
 
 .supprAttr {
     color: red;
+    background-color: #D9D9D9;
+    margin: 15px;
+}
+
+.validerDemande {
+    color: green;
     background-color: #D9D9D9;
     margin: 15px;
 }
@@ -271,7 +295,7 @@ h1 {
     flex-grow: 1;
 }
 
-.caseBleu:hover, .supprAttr:hover .switch-menu>i:hover{
+.caseBleu:hover, .supprAttr:hover, .validerDemande:hover, .switch-menu>i:hover{
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 

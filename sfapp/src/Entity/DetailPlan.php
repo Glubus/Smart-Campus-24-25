@@ -83,6 +83,11 @@ class DetailPlan
         return $this->etatSA->value;
     }
 
+    public function getEtatInstallation(): EtatInstallation
+    {
+        return $this->etatSA;
+    }
+
     public function setEtatSA(?EtatInstallation $etatSA): static
     {
         $this->etatSA = $etatSA;

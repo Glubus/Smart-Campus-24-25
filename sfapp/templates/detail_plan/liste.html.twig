@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <div id="sidebar-wrapper">
+        <div id="deco-sidebar"></div>
         <div id="sidebar">
             <div class="switch-menu"><i class="fa fa-exchange"></i></div>
             <div id="toolbox" class="toolbox {% if form.nom.vars.value is empty %}hidden{% endif %}">
@@ -79,6 +81,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <div class="page-content">
         <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
@@ -112,7 +115,9 @@
                                 </div>
                                 <div class="actions">
                                     <i class="toggle caseBleu fas fa-eye" data-salle-id="{{ salle.id }}"></i>
-                                    <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu material-icons" role="button">add_circle</a>
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu material-icons" role="button">add_circle</a>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="afficher-{{ salle.id }} gray-container">
@@ -150,7 +155,7 @@
                                                 <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
                                         {% elseif is_granted('ROLE_TECHNICIEN') %}
                                             {% if plan.etatSA != 'pret' %}
-                                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="material-icons">check_circle</a>
+                                                <a href="{{ path('app_lier_validation', {id: plan.id }) }}" role="button" class="validerDemande material-icons">check_circle</a>
                                             {% endif %}
                                         {% endif %}
                                     </div>

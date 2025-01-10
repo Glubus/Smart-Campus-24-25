@@ -24,6 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DetailPlanController extends AbstractController
 {
     #[Route('/lier/{id}/ajout', name: 'app_lier_ajout')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function ajouter(EntityManagerInterface $em, Request $request, int $id): Response
     {
         $sa_id = $request->query->get('sa_id');
@@ -153,20 +154,30 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
         $detail_plan = $repo->find($id);
 
         if ($request->isMethod('POST')) {
             if ($detail_plan) {
-                if($detail_plan->getEtatSA() == EtatInstallation::PRET){
+                if($detail_plan->getEtatInstallation() == EtatInstallation::PRET){
                     $detail_plan->setEtatSA(EtatInstallation::DESINSTALLATION);
                     $detail_plan->setDateEnleve(new DateTime());
+                    $em->persist($detail_plan);
                 }
-                else{
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateEnleve(null);
+                    $em->persist($detail_plan);
+                }
+                else
+                {
                     $em->remove($detail_plan);
-                    $em->flush();
                 }
+                $em->flush();
+
+
 
 
                 return $this->redirectToRoute('app_lier_liste', [
@@ -176,6 +187,37 @@ class DetailPlanController extends AbstractController
         }
             return $this->render('detail_plan/supprimer.html.twig', [
                 "detail_plan" => $detail_plan,
+                "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
             ]);
+    }
+
+    #[Route('/lier/{id}/valider', name: 'app_lier_validation')]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function valider(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
+    {
+        $detail_plan = $repo->find($id);
+
+        if ($request->isMethod('POST')) {
+            if ($detail_plan) {
+                if($detail_plan->getEtatInstallation() == EtatInstallation::INSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateAjout(new DateTime());
+                    $em->persist($detail_plan);
+                    $em->flush();
+                }
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $em->remove($detail_plan);
+                    $em->flush();
+                }
+
+                return $this->redirectToRoute('app_lier_liste', [
+                    'id' => $detail_plan->getPlan()->getId()
+                ]);
+            }
+        }
+        return $this->render('detail_plan/valider.html.twig', [
+            "detail_plan" => $detail_plan,
+            "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
+        ]);
     }
 }
