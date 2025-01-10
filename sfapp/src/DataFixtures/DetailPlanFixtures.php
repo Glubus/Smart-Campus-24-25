@@ -33,6 +33,7 @@ class DetailPlanFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        $plan=$this->getReference(PlanFixtures::PLAN_1, Plan::class);
         foreach (self::ASSOCIATIONS as $key => $values){
             $salle=$this->getReference($key, Salle::class);
             $sa=$this->getReference($values, SA::class);
@@ -49,9 +50,7 @@ class DetailPlanFixtures extends Fixture implements DependentFixtureInterface
         $DetailPlan->setSalle($salle);
         $DetailPlan->setEtatSA(EtatInstallation::PRET);
         $DetailPlan->setDateAjout(new \DateTime());
-        if($etat==EtatInstallation::DESINSTALLATION){
-            $DetailPlan->setDateEnleve(new \DateTime());
-        }
+
         return $DetailPlan;
     }
     public function getDependencies() : array{
