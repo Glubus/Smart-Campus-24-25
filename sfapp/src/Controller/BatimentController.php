@@ -75,7 +75,15 @@ class   BatimentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $etages = $request->request->all('form')['etages'] ?? [];
+            // Access dynamically added "etages" data
+            $etages = $request->request->all('form')['etages']; // Safely retrieve
+            foreach ($etages as $key => $etageName) {
+                if($etageName != null){
+                    $batiment->renameEtage($key, $etageName);
+                }
+                else
+                    $etages[$key] = $key;
+            }
 
             if (!$this->isNomEtagesUnique($etages)) {
                 $this->addFlash('error', 'Chaque étage doit avoir un nom unique.');

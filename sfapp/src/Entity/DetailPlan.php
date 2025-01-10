@@ -21,14 +21,18 @@ class DetailPlan
     #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Salle $salle = null;
 
-    #[ORM\ManyToOne(inversedBy: 'detailPlans')]
-    private ?SA $sa = null;
 
     #[ORM\ManyToOne(inversedBy: 'detailPlans')]
     private ?Plan $plan = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?EtatSA $etatSA = null;
+    private ?EtatInstallation $etatSA = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateEnleve = null;
+
+    #[ORM\OneToOne(inversedBy: 'detailPlan', cascade: ['persist'])]
+    private ?SA $SA = null;
 
 
 
@@ -37,17 +41,6 @@ class DetailPlan
         return $this->id;
     }
 
-    public function getSA(): ?SA
-    {
-        return $this->sa;
-    }
-
-    public function setSA(SA $SA): static
-    {
-        $this->sa = $SA;
-
-        return $this;
-    }
 
     public function getSalle(): ?Salle
     {
@@ -85,14 +78,53 @@ class DetailPlan
         return $this;
     }
 
-    public function getEtatSA(): ?EtatSA
+    public function getEtatSA(): string
+    {
+        return $this->etatSA->value;
+    }
+
+    public function getEtatInstallation(): EtatInstallation
     {
         return $this->etatSA;
     }
 
-    public function setEtatSA(?string $etatSA): static
+    public function setEtatSA(?EtatInstallation $etatSA): static
     {
         $this->etatSA = $etatSA;
+
+        return $this;
+    }
+
+    public function getDateEnleve(): ?\DateTimeInterface
+    {
+        return $this->dateEnleve;
+    }
+
+    public function setDateEnleve(?\DateTimeInterface $dateEnleve): static
+    {
+        $this->dateEnleve = $dateEnleve;
+
+        return $this;
+    }
+
+    public function getSA(): ?SA
+    {
+        return $this->SA;
+    }
+
+    public function setSA(?SA $SA): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($SA === null && $this->SA !== null) {
+            $this->SA->setDetailPlan(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($SA !== null && $SA->getDetailPlan() !== $this) {
+            $SA->setDetailPlan($this);
+        }
+
+        $this->SA = $SA;
 
         return $this;
     }

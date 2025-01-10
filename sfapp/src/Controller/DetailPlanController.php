@@ -3,27 +3,28 @@
 namespace App\Controller;
 
 use App\Entity\DetailPlan;
+use App\Entity\EtatInstallation;
 use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use App\Form\AssociationSASalle;
-use App\Form\SuppressionType;
-use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
-use App\Repository\EtageRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function PHPUnit\Framework\isNull;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DetailPlanController extends AbstractController
 {
     #[Route('/lier/{id}/ajout', name: 'app_lier_ajout')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function ajouter(EntityManagerInterface $em, Request $request, int $id): Response
     {
         $sa_id = $request->query->get('sa_id');
@@ -51,6 +52,7 @@ class DetailPlanController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $detail_plan->setDateAjout(new DateTime());
+            $detail_plan->setEtatSA(EtatInstallation::INSTALLATION);
             $em->persist( $detail_plan);
             $em->flush();
 
@@ -65,7 +67,8 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/lier/{id}', name: 'app_lier_liste')]
-    public function list(PlanRepository $planRepo, Request $request, int $id): Response
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request, int $id): Response
     {
         $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
@@ -104,24 +107,69 @@ class DetailPlanController extends AbstractController
             ];
         }
 
+        $form = $this->createFormBuilder()
+            ->add('nom', TextType::class, [
+                'label' => false,
+                'attr' => [
+                    'placeholder' => 'Rechercher par nom de salle',
+                    'class' => 'form-control',
+                    ],
+               ])
+        ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $salleFiltrer = $salleRepo->findByNomRessemblant($data['nom']);
+            $salles = array_intersect_key(
+                $salles,
+                array_intersect(
+                    array_map(fn($s):string => $s->getNom(), $salles),
+                    array_map(fn($s):string => $s->getNom(), $salleFiltrer)
+                )
+            );
+        }
+
+
         // Afficher la liste des plans dans le template
         return $this->render('detail_plan/liste.html.twig', [
+            'form' => $form->createView(),
             'salles' => $salles,
             'batiments' => $batimentsArray,
             'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
-            'plan_select' => $plan
+            'plan_select' => $plan,
         ]);
     }
+
     #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
         $detail_plan = $repo->find($id);
 
         if ($request->isMethod('POST')) {
             if ($detail_plan) {
-                $em->remove($detail_plan);
+                if($detail_plan->getEtatInstallation() == EtatInstallation::PRET){
+                    $detail_plan->setEtatSA(EtatInstallation::DESINSTALLATION);
+                    $detail_plan->setDateEnleve(new DateTime());
+                    $em->persist($detail_plan);
+                }
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateEnleve(null);
+                    $em->persist($detail_plan);
+                }
+                else
+                {
+                    $em->remove($detail_plan);
+                }
                 $em->flush();
+
+
+
+
                 return $this->redirectToRoute('app_lier_liste', [
                     'id' => $detail_plan->getPlan()->getId()
                 ]);
@@ -129,6 +177,37 @@ class DetailPlanController extends AbstractController
         }
             return $this->render('detail_plan/supprimer.html.twig', [
                 "detail_plan" => $detail_plan,
+                "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
             ]);
+    }
+
+    #[Route('/lier/{id}/valider', name: 'app_lier_validation')]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function valider(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
+    {
+        $detail_plan = $repo->find($id);
+
+        if ($request->isMethod('POST')) {
+            if ($detail_plan) {
+                if($detail_plan->getEtatInstallation() == EtatInstallation::INSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateAjout(new DateTime());
+                    $em->persist($detail_plan);
+                    $em->flush();
+                }
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $em->remove($detail_plan);
+                    $em->flush();
+                }
+
+                return $this->redirectToRoute('app_lier_liste', [
+                    'id' => $detail_plan->getPlan()->getId()
+                ]);
+            }
+        }
+        return $this->render('detail_plan/valider.html.twig', [
+            "detail_plan" => $detail_plan,
+            "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
+        ]);
     }
 }

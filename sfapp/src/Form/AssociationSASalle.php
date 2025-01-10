@@ -24,16 +24,16 @@ class AssociationSASalle extends AbstractType
                 'class' => SA::class,
                 'choice_label' => 'nom',
                 'label' => 'Système d\'acquisition',
-                'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('sa')
-                        ->leftJoin('sa.plans', 'detail_plan')
+                        ->leftJoin('sa.detailPlan', 'detail_plan')
                         ->where('detail_plan.id IS NULL')  // Cette condition filtre les SA qui n'ont pas de DetailPlan associé
                         ->orderBy('sa.nom', 'ASC'); // Trie les SA par nom, par exemple
                 },
                 'attr' => [
                     'class' => 'form-control sa-searchable', // Applique les classes Bootstrap
                     'data-live-search' => 'true',            // Option pour activer la recherche dans le select (pour une meilleure expérience utilisateur)
+                    'required' => 'true',
                 ],
             ])
         // Champ pour la Salle
