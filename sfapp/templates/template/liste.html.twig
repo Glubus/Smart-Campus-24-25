@@ -9,15 +9,10 @@
     routeItem = une route href pour les infos items
     classSpecifique = une classe pour afficher les items de entrys
 #}
-{% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('/styles/liste/'~css~'.scss') }}">
-{% endblock %}
 {% block body %}
 
     <h1 class="mainTitle">Liste des {{ classItem }}</h1>
     <div class="all">
-
-
         <main class="liste">
             <div class="btns">
                 <a href="{{ path("app_"~classItem~"_ajouter") }}">
@@ -56,7 +51,6 @@
 
                 {% endfor %}
             </article>
-            <button class="btnAffPl">Afficher plus</button>
         </main>
     </div>
 {% endblock %}

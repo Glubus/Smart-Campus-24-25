@@ -190,7 +190,7 @@ class SalleController extends AbstractController
                     }
 
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseils($wrapper, ($data['temp'] ?? null), ($data['co2'] ?? null), ($data['hum'] ?? null))['danger'];
+                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, ($data['temp'] ?? null), ($data['co2'] ?? null), ($data['hum'] ?? null))['danger'];
                     break;
                 }
             }
@@ -238,44 +238,63 @@ class SalleController extends AbstractController
     }
 
     #[Route('/salle/user/{id}', name: 'app_salle_user_infos', requirements: ['id' => '\d+'])]
-    public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository)
+    public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository)
     {
         $salle = $salleRepository->find($id);
-        $tempVar = null;
-        $co2Var = null;
-        $humVar = null;
+        $plans = $detailPlanRepository->findBy(['salle' => $salle]);
 
+        $moyTemp = null; $moyCo2 = null; $moyHum = null;
+        $tempVar = [];
+        $co2Var = [];
+        $humVar = [];
+        $dataSalle = null;
+        $conseil = new Conseils();
+        $conseilGeneral = new Conseils();
 
-        $tempValue = $wrapper->requestSalleByType($salle->getNom(), "temp", 1, 2);
-        $co2Value = $wrapper->requestSalleByType($salle->getNom(), "co2", 1, 2);
-        $humValue = $wrapper->requestSalleByType($salle->getNom(), "hum", 1, 2);
+        foreach ($plans as $plan) {
+            $tempValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "temp", 1, 2);
+            $co2Value = $wrapper->requestSalleByType($plan->getSA()->getNom(), "co2", 1, 2);
+            $humValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "hum", 1, 2);
 
-        switch ($tempValue) {
-            case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
-            case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
-            case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
-        } switch ($co2Value) {
-            case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
-            case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
-            case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
-        } switch ($humValue) {
-            case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
-            case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
-            case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
+            switch ($tempValue) {
+                case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
+                case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
+                case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
+            } switch ($co2Value) {
+                case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
+                case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
+                case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
+            } switch ($humValue) {
+                case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
+                case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
+                case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
+            }
+
+            $moyTemp += $tempValue[0]['valeur'];
+            $moyCo2 += $co2Value[0]['valeur'];
+            $moyHum += $humValue[0]['valeur'];
+
+            $conseil = $conseil->getConseilsParCapteur($wrapper, $tempValue[0]['valeur'], $co2Value[0]['valeur'], $humValue[0]['valeur']);
+            
+            $dataSalle[] = [
+                'sa' => $plan->getSA(),
+                'conseil' => $conseil,
+                'temp' => ['val' => $tempValue[0]['valeur'], 'variation' => $tempVar],
+                'co2' => ['val' => $co2Value[0]['valeur'], 'variation' => $co2Var],
+                'humi' => ['val' => $humValue[0]['valeur'], 'variation' => $humVar]
+                ];
         }
 
-        $conseil = new Conseils();
-        $conseil = $conseil->getConseils($wrapper, $tempValue[0]["valeur"], $co2Value[0]["valeur"], $humValue[0]["valeur"]);
+        $moyTemp = $moyTemp / count($dataSalle);
+        $moyCo2 = $moyCo2 / count($dataSalle);
+        $moyHum = $moyHum / count($dataSalle);
 
-        $infos = ['salle' => $salle,
-            'temp' => ['valeur' => $tempValue[0]["valeur"], 'variation' => $tempVar],
-            'co2' => ['valeur' => $co2Value[0]["valeur"], 'variation' => $co2Var],
-            'humi' => ['valeur' => $humValue[0]["valeur"], 'variation' => $humVar]
-        ];
+        $conseilGeneral = $conseilGeneral->getConseilsGeneraux($wrapper, $moyTemp, $moyCo2, $moyHum);
 
         return $this->render('salle/user_infos.html.twig', [
-            'infos' => $infos,
-            'conseil' => $conseil,
+            'data' => $dataSalle,
+            'salle' => $salle,
+            'conseilGeneral' => $conseilGeneral,
         ]);
     }
 
