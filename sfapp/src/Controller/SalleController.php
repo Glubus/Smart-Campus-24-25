@@ -131,13 +131,16 @@ class SalleController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/salle/user', name: 'app_salle_user_liste')]
-    public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository): Response
+    public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, DetailInterventionRepository $detailInterventionRepository): Response
     {
         $currentDateTime = new \DateTime('now');
         $currentDateTime->modify('+1 hour');
-
+        $arr=[];
         $form = $this->createForm(RechercheSalleType::class);
-        $arr = $wrapper->requestAllSalleLastValue();
+        $batiment = $batimentRepository->findOneBy(['nom'=>"Batiment D"]);
+        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        }
         $salles = $salleRepository->findAll();
 
         $form->handleRequest($request);
@@ -180,13 +183,14 @@ class SalleController extends AbstractController
                     $minutes = $interval->i; // Minutes restantes (après division par heures)
 
                     $data = $value;
-                    if ($data['temp'] != null && $data['co2'] != null && $data['hum'] != null) {
+
+                    if (isset($data['temp']) && isset($data['co2'])&& isset($data['hum'])) {
                         $etat = "Fonctionnelle";
                         $colEtat = "#00D01F";
                     }
 
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseils($wrapper, $data['temp'], $data['co2'], $data['hum'])['danger'];
+                    $isInDanger = $conseils->getConseils($wrapper, ($data['temp'] ?? null), ($data['co2'] ?? null), ($data['hum'] ?? null))['danger'];
                     break;
                 }
             }

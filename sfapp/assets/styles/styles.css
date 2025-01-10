@@ -438,23 +438,7 @@ body.accueil {
     src: url('font/JejuGothic.ttf') format('truetype');
 }
 
-.allNav {
-    background-color: white;
-    width: 100%;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
 
-.navbar {
-    margin: auto;
-    width: 1115px;
-    height: 80px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 2;
-}
 
 .accueil {
     margin-left: 15px;

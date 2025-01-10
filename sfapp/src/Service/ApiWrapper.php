@@ -26,7 +26,7 @@ class ApiWrapper
         "C101" => "ESP-007",
         "D109" => "ESP-024",
         "Secrétariat" => "ESP-026",
-        "D001" => "ESP-0getSA30",
+        "D001" => "ESP-030",
         "D002" => "ESP-028",
         "D004" => "ESP-020",
         "C004" => "ESP-021",
@@ -103,7 +103,6 @@ private CacheInterface $cache;
         if ($limit > 20) {
             $limit = 20;
         }
-
         // Génération d'une clé de cache unique basée sur les paramètres
         $cacheKey = sprintf('salle_by_type_%s_%s_%d_%d', $sa, $type, $page, $limit);
 
@@ -213,6 +212,24 @@ private CacheInterface $cache;
             $validNames = ['co2', 'temp', 'hum', 'lum', 'pres'];
             if (in_array($nom, $validNames, true)) {
                 $result[$date][$nom] = $valeur;
+            }
+        }
+
+        return $result;
+    }
+    public function transformBySalle($data): array
+    {
+        $result = [];
+        foreach ($data as $item) {
+            $salle = $item['localisation'];
+            $date = $item['dateCapture'];
+            $nom = strtolower($item['nom']);
+            $valeur = $item['valeur'];
+            $result[$salle] ??= [];
+            $validNames = ['co2', 'temp', 'hum', 'lum', 'pres'];
+            if (in_array($nom, $validNames, true)) {
+                $result[$salle][$nom] = $valeur;
+                $result[$salle]['date'] = $date;
             }
         }
 
@@ -387,9 +404,9 @@ private CacheInterface $cache;
             foreach ($allSalle as $salle) {
                 // Récupérer toutes les "SA" associées à la salle
                 $sas = $this->getSA($salle);
-
                 foreach ($sas as $sa) {
                     foreach ($types as $type) {
+
                         // Appel de l'API pour obtenir les données du type demandé
                         $results = $this->requestSalleByType($sa, $type, 1, 1);
 
