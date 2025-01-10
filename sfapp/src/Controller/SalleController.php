@@ -245,6 +245,7 @@ class SalleController extends AbstractController
         $co2Var = null;
         $humVar = null;
 
+
         $tempValue = $wrapper->requestSalleByType($salle->getNom(), "temp", 1, 2);
         $co2Value = $wrapper->requestSalleByType($salle->getNom(), "co2", 1, 2);
         $humValue = $wrapper->requestSalleByType($salle->getNom(), "hum", 1, 2);
