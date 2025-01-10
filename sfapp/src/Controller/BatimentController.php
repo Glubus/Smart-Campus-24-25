@@ -20,51 +20,37 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use function PHPUnit\Framework\isNull;
 
-class BatimentController extends AbstractController
+class   BatimentController extends AbstractController
 {
-    /*#[Route('/batiment', name: 'app_batiment')]
-    public function index(EntityManagerInterface $em): Response
-    {
-        // Récupération de tous les bâtiments depuis la base de données
-        $batiments = $em->getRepository(Batiment::class)->findAll();
-
-        return $this->render('batiment/ajouter.html.twig', [
-            'batiments' => $batiments,
-        ]);
-    }*/
+    private const CONFIRMATION_PHRASE = 'CONFIRMER';
 
     #[Route('/batiment', name: 'app_batiment_liste')]
-    public function liste(EntityManagerInterface $em): Response
+    public function liste(EntityManagerInterface $entityManager): Response
     {
-        // Récupérer la liste des bâtiments
-        $batiments = $em->getRepository(Batiment::class)->findAll();
-
+        $batiments = $entityManager->getRepository(Batiment::class)->findAll();
 
         return $this->render('batiment/liste.html.twig', [
             'css' => 'batiment',
             'classItem' => "batiment",
             'items' => $batiments,
-            'routeItem'=> "app_batiment_ajouter",
+            'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
         ]);
     }
 
-    #[Route('/batiment/{id}', name: 'app_batiment_infos',requirements: ['id' => '\d+'])]
-    public function infos(int $id, BatimentRepository $em): Response
+    #[Route('/batiment/{id}', name: 'app_batiment_infos', requirements: ['id' => '\d+'])]
+    public function infos(int $id, BatimentRepository $repository): Response
     {
-        // Récupérer la liste des bâtiments
-        $batiment = $em->find($id);
-
+        $batiment = $repository->find($id);
 
         return $this->render('batiment/infos.html.twig', [
             'css' => 'batiment',
             'classItem' => "batiment",
             'item' => $batiment,
-            'routeItem'=> "app_batiment_ajouter",
+            'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
         ]);
     }
-
     #[Route('/batiment/modifier/{id}', name: 'app_batiment_modifier')]
     public function modifier(int $id, Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
@@ -79,24 +65,13 @@ class BatimentController extends AbstractController
         ]);
     }
 
-
-        #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
-    public function ajouter(Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
+    #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
+    public function ajouter(Request $request, BatimentRepository $repository, EntityManagerInterface $entityManager): Response
     {
-        /*$req=$request->get('batiment');
-        $batiment=null;
-        if ($req) {
-            $batiment = $batimentRepository->find($req);
-        }
-        if (!$batiment) {
-            // Initialisation d'un nouveau bâtiment
-            $batiment = new Batiment();
-        }*/
-        $batiment = new Batiment();
-        // Création du formulaire
-        $form = $this->createForm(AjoutBatimentType::class, $batiment);
+        $batimentId = $request->get('batiment');
+        $batiment = $batimentId ? $repository->find($batimentId) : new Batiment();
 
-        // Gestion de la requête
+        $form = $this->createForm(AjoutBatimentType::class, $batiment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -110,24 +85,15 @@ class BatimentController extends AbstractController
                     $etages[$key] = $key;
             }
 
-            if (count($etages) != count(array_unique($etages))) {
+            if (!$this->isNomEtagesUnique($etages)) {
                 $this->addFlash('error', 'Chaque étage doit avoir un nom unique.');
-            }
+            } elseif ($repository->findOneBy(['nom' => $batiment->getNom()])) {
+                $this->addFlash('error', 'Ce bâtiment existe déjà.');
+            } else {
+                $this->processEtages($batiment, $etages);
+                $this->persistAndFlush($entityManager, $batiment);
 
-            else {
-                $batimentExistante = $batimentRepository->findBy(
-                    ['nom' => $batiment->getNom()]
-                );
-                if($batimentExistante) {
-                    $this->addFlash('error', 'Ce batiment existe déjà');
-                }
-                else{
-                    $em->persist($batiment);
-                    $em->flush();
-
-                    // Redirection vers la liste des bâtiments après ajout
-                    return $this->redirectToRoute('app_batiment_liste');
-                }
+                return $this->redirectToRoute('app_batiment_liste');
             }
         }
 
@@ -135,56 +101,83 @@ class BatimentController extends AbstractController
             'form' => $form->createView(),
             'css' => 'batiment',
             'classItem' => "batiment",
-            'routeItem'=> "app_batiment_ajouter",
+            'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
         ]);
     }
+
     #[Route('/batiment/{id}/suppression', name: 'app_batiment_suppression')]
-    public function supprimer(
-        Request $request,
-        BatimentRepository $batimentRepository,
-        EntityManagerInterface $entityManager,
-        SessionInterface $session
-    ): Response {
-        // Récupérer les IDs à partir de la requête GET
-        $ids = $request->query->all('selected_batiment');
-
-        if (empty($ids)) {
-            $ids = $session->get('selected_batiment', []);
-        } else {
-            $session->set('selected_batiment', $ids);
-        }
-
-        $batiments = array_map(fn($id) => $batimentRepository->find($id), $ids);
+    public function supprimer(Request $request, BatimentRepository $repository, EntityManagerInterface $entityManager, SessionInterface $session): Response
+    {
+        $selectedIds = $this->getSelectedIds($request, $session, 'selected_batiment');
+        $batiments = $this->getSelectedBatiments($selectedIds, $repository);
 
         $form = $this->createForm(SuppressionType::class, null, [
-            'phrase' => 'CONFIRMER' // Passer la variable au formulaire
+            'phrase' => self::CONFIRMATION_PHRASE
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $submittedString = $form->get('inputString')->getData();
+        if ($form->isSubmitted() && $this->isConfirmationValid($form->get('inputString')->getData())) {
+            $this->deleteBatiments($batiments, $entityManager);
 
-            if ($submittedString === 'CONFIRMER') {
-                foreach ($batiments as $batiment) {
-                    foreach ($batiment->getSalles() as $salle) {
-                        $entityManager->remove($salle);
-                    }
-                    $entityManager->remove($batiment);
-                }
-
-                $entityManager->flush();
-
-                return $this->redirectToRoute('app_batiment_liste');
-            } else {
-                $this->addFlash('error', 'La saisie est incorrecte.');
-            }
+            return $this->redirectToRoute('app_batiment_liste');
         }
 
+        $this->addFlash('error', 'La saisie est incorrecte.');
+
         return $this->render('batiment/supprimer.html.twig', [
-            "form" => $form->createView(),
-            "batiment" => $batiments,
+            'form' => $form->createView(),
+            'batiments' => $batiments,
         ]);
+    }
+
+    private function processEtages(Batiment $batiment, array $etages): void
+    {
+        foreach ($etages as $key => $etageName) {
+            if ($etageName !== null) {
+                $batiment->renameEtage($key, $etageName);
+            }
+        }
+    }
+
+    private function deleteBatiments(array $batiments, EntityManagerInterface $entityManager): void
+    {
+        foreach ($batiments as $batiment) {
+            foreach ($batiment->getSalles() as $salle) {
+                $entityManager->remove($salle);
+            }
+            $entityManager->remove($batiment);
+        }
+        $entityManager->flush();
+    }
+
+    private function getSelectedIds(Request $request, SessionInterface $session, string $sessionKey): array
+    {
+        $ids = $request->query->all('selected_batiment') ?: $session->get($sessionKey, []);
+        $session->set($sessionKey, $ids);
+
+        return $ids;
+    }
+
+    private function getSelectedBatiments(array $ids, BatimentRepository $repository): array
+    {
+        return array_filter(array_map(fn($id) => $repository->find($id), $ids));
+    }
+
+    private function isNomEtagesUnique(array $etages): bool
+    {
+        return count($etages) === count(array_unique($etages));
+    }
+
+    private function isConfirmationValid(string $submittedString): bool
+    {
+        return $submittedString === self::CONFIRMATION_PHRASE;
+    }
+
+    private function persistAndFlush(EntityManagerInterface $entityManager, object $entity): void
+    {
+        $entityManager->persist($entity);
+        $entityManager->flush();
     }
     #[Route('/batiment/{id}/max-etages', name: 'batiment_max_etages', methods: ['GET'])]
     public function getMaxEtages(int $id, BatimentRepository $batimentRepository): JsonResponse
@@ -210,50 +203,49 @@ class BatimentController extends AbstractController
         EntityManagerInterface $entityManager,
         SessionInterface $session
     ): Response {
-        // Fetch the 'selected_batiments' from the request
-        $ids = $request->request->all('selected');
+        // Récupération des bâtiments sélectionnés
+        $ids = $this->getSelectedBatimentIds($request, $session);
+        $batiments = $this->getBatimentsByIds($ids, $batimentRepository);
 
-        if (empty($ids)) {
-            $ids = $session->get('selected', []);
-        } else {
-            $session->set('selected', $ids);
-        }
-
-        $batiments = array_map(fn($id) => $batimentRepository->find($id), $ids);
-
-
+        // Création du formulaire
         $form = $this->createForm(SuppressionType::class, null, [
             'phrase' => 'CONFIRMER'
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $submittedString = $form->get('inputString')->getData();
 
-            if ($submittedString === 'CONFIRMER') {
+            if ($this->isConfirmationValid($submittedString)) {
+                $this->deleteBatiments($batiments, $entityManager);
 
-                if (!is_iterable($batiments)) {
-                    throw new \Exception("No buildings found.");
-                }
-                foreach ($batiments as $batiment) {
-
-
-                    $entityManager->remove($batiment);
-                }
-                $entityManager->flush();
                 return $this->redirectToRoute('app_batiment_liste');
             }
-                else {
-                $this->addFlash('error', 'La saisie est incorrecte.');
-            }
+
+            $this->addFlash('error', 'La saisie est incorrecte.');
         }
 
         return $this->render('batiment/supprimer_multiple.html.twig', [
             'form' => $form->createView(),
             'items' => $batiments,
-            'classItem'=> "batiment"
+            'classItem' => 'batiment'
         ]);
+    }
+
+    private function getSelectedBatimentIds(Request $request, SessionInterface $session): array
+    {
+        $ids = $request->request->all('selected') ?: $session->get('selected', []);
+        $session->set('selected', $ids);
+
+        return $ids;
+    }
+
+    private function getBatimentsByIds(array $ids, BatimentRepository $batimentRepository): array
+    {
+        return array_filter(
+            array_map(fn($id) => $batimentRepository->find($id), $ids),
+            fn($batiment) => $batiment !== null
+        );
     }
 
 

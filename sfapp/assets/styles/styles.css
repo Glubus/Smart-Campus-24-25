@@ -1,0 +1,845 @@
+*{
+    font-family: 'JejuGothic', serif;
+
+}
+
+body {
+    background: linear-gradient(50deg, #001932, #0041B5); /* Dégradé existant */
+    background-attachment: fixed; /* Fixe le fond pour qu'il ne bouge pas lors du scroll */
+    background-size: cover; /* S'assure que le dégradé couvre tout l'écran */
+    background-repeat: no-repeat; /* Évite toute répétition */
+    color: #ffffff;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+
+main {
+    padding: 20px;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    padding: 15px;
+    width: 30%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.period-options {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.period-options select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.graph-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.graph-container {
+    flex: 1;
+    max-width: 30%;
+    margin: 10px;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Container (styles.css) */
+.login-container {
+    z-index: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    width: 900px;
+    height: 500px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.35);
+    overflow: hidden;
+}
+.accueil-container {
+    padding:0 0 0 0;
+    height:92%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.20);
+    overflow: hidden;
+}
+
+/* Form Section (styles.css) */
+.form-section {
+    flex: 1;
+    padding: 40px;
+}
+
+.form-control {
+    border-radius: 10px;
+
+}
+
+.form-section h2 {
+    font-size: 55px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 30px;
+}
+
+.input-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6ba0ff;
+    font-size: 20px;
+}
+
+/* Input fields (styles merged to preserve additional rules) */
+input {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 40px;
+    border: none;
+    font-size: 16px;
+}
+
+input:focus {
+    outline: 2px solid #6ba0ff;
+}
+
+/* Buttons (priority: styles.css, with hover states preserved) */
+button {
+    width: 60%;
+    padding: 12px;
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 40%;
+    margin-top: -25px;
+}
+
+button:hover {
+    background: #005bb5;
+}
+
+/* Welcome Section (styles.css) */
+.welcome-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.welcome-section img {
+    width: 220px;
+    margin-bottom: 20px;
+    filter: contrast(200%) brightness(240%) saturate(90%) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    transition: filter 0.3s ease;
+}
+
+.welcome-section h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.welcome-section p {
+    font-size: 16px;
+}
+
+/* Alert Styles (styles.css) */
+.alert {
+    width: 100%;
+    background-color: #17a2b8;
+    color: #ffffff;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.alert a:hover {
+    color: #d1ecf1;
+}
+
+/* Divider Line (styles.css) */
+.line {
+    margin-top: 25px;
+    background: rgba(255, 255, 255, 0.7);
+    width: 2px;
+    height: 450px;
+}
+
+
+/* Styles spécifiques à accueil.css renommés pour éviter les conflits */
+
+/* Ancien body de accueil.css (renommé) */
+body.accueil {
+    width: 100%;
+    margin: 0;
+    background-color: rgb(173, 216, 230); /* Bleu clair initial */
+    transition: background-color 0.1s linear; /* Transition fluide */
+}
+
+/* Bandeau (accueil.css) */
+.banderole {
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+.logo {
+    width: 40%;
+}
+
+/* JouerInfos (accueil.css renvoyée sous classe dédiée pour accueil) */
+.jouerInfos-accueil {
+    margin-top: 80px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* Bouton Jouer (accueil) */
+.boutonJouer-accueil {
+    color: white;
+    background: linear-gradient(45deg, #4E76E3, #1D50D7);
+    border-radius: 50px;
+    border: 2px solid white;
+    width: 420px;
+    height: 100px;
+    font-size: 48px;
+    text-shadow: 2px 2px 3px #3b82f6;
+    transition: background 0.3s ease;
+}
+
+.boutonJouer-accueil:hover {
+    border: 3px solid #00365D;
+    mso-border-shadow: yes;
+}
+
+/* Flèche (accueil.css) */
+.flech-accueil {
+    width: 110px;
+    height: 180px;
+}
+
+.sep-accueil {
+    width: 100%;
+}
+
+.titre1-accueil {
+    font-size: 55px;
+    margin-top: 50px;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 3px #3b82f6;
+}
+
+/* Paragraphes spécifiques pour accueil */
+.p1-accueil {
+    margin: auto;
+    text-align: justify;
+    margin-top: 50px;
+    color: white;
+    font-size: 30px;
+    width: 80%;
+}
+
+.sep2-accueil {
+    width: 100%;
+}
+
+.p2-accueil {
+    margin: auto;
+    margin-bottom: 200px;
+    text-align: justify;
+    margin-top: 50px;
+    color: white;
+    font-size: 30px;
+    width: 80%;
+}
+
+.flech2-accueil {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Keyframes (restent intacts car aucune duplication dans styles.css) */
+@keyframes animateSprite {
+    0% {
+        background-position: -600px;
+    }
+    20% {
+        background-position: 0px;
+    }
+    25% {
+        background-position: -200px;
+    }
+    35% {
+        background-position: -400px;
+    }
+    40% {
+        background-position: -400px;
+    }
+    50% {
+        background-position: -200px;
+    }
+    60% {
+        background-position: -0px;
+    }
+    67% {
+        background-position: -600px;
+    }
+    100% {
+        background-position: -600px;
+    }
+}
+
+@keyframes swim {
+    0% {
+        transform: translate(0, 0);
+    }
+    20% {
+        transform: translate(calc(-50vw - 100px), 0);
+    }
+    25% {
+        transform: translate(calc(-50vw - 100px), 0);
+    }
+    35% {
+        transform: translate(calc(-50vw - 100px), -20vh);
+    }
+    50% {
+        transform: translate(-25vw, 15vh);
+    }
+    60% {
+        transform: translate(-25vw, -20vh);
+    }
+    67% {
+        transform: translate(-25vw, -20vh);
+    }
+    100% {
+        transform: translate(calc(-100vw - 300px), 0);
+    }
+}
+
+/* Ocean Styles */
+.ocean {
+    position: fixed;
+    z-index: -3;
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(0deg, #182848, #2980b9);
+}
+
+/* Bubble animations */
+.bubble {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    position: absolute;
+    background-color: white;
+    bottom: -30px;
+    opacity: 0.2;
+    animation: bubble 15s ease-in-out infinite, sideWays 4s ease-in-out infinite alternate;
+}
+
+@keyframes bubble {
+    0% {
+        transform: translateY(0%);
+        opacity: 0.06;
+    }
+    100% {
+        transform: translateY(-120vh);
+    }
+}
+
+@keyframes sideWays {
+    0% {
+        margin-left: 0px;
+    }
+    100% {
+        margin-left: 200px;
+    }
+}
+
+/* Individual bubble classes */
+.bubble--1 {
+    left: 10%;
+    animation-delay: 0.5s;
+    animation-duration: 16s;
+    opacity: 0.2;
+}
+
+/* Text and conclusion-specific styles */
+.text-white-conclusion {
+    color: white;
+}
+
+.conclusionInfos-accueil {
+    margin-top: 20px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+@font-face {
+    font-family: 'JejuGothic'; /* Name your font family */
+    src: url('font/JejuGothic.ttf') format('truetype');
+}
+
+
+
+.accueil {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.logo {
+    width: 65px;
+}
+
+.el1 {
+    font-size: 32px;
+    margin-left: 25px;
+    margin-right: 25px;
+    font-family: "Train One", system-ui;
+    color: black;
+}
+
+.el1:hover {
+    text-shadow: 1px 1px 2px gray;
+}
+
+.elNav {
+    color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-left: 1px solid black;
+    font-size: 20px;
+    padding-left: 45px;
+    margin-right: 45px;
+}
+
+.elNav:hover {
+    text-shadow: 1px 1px 2px gray;
+}
+
+.line-edit {
+    border-radius: 10px;
+    padding: 10px 10px 10px 40px;
+    display: block;
+    width: 100%;
+    font-weight: 400;
+    line-height: 1.5;
+    appearance: none; // Fix appearance for date inputs in Safari
+    background-clip: padding-box;
+
+}
+/* Bandeau principal */
+.bandeau-accueil {
+    position: relative; /* Permet un positionnement absolu des enfants */
+    width: 100%;
+    height: 300px; /* Hauteur du bandeau (ajustez selon vos besoins) */
+    background-image: url("../img/logo-iut.png"); /* Image de fond du bandeau */
+    background-size: cover; /* L'image couvre tout l'espace */
+    background-position: center; /* Centrer l'image */
+    display: flex; /* Pour positionner les éléments au centre */
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    overflow: hidden;
+}
+
+/* Assombrir l'image de fond */
+.bandeau-accueil:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Couche assombrie (ajustez l'opacité si nécessaire) */
+    z-index: 1; /* Positionne la couche au-dessus de l'image de fond */
+}
+
+/* Conteneur des éléments du bandeau */
+.bandeau-overlay-accueil {
+    position: relative;
+    z-index: 2; /* Pour que les éléments soient au-dessus de l'assombrissement */
+    text-align: center; /* Centrer le texte et le logo */
+}
+
+/* Style du logo */
+.bandeau-logo-accueil {
+    width: 100px; /* Taille du logo (ajustez selon vos besoins) */
+    margin-bottom: 20px; /* Espacement entre le logo et le titre */
+}
+
+/* Style du titre */
+.bandeau-title-accueil {
+    font-size: 36px; /* Taille du titre */
+    color: #ffffff; /* Texte en blanc */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Effet d'ombre sur le texte */
+    margin: 0;
+}
+
+/* Styles pour le bandeau avec une image de fond */
+.image-bandeau {
+    position: relative; /* Pour permettre l'utilisation de :before */
+    width: 100%;
+    height: 100%; /* Ajuste la hauteur automatiquement */
+    background-image: url("../img/image_iut.jpg");
+    background-size:     cover;                      /* <------ */
+    background-repeat:   no-repeat;
+    background-position: center center;
+    display: flex; /* Active Flexbox pour le centrage */
+    justify-content: center; /* Centre horizontalement le contenu */
+    align-items: center; /* Centre verticalement le contenu */
+    overflow: hidden; /* Cache le contenu débordant */
+}
+
+/* Calque sombre au-dessus de l'image */
+.image-bandeau:before {
+    content: ""; /* Nécessaire pour générer le pseudo-élément */
+    position: absolute; /* Rend la pseudo-classe positionnée */
+    top: 0; /* Calque commence en haut */
+    left: 0; /* Calque commence à gauche */
+    width: 100%; /* Recouvre toute la largeur */
+    height: 100%; /* Recouvre toute la hauteur */
+    background: rgba(0, 0, 0, 0.6); /* Couleur noire semi-transparente */
+    z-index: 1; /* Place le calque au-dessus de l'image */
+}
+
+/* Le contenu à l'intérieur de .image-bandeau doit rester visible */
+.image-bandeau/* Contenu à afficher par-dessus le calque sombre */
+.content {
+    position: relative; /* Met la couche de contenu au-dessus du calque assombri */
+    z-index: 2; /* Assure que le contenu est visible au-dessus de `:before` */
+    color: #ffffff; /* Couleur de texte blanche */
+    text-align: center; /* Centre le texte à l'intérieur */
+}
+
+/* Style du titre */
+.content h1 {
+    font-size: 84px; /* Taille du titre en gros (modifiable) */
+    font-weight: bold; /* Mettre en gras */
+    margin: -2em 0 0 0 ; /* Supprime les marges par défaut */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Effet d'ombre légère */
+}
+
+.accueil-row{
+    height:100%;
+}
+
+/* Section pour aligner les graphiques */
+
+.dashboard-content {
+    display: flex; /* Met les deux colonnes côte à côte */
+    justify-content: space-between; /* Espace entre les colonnes */
+    gap: 20px; /* Espacement entre les deux colonnes */
+    margin-top: 20px;
+}
+
+/* Colonne gauche (graphique) */
+.left-column {
+    flex: 3; /* Prend 3 parts de l'espace total */
+    display: flex;
+    flex-direction: column; /* Affiche les graphiques un en dessous de l'autre */
+    gap: 20px; /* Espacement entre les graphiques */
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    padding:40px;
+    border-radius: 8px;
+
+}
+
+/* Dashboard styles not in styles.css */
+header {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #003973;
+    padding: 20px 10px;
+    text-align: center;
+}
+
+header h1 {
+    margin:0
+}
+/* Canvas graphique */
+.left-column canvas {
+    background: #ffffff; /* Fond blanc pour les graphiques */
+    border: 1px solid #ccc; /* Bordure douce */
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet d'ombre subtile */
+    height: 250px; /* Hauteur fixe pour une uniformité visuelle */
+    width: 100%; /* Largeur 100 % de la colonne */
+}
+
+/* Ajustez les titres pour chaque colonne */
+.right-column h1,
+.left-column h1,
+.period-options h3 {
+    color: #003973;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+h3{
+    color: #003973;
+
+}
+
+.graphiques {
+    display: flex;
+    justify-content: space-between; /* Aligne les graphiques avec un espace équilibré */
+    flex-wrap: wrap; /* Permet le passage à la ligne si l'écran est trop petit */
+    height:400px;
+}
+
+/* Style uniformisé pour les containers des graphiques */
+.graphiques canvas {
+    background: #ffffff; /* Ajout d'un fond blanc autour des graphiques */
+    border-radius: 8px; /* Légère courbure des coins */
+    border: 1px solid #ccc; /* Ajoute une bordure subtile */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour un effet flottant */
+    max-width: 32%; /* Chaque graphique occupe jusqu'à 32% de la largeur */
+    flex: 1; /* S'adapte automatiquement à la largeur disponible */
+    height: 300px; /* Hauteur fixe pour harmoniser visuellement */
+}
+
+.statistiques-globales {
+    margin-bottom: 40px;
+    padding: 20px 15px;
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    border-radius: 10px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effets d'ombre */
+}
+
+.statistiques-globales h2 {
+    text-transform: uppercase; /* Texte en majuscules */
+    letter-spacing: 1.5px; /* Espacement des lettres */
+    color: #003973; /* Texte bleu foncé */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-between; /* Répartit les cartes équitablement */
+    gap: 15px; /* Espacement entre les cartes */
+    flex-wrap: wrap; /* Permet une disposition en ligne sur écrans petits */
+}
+
+.card {
+    background-color: #efefef; /* Fond gris clair */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 15px;
+    width: 30%; /* Chaque carte occupe environ 30% de la section */
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
+
+.card h3 {
+    text-transform: uppercase;
+    color: #007bff; /* Accent bleu */
+    margin-bottom: 10px;
+}
+.period-options {
+    background: #f6f8fa; /* Fond gris doux */
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtile ombre */
+}
+
+.period-options h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.period-options select {
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    transition: all 0.3s ease-in-out;
+}
+
+.period-options select:hover {
+    border-color: #007bff; /* Bordure bleue au survol */
+}
+.right-column {
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    padding: 40px;
+    width:35%;
+    border-radius: 12px; /* Arrondit les coins du container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre subtile */
+}
+
+.right-column h1 {
+    text-align: left;
+    color: #003973; /* Accent bleu-vert foncé */
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Effet de profondeur */
+}
+
+.left-column h1 {
+    margin:0;
+    text-align: left;
+    color: #003973; /* Accent bleu-vert foncé */
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Effet de profondeur */
+}
+.right-column .alert {
+    background-color: #d4edda; /* Vert pâle pour succès */
+    color: #155724; /* Texte vert foncé */
+    padding: 15px;
+    border: 1px solid #c3e6cb; /* Bordure verte douce */
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.right-column table {
+    width: 100%; /* Occupe toute la largeur */
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px; /* Taille du texte pour lisibilité */
+    background: rgba(255, 255, 255, 1); /* Fond blanc pur */
+    border: 1px solid #ddd; /* Bordure subtile autour du tableau */
+    border-radius: 8px; /* Coins arrondis */
+    overflow: hidden; /* Prévenir tout débordement */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Donne un léger effet flottant */
+}
+
+.right-column table thead {
+    background-color: #001932; /* Fond bleu foncé pour la tête du tableau */
+    color: #ffffff; /* Texte blanc */
+    font-weight: bold; /* Mettre en valeur les titres */
+    text-transform: uppercase; /* Majuscules */
+}
+
+.right-column table th,
+.right-column table td {
+    padding: 12px 15px; /* Espacement interne */
+    text-align: left; /* Alignement du texte à gauche */
+    border-bottom: 1px solid #eee; /* Ligne de séparation subtile */
+}
+
+.right-column table tr:hover {
+    background-color: rgba(0, 41, 85, 0.1); /* Légère surbrillance au survol */
+}
+
+.right-column table tbody tr:last-child td {
+    border-bottom: none; /* Supprime la ligne pour la dernière rangée */
+}
+
+.right-column table td {
+    color: #333; /* Texte standard */
+}
+
+.right-column table td:first-child {
+    font-weight: bold; /* Mettez en gras les noms des salles */
+}
+
+.right-column .table-container {
+    max-height: 400px; /* Limitation de la hauteur pour prévenir l'encombrement */
+    overflow-y: auto; /* Barre de défilement si les données débordent */
+    margin-top: 20px;
+}
+
+/* Style pour la barre de défilement */
+.right-column .table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.right-column .table-container::-webkit-scrollbar-thumb {
+    background-color: #0041b5; /* Couleur bleue pour la barre */
+    border-radius: 8px;
+}
+
+.data-header {
+    display: flex; /* Permet d'aligner les enfants en ligne */
+    align-items: center; /* Centre verticalement h2 et la section */
+    justify-content: space-between; /* Ajuste l'espace entre les deux éléments */
+    margin-bottom: 15px; /* Ajoute un espacement en dessous */
+}
+
+.data-header h2 {
+    margin: 0; /* Supprime les marges ajoutées par défaut */
+    font-size: 24px; /* Ajustement éventuel de la taille */
+    color: #333; /* Couleur du texte */
+}
+
+.period-options {
+    margin: 0; /* Supprime les marges ajoutées par défaut */
+}
+
+#timePeriod{
+    padding: 8px 10px; /* Ajuste l'espacement interne du champ */
+    font-size: 14px; /* Taille du texte */
+    border: 1px solid #ccc; /* Couleur de bordure discrète */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #ffffff; /* Fond blanc */
+    transition: all 0.3s ease; /* Animation au survol */
+}

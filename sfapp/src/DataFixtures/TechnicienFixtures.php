@@ -11,7 +11,7 @@ use App\Entity\EtatIntervention;
 use App\Entity\DetailIntervention;
 use App\Entity\Salle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-class TechicienFixtures extends Fixture
+class TechnicienFixtures extends Fixture
 {
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)

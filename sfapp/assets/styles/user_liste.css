@@ -19,34 +19,17 @@ body {
     align-items: center;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
 .search {
+    margin-left: 0;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    justify-content: flex-start;
     display: flex;
-    flex-direction: row;
     gap: 10px;
 }
 
-.sort-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    background: #fff;
-    color: #0041B5;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
 .title {
+    margin-top: 15px;
     font-size: 2rem;
     text-align: center;
 }
@@ -161,7 +144,6 @@ body {
     width: 20px;
     height: 20px;
     border-radius: 30px;
-    background-color: red;
 }
 
 #last-update {

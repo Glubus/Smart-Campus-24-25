@@ -13,7 +13,7 @@ class EtageFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-        $batA = $this->getReference(BatimentFixtures::BATIMENT_A, Batiment::class);
+        $batA = $this->getReference(BatimentFixtures::BATIMENT_D, Batiment::class);
 
         for($i = 0; $i < $batA->getNbEtages(); $i++) {
             $batA->renameEtage($i, (string)($i - 2));
