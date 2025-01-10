@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     position:relative;
-    background-image: linear-gradient(to top right, #001932, #0041B5);
+    height: 100%;
 }
 
 h1 {
@@ -79,6 +79,17 @@ h1 {
 
 .research i{
     font-size: 40px;
+}
+
+fieldset input{
+    width: 15px;
+    height: 15px;
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+fieldset label{
+    font-size: 16px;
 }
 
 .white-container{
