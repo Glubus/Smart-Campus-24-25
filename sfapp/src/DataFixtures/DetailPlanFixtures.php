@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\DetailPlan;
+use App\Entity\EtatInstallation;
 use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
@@ -47,7 +48,9 @@ class DetailPlanFixtures extends Fixture implements DependentFixtureInterface
         $DetailPlan->setPlan($plan);
         $DetailPlan->setSA($sa);
         $DetailPlan->setSalle($salle);
+        $DetailPlan->setEtatSA(EtatInstallation::PRET);
         $DetailPlan->setDateAjout(new \DateTime());
+
         return $DetailPlan;
     }
     public function getDependencies() : array{

@@ -123,6 +123,8 @@ private CacheInterface $cache;
             ]);
 
             if (200 !== $response->getStatusCode()) {
+                var_dump($headers);
+                var_dump($sa);
                 throw new RuntimeException(sprintf('Erreur API. URL : %s', $url));
             }
 
@@ -337,56 +339,58 @@ private CacheInterface $cache;
         $bizarreSalles = [];
         $currentTime = new DateTime();
         $allData = $this->requestAllSalleLastValue($bat); // Récupère toutes les dernières données des salles
-        // Définir les seuils pour CO2 et humidité
         $co2Threshold = 1200; // Seuil en ppm pour le CO2
-        $humThreshold = 85;   // Seuil en pourcentage pour l'humidité
+        $humThreshold = 85;   // Seuil en pourcentage pour l'humidite
+        $arr = [];
 
-        foreach ($allData as $salle => $data) {
-            // Initialiser la liste des problèmes pour la salle
-            $issues = [];
+        foreach ($allData as $salle => $d) {
+            foreach ($d as $data){
+                // Initialiser la liste des problèmes pour la salle
+                $issues = [];
 
-            // 1. Vérification des données disponibles
-            if (empty($data)) {
-                $issues[] = 'Aucune donnée disponible.';
-            } else {
-                // 2. Vérification de la date des données
-                if (isset($data['date'])) {
-                    try {
-                        $lastDate = new DateTime($data['date']);
-                        $dateDifference = $currentTime->getTimestamp() - $lastDate->getTimestamp();
-
-                        if ($dateDifference > 3600) { // Plus d'une heure
-                            $issues[] = "Aucun envoi depuis plus d'une heure.";
-                        }
-                    } catch (Exception $e) {
-                        $issues[] = "Données erronées.";
-                    }
+                // 1. Vérification des données disponibles
+                if (empty($data)) {
+                    $issues[] = 'Aucune donnée disponible.';
                 } else {
-                    $issues[] = 'Date de la donnée manquante.';
+                    // 2. Vérification de la date des données
+                    if (isset($data['dateCapture'])) {
+                        try {
+                            $lastDate = new DateTime($data['dateCapture']);
+                            $dateDifference = $currentTime->getTimestamp() - $lastDate->getTimestamp();
+
+                            if ($dateDifference > 3600) { // Plus d'une heure
+                                $issues[] = "Aucun envoi depuis plus d'une heure.";
+                            }
+                        } catch (Exception $e) {
+                            $issues[] = "Données erronées.";
+                        }
+                    } else {
+                        $issues[] = 'Date de la donnée manquante.';
+                    }
+
+                    // 3. Vérification des seuils de température
+                    if (isset($data['nom']) && $data['nom']=='temp' && $this->isTemperatureNormal((float)$data['valeur'])) {
+                        $issues[] = "Température anormale.";
+                    }
+
+                    // 4. Vérification des seuils de CO2
+                    if (isset($data['nom']) && $data['nom']=='co2' && !$data['valeur'] > $co2Threshold)
+                    {
+                        $issues[] = "Concentration de CO2 trop élevée.";
+                    }
+
+                    // 5. Vérification des seuils d'humidité
+                    if (isset($data['nom']) && $data['nom']=='hum' && !$data['valeur'] > $humThreshold) {
+                        $issues[] = "Humidité trop élevée.";
+                    }
                 }
 
-                // 3. Vérification des seuils de température
-                if (isset($data['temp']) && !$this->isTemperatureNormal((float)$data['temp'])) {
-                    $issues[] = "Température anormale.";
+                // Enregistrer les problèmes détectés pour la salle
+                if (!empty($issues)) {
+                    $bizarreSalles[$salle] = implode(" ", $issues); // Combine les messages en une seule chaîne
                 }
-
-                // 4. Vérification des seuils de CO2
-                if (isset($data['co2']) && $data['co2'] > $co2Threshold) {
-                    $issues[] = "Concentration de CO2 trop élevée.";
-                }
-
-                // 5. Vérification des seuils d'humidité
-                if (isset($data['hum']) && $data['hum'] > $humThreshold) {
-                    $issues[] = "Humidité trop élevée.";
-                }
-            }
-
-            // Enregistrer les problèmes détectés pour la salle
-            if (!empty($issues)) {
-                $bizarreSalles[$salle] = implode(" ", $issues); // Combine les messages en une seule chaîne
             }
         }
-
         return $bizarreSalles;
     }
 

@@ -24,20 +24,6 @@ main {
     padding: 20px;
 }
 
-.cards {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.card {
-    background-color: #ecf0f1;
-    border-radius: 5px;
-    padding: 15px;
-    width: 30%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
 
 .period-options {
     text-align: center;
@@ -100,7 +86,6 @@ canvas {
 
 .form-control {
     border-radius: 10px;
-
 }
 
 .form-section h2 {
