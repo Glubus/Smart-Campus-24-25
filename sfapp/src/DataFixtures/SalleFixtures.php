@@ -47,6 +47,7 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $d004 = $this->make_Salle($batD, "D004", 0, 4, 3);
         $c004 = $this->make_Salle($batC, "C004", 0, 4, 3);
         $c007 = $this->make_Salle($batC, "C007", 0, 7, 3);
+        $c101 = $this->make_Salle($batC, "C101", 0, 7, 3);
 
         // Persist des salles
         $manager->persist($d205);
@@ -64,6 +65,7 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($d004);
         $manager->persist($c004);
         $manager->persist($c007);
+        $manager->persist($c101);
 
         // Ajout des références pour les liaisons futures
         $this->addReference(self::D205, $d205);
@@ -81,6 +83,7 @@ class SalleFixtures extends Fixture implements DependentFixtureInterface
         $this->addReference(self::D004, $d004);
         $this->addReference(self::C004, $c004);
         $this->addReference(self::C007, $c007);
+        $this->addReference(self::C101, $c101);
 
         // Enregistrement en base de données
         $manager->flush();
