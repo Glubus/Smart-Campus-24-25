@@ -9,33 +9,79 @@
         <section class="statistiques-globales">
             <h2>Statistiques Globales</h2>
 
-            <div class="cards">
-                <div class="card">
-                    <h3>CO₂ du batiment (ppm)</h3>
-                    <p><strong>Actuellement : </strong>{{ co2.lastData }} ppm</p>
-                    <p><strong>Mobatimentyenne :</strong> {{ co2.mean}} ppm</p>
-                    <p><strong>Ecart Type :</strong> {{ co2.ecarttype}} ppm</p>
+            <div class="cards-diagnostics">
+                <div class="card-diagnostic valeurCard co2">
+                    <h3>CO₂ du bâtiment (ppm)</h3>
+                    <i class="fas fa-cloud icon-co2"></i>
+                    <div class="co2-header">
+                        <p class="current-co2">
+                            <span>{{ co2.lastData }} ppm</span>
+                        </p>
+                    </div>
+                    <div class="co2-stats">
+                        <p>
+                            <i class="fas fa-chart-line icon-mean"></i>
+                            <strong>Moyenne :</strong> {{ co2.mean }} ppm
+                        </p>
+                        <p>
+                            <i class="fas fa-signal icon-ecarttype"></i>
+                            <strong>Écart Type :</strong> {{ co2.ecarttype }} ppm
+                        </p>
+                    </div>
                     {% if co2.ecarttype > 100 %}
-                        Attention ! le CO2 varie beaucoup. ecart type > 100
+                        <p class="co2-warning">
+                            ⚠️ Attention ! Le CO₂ varie beaucoup (écart type > 100)
+                        </p>
                     {% endif %}
                 </div>
-                <div class="card">
-                    <h3>Temperature du batiment (°C)</h3>
-                    <p><strong>Actuellement : </strong>{{ temp.lastData }} °C</p>
-                    <p><strong>Moyenne sur la période :</strong> {{ temp.mean}} °C</p>
-                    <p><strong>Écart Type sur la période :</strong> {{ temp.ecarttype}} °C</p>
-                    <p><strong>Temperature Exterieur : </strong>{{ tempOutside }}°C</p>
+                <div class="card-diagnostic valeurCard temp">
+                    <h3>Température du bâtiment (°C)</h3>
+                    <i class="fas fa-thermometer-half icon-temp"></i>
+                    <div class="temp-header">
+                        <p class="current-temp">
+                            <span>{{ temp.lastData }} °C</span>
+                        </p>
+                    </div>
+                    <div class="temp-stats">
+                        <p>
+                            <i class="fas fa-chart-line icon-mean"></i>
+                            <strong>Moyenne :</strong> {{ temp.mean }} °C
+                        </p>
+                        <p>
+                            <i class="fas fa-signal icon-ecarttype"></i>
+                            <strong>Écart Type :</strong> {{ temp.ecarttype }} °C
+                        </p>
+                    </div>
+                    <p><strong>Température Extérieure :</strong> {{ tempOutside }}°C</p>
                     {% if temp.ecarttype > 2 %}
-                        Attention ! la temperature varie beaucoup. ecart type > 2
+                        <p class="warning">
+                            ⚠️ Attention ! La température varie beaucoup (écart type > 2)
+                        </p>
                     {% endif %}
                 </div>
-                <div class="card">
-                    <h3>Humidite du batiment (%)</h3>
-                    <p><strong>Actuellement : </strong>{{ hum.lastData }}%</p>
-                    <p><strong>Moyenne : </strong>{{ hum.mean}}%</p>
-                    <p><strong>Écart Type :</strong> {{ hum.ecarttype}}%</p>
+
+                <div class="card-diagnostic valeurCard humidite">
+                    <h3>Humidité du bâtiment (%)</h3>
+                    <i class="fas fa-tint icon-hum"></i>
+                    <div class="hum-header">
+                        <p class="current-hum">
+                            <span>{{ hum.lastData }}%</span>
+                        </p>
+                    </div>
+                    <div class="hum-stats">
+                        <p>
+                            <i class="fas fa-chart-line icon-mean"></i>
+                            <strong>Moyenne :</strong> {{ hum.mean }}%
+                        </p>
+                        <p>
+                            <i class="fas fa-signal icon-ecarttype"></i>
+                            <strong>Écart Type :</strong> {{ hum.ecarttype }}%
+                        </p>
+                    </div>
                     {% if hum.ecarttype > 5 %}
-                        Attention ! l'humidite varie beaucoup. ecart type > 5
+                        <p class="hum-warning">
+                            ⚠️ Attention ! L'humidité varie beaucoup (écart type > 5)
+                        </p>
                     {% endif %}
                 </div>
             </div>
