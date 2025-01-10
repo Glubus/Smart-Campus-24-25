@@ -46,10 +46,8 @@ class SalleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $salleNom = $form->get('salleNom')->getData();
-
             if ($salleNom) {
                 $salles = $salleRepository->findAll();
-
                 $salles = array_filter($salles, function($salle) use ($salleNom) {
                     return stripos($salle->getNom(), $salleNom) !== false;
                 });
@@ -190,7 +188,7 @@ class SalleController extends AbstractController
                     }
 
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, ($data['temp'] ?? null), ($data['co2'] ?? null), ($data['hum'] ?? null))['danger'];
+                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null))['danger'];
                     break;
                 }
             }

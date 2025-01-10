@@ -1217,7 +1217,7 @@ h3{
 
 .liste {
     padding: 25px;
-    border-top: 1px solid black;
+    width: 75%;
 }
 
 .titreListe {
@@ -1277,15 +1277,13 @@ h3{
 
 
 .checkbox {
-    margin-left: 15px;
-    margin-top: 15px;
-    transform: scale(1.5);
+    width: 30px;
+    margin-left: 20px;
 }
 
 .DetailsModif {
     display: flex;
     flex-direction: column;
-    border-left: 1px solid black;
     padding: 15px;
 }
 
@@ -1336,6 +1334,8 @@ h3{
 
 
 
+
+
 /*
             LISTE SALLES TECHNICIEN & ADMIN
  */
@@ -1344,6 +1344,11 @@ h3{
     display: flex;
     flex-wrap: wrap;
     flex-shrink: inherit;
+}
+
+.salleBlock a {
+    text-decoration: none;
+    color: white;
 }
 
 .salleBlock {
@@ -1372,22 +1377,12 @@ h3{
             -2px -2px 20px white;
 }
 
-.checkbox {
-    margin-left: 15px;
-    transform: scale(1.5);
-}
-
-.salleBlock:has(.checkbox:checked) {
-
-}
-
 .salleInfos {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     gap: 70px;
-
     height: 100%;
 }
 
@@ -1396,8 +1391,115 @@ h3{
 }
 
 .SalleSaNom {
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+
+
+
+
+
+/*
+            LISTE BATIMENTS TECHNICIEN &
+ */
+
+.batimentBlock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    border: 1px solid black;
+    height: 132px;
+    margin-top: 30px;
+}
+
+.batimentBlock:hover {
+    box-shadow: 0.9px 5px 5px black;
+}
+
+.batimentBlock:has(.checkbox:checked) {
+    border: 1px solid dodgerblue;
+    background-color: lightblue;
+}
+
+.batimentInfos {
+    display: flex;
+    flex-direction: row;
+}
+
+.batiment_1 {
     width: 200px;
     font-size: 28px;
     font-weight: bold;
     margin-left: 20px;
+}
+
+.batiment {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: inherit;
+    gap:10px;
+}
+
+.getCount {
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+
+
+
+
+
+/*
+            LISTE PLANS
+ */
+
+.planBlock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    border: 1px solid black;
+    height: 132px;
+    margin-top: 30px;
+}
+
+.planBlock:hover {
+    box-shadow: 0.9px 5px 5px black;
+}
+
+.planBlock:has(.checkbox:checked) {
+    border: 1px solid dodgerblue;
+    background-color: lightblue;
+}
+
+.planInfos {
+    display: flex;
+    flex-direction: row;
+}
+
+.plan_1 {
+    width: 200px;
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.getCount {
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.plan {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: inherit;
+    gap:10px;
 }
