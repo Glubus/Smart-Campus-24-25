@@ -843,3 +843,335 @@ h3{
     background-color: #ffffff; /* Fond blanc */
     transition: all 0.3s ease; /* Animation au survol */
 }
+
+
+
+
+
+
+
+
+/*
+        SALLE USER LISTE SECTION
+ */
+
+a {
+    text-decoration: none;
+}
+
+/* Général */
+
+.search {
+    margin-left: 0;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    justify-content: flex-start;
+    display: flex;
+    gap: 10px;
+}
+
+.titleSallesUser {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.containerSallesUser {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.listeSallesUser {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.col1 {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.col2 {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.col3 {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Card style */
+.salleUserBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.salleUserBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.salleUserMainInfos {
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.salleUserMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.salleUserName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.salleUserTop {
+    background-color: transparent;
+    height: 40%;
+    padding: 0;
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-weight: bold;
+}
+
+.etatSalleUser {
+    display: flex;
+    flex-direction: row;
+}
+
+.salleUserStatus {
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.salleUserPastilleStatus {
+    width: 20px;
+    height: 20px;
+    border-radius: 30px;
+}
+
+#salleUserLastUpdate {
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+/* Hidden content */
+.salleUserContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.salleUserContent .location {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.salleUserMetrics {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.salleUserMetric {
+    color: #000;
+    padding: 5px;
+    border-radius: 8px;
+    width: 100px;
+    height: min-content;
+}
+
+.salleUserMetric .icon {
+    float: right;
+    height: 20px;
+}
+
+.salleUserMetric .value {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-top: 20px;
+    font-size: 40px;
+}
+
+.salleUserMetric .unit {
+    margin-top: -20px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 16px;
+}
+
+.m1 {
+    background-color: #FFFB78;
+    border: 2px solid #FFD900;
+}
+
+.m2 {
+    background-color: #FFBABA;
+    border: 2px solid #FF7171;
+}
+
+.m3 {
+    background-color: #B9F0FF;
+    border: 2px solid #6ADFFF;
+}
+
+.conseils {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.salleUserBtnDetail {
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow:
+            inset 0 -7.65px 7.65px #006AD5,
+            inset 0 7.65px 7.65px #0090FF;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.salleUserBtnDetail:hover {
+    box-shadow:
+            inset 0 -7.65px 7.65px #006AD5,
+            inset 0 7.65px 7.65px #0090FF,
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+/*
+        SALLE USER INFOS SECTION
+ */
+
+.salleUserInfosAll {
+    width: 75%;
+    margin: auto;
+    color: white;
+}
+
+.salleUserInfosMetriques {
+    color: black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10%;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.salleUserInfosDataBlock {
+    border-radius: 10px;
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.salleUserInfosBottomMet {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.temp {
+    border: 2px solid #FFD900;
+    background-color: #FFFB78;
+}
+
+.co2 {
+    border: 2px solid #FF7171;
+    background-color: #FFBABA;
+}
+
+.humidite {
+    border: 2px solid #6ADFFF;
+    background-color: #B9F0FF;
+}
+
+.salleUserInfosTextData {
+    font-size: 18px;
+    font-weight: 20;
+}
+
+.salleUserInfosEtatNomCap {
+    height: min-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.salleUserInfosNomCap {
+    margin-left: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 30px;
+}
+
+.data {
+    text-align: end;
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.ppm {
+    font-size: 18px;
+}
+
+.el {
+    margin-left: 10px;
+}
+
+.salleUserInfosConseils {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+    color: white;
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    border-radius: 10px;
+}
