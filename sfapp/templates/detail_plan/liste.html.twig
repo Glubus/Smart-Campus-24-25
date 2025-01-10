@@ -4,23 +4,72 @@
 
 {% block body %}
     {# Link to the CSS file#}
-    <link rel="stylesheet" href="{{ asset("styles/plan/index.css") }}">
+    <link rel="stylesheet" href="{{ asset("styles/detail_plan/liste.scss") }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
-
-    <div class="page-content">
+    <div id="sidebar-wrapper">
+        <div id="deco-sidebar"></div>
         <div id="sidebar">
-            <select id="batiment_selection" onchange="updateEtages()">
-                <option value="" disabled selected>selectionner un batiment</option>
-                {% for batiment in batiments %}
-                    <option value="{{ batiment.id }}"
-                            {% if batiment.id == selected_batiment %}
-                    selected
-                            {% endif %}>
-                        {{ batiment.nom }}</option>
-                {% endfor %}
-            </select>
+            <div class="switch-menu"><i class="fa fa-exchange"></i></div>
+            <div id="toolbox" class="toolbox {% if form.nom.vars.value is empty %}hidden{% endif %}">
+                <div class="research"><i class="fa fa-search"></i>
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    {{ form_end(form) }}
+                </div>
+                <h2>Filtrer par</h2>
+                <fieldset class="white-container">
+                    <legend>Nombre de SA attribue</legend>
+                    <div>
+                        <input type="checkbox" name="nbSA" value="sa0" checked />
+                        <label>0</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="nbSA" value="sa1" checked />
+                        <label>1</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="nbSA" value="saN" checked />
+                        <label>>1</label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="white-container">
+                    <legend>Etat d'installation</legend>
+                    <div>
+                        <input type="checkbox" name="etat" value="prete" checked />
+                        <label><i class="fa fa-check pret"></i>Installe</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="etat" value="install" checked />
+                        <label><i class="material-icons installation">timelapse</i>A installer</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="etat" value="desinstall" checked />
+                        <label><i class="material-icons deinstallation">timelapse</i>A desinstaller</label>
+                    </div>
+                </fieldset>
+
+                <h2>Actions</h2>
+                <div>
+                    <div class="white-container" style="cursor: pointer" id="deplier"><i class="fas fa-eye action-button"></i>Tout deplier</div>
+                    <div class="white-container" style="cursor: pointer" id="plier"><i class="fas fa-eye-slash action-button"></i>Tout plier</div>
+                </div>
+            </div>
+
+
+            <div id="filter-etage" class="filter-etage {% if form.nom.vars.value is not empty %}hidden{% endif %}">
+                <select id="batiment_selection" onchange="updateEtages()">
+                    <option value="" disabled selected>selectionner un batiment</option>
+                    {% for batiment in batiments %}
+                        <option value="{{ batiment.id }}"
+                                {% if batiment.id == selected_batiment %}
+                        selected
+                                {% endif %}>
+                            {{ batiment.nom }}</option>
+                    {% endfor %}
+                </select>
                 <div id="etagesDiv">
                     <div class="vertical-line"></div>
                     <span>
@@ -30,70 +79,93 @@
                         </ul>
                     </span>
                 </div>
-
+            </div>
         </div>
+    </div>
 
-        <table id="plan">
-            <thead id="table-header">
-                <tr>
-                    <th>Salle</th>
-                    <th>Attribution</th>
-                    <th>SA</th>
-                </tr>
-            </thead>
-            <tbody id="table-content">
+    <div class="page-content">
+        <h1 class="text-center mb-4"> Details {{ plan_select.nom }}</h1>
+
+        {% if salles|length == 0 %}
+            <div class="aucunResultat"><h2>Aucune salle selectionnee...</h2></div>
+        {% else %}
+        <div id="detail_plan">
                 {% for salle in salles %}
-                    <tr class="ligne-attribution">
-                        <td class="salleDiv">{{ salle.nom }}</td>
-                        <td class="tdAttribuer">
-                            <div class="horizontal-line"></div>
-                            <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu fa fa-plus-square" role="button"></a>
-                            <div class="flex">
-                                {% if salle.detailPlans|length == 0 %}
-                                    <div class="line-stop"><i class="fa fa-close"></i></div>
-                                {% else %}
-                                    <div class="horizontal-line"></div>
-                                {% endif %}
-                            </div>
-                        </td>
+                    <div class="block-salle-container
                         {% if salle.detailPlans|length == 0 %}
-                            <td class = "SAattribue AucunSA">Aucun SA attribue</td>
-                    </tr>
+                            sa0
                         {% elseif salle.detailPlans|length == 1%}
-                            <td class = "SAattribue">
-                            {% set plan = salle.detailPlans[0] %}
-                                <span class="infoSA">
-                                    <div>{{ plan.sa.nom }}</div>
-                                    <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
-                                </span>
-                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
-                            </td>
-                    </tr>
-                    {% else %}
-                        <td class="SAattribue">
-                                {{ salle.detailPlans|length }} SA attribues
-                                <i class="toggle caseBleu fa fa-arrow-circle-down" data-salle-id="{{ salle.id }}"></i>
-                            </td>
-                        </tr>
-                        {% for plan in salle.detailPlans %}
-                            <tr class="ligne-attribution hidden afficher-{{ salle.id }}">
-                                <td></td>
-                                <td class="flex-2">
-                                    <div class="line-aggregate"></div>
-                                </td>
-                                <td class="SAattribue">
-                                    <span class="infoSA">
-                                        <div>{{ plan.sa.nom }}</div>
-                                        <div>Date attribue: {{ plan.dateAjout|date('d/m/Y') }}</div>
-                                    </span>
-                                    <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr fa fa-trash"></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
+                            sa1
+                        {% else %}
+                            saN
+                        {% endif %}">
+                        <div class="block-salle">
+                            <div class="circle-niveau">{{ salle.etage.niveau }}</div>
+                            <div class="nom-salle">{{ salle.nom }}</div>
+                            <div class="SAattribue">
+                                <div class = "nbrSAattribue">
+                                {% if salle.detailPlans|length == 0 %}
+                                    Aucun SA attribue
+                                {% elseif salle.detailPlans|length == 1%}
+                                    {% set plan = salle.detailPlans[0] %}
+                                    {{ plan.sa.nom }} attribue
+                                {% else %}
+                                    {{ salle.detailPlans|length }} SA attribues
+                                {% endif %}
+                                </div>
+                                <div class="actions">
+                                    <i class="toggle caseBleu fas fa-eye" data-salle-id="{{ salle.id }}"></i>
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu material-icons" role="button">add_circle</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="afficher-{{ salle.id }} gray-container">
+                                {% for plan in salle.detailPlans %}
+                                    <div class="ligne-attribue
+                                        {% if plan.etatSA == 'pret' %}
+                                            prete
+                                        {% elseif plan.etatSA == 'installation' %}
+                                            install
+                                        {% else %}
+                                            desinstall
+                                        {% endif %}">
+                                        <div>
+                                        {% if plan.etatSA == 'pret' %}
+                                            <i class="fa fa-check pret"></i>
+                                        {% elseif plan.etatSA == 'installation' %}
+                                            <i class="material-icons installation">timelapse</i>
+                                        {% else %}
+                                            <i class="material-icons deinstallation">timelapse</i>
+                                        {% endif %}
+                                        </div>
+                                            <span class="infoSA">
+                                                <div>{{ plan.sa.nom }}</div>
+                                                <div style="font-size: 16px">
+                                                    {% if plan.etatSA == 'pret' %}
+                                                        installe le {{ plan.dateAjout|date('d/m/Y') }}
+                                                    {% elseif plan.etatSA == 'installation' %}
+                                                        demande d'installation faite le {{ plan.dateAjout|date('d/m/Y') }}
+                                                    {% else %}
+                                                        demande de deinstallation faite le {{ plan.dateEnleve|date('d/m/Y') }}
+                                                    {% endif %}
+                                                </div>
+                                            </span>
+                                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                                <a href="{{ path('app_lier_suppression', {id: plan.id }) }}" role="button" class="supprAttr material-icons">cancel</a>
+                                        {% elseif is_granted('ROLE_TECHNICIEN') %}
+                                            {% if plan.etatSA != 'pret' %}
+                                                <a href="{{ path('app_lier_validation', {id: plan.id }) }}" role="button" class="validerDemande material-icons">check_circle</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 {% endfor %}
-            </tbody>
-        </table>
+        </div>
+        {% endif %}
     </div>
 
     <script>
@@ -162,6 +234,10 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             const toggleButtons = document.querySelectorAll(".toggle");
+            const b1 = document.getElementById('filter-etage');
+            const b2 = document.getElementById('toolbox');
+            const deplier = document.getElementById('deplier');
+            const plier = document.getElementById('plier');
 
             toggleButtons.forEach((button) => {
                 button.addEventListener("click", function () {
@@ -169,10 +245,39 @@
                     const details = document.querySelectorAll(`.afficher-${salleId}`);
 
                     details.forEach(detail => { detail.classList.toggle('hidden'); });
-                    this.classList.toggle("fa-arrow-circle-up");
-                    this.classList.toggle("fa-arrow-circle-down");
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
                 });
             });
+
+            const switchMenu = document.querySelector(".switch-menu");
+
+            switchMenu.addEventListener("click", function () {
+                    b1.classList.toggle('hidden');
+                    b2.classList.toggle('hidden');
+            });
+
+            deplier.addEventListener("click", function () {
+                const details = document.querySelectorAll(".toggle.fa-eye-slash");
+                details.forEach(detail => { detail.click(); });
+            });
+
+            plier.addEventListener("click", function () {
+                const details = document.querySelectorAll(".toggle.fa-eye");
+                details.forEach(detail => { detail.click(); });
+            });
+        });
+
+        // Function to toggle the visibility of the elements based on checkbox state
+        function toggleVisibility() {
+            const targets = document.querySelectorAll(`.${this.value}`);
+
+            targets.forEach(target => { target.classList.toggle('hidden')});
+        }
+
+        // Add event listeners to all checkboxes to detect changes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', toggleVisibility); // Re-run the toggleVisibility function on checkbox change
         });
     </script>
 {% endblock %}

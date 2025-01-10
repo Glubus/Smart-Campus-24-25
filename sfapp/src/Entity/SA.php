@@ -17,14 +17,15 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'sa')]
-    private Collection $plans;
 
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
     #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
     private Collection $valCapteurs;
+
+    #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
+    private ?DetailPlan $detailPlan = null;
 
 
     public function __construct()
@@ -52,31 +53,6 @@ class SA
         return $this;
     }
 
-    public function getPlans(): Collection
-    {
-        return $this->plans;
-    }
-
-    public function addPlan(DetailPlan $plan): static
-    {
-        if (!$this->plans->contains($plan)) {
-            $this->plans->add($plan);
-            $plan->setSa($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlan(DetailPlan $plan): static
-    {
-        if ($this->plans->removeElement($plan)) {
-            if ($plan->getSa()=== $this) {
-                $plan->setSa(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getSALogs(): Collection
     {
@@ -126,6 +102,18 @@ class SA
                 $valCapteur->setSA(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDetailPlan(): ?DetailPlan
+    {
+        return $this->detailPlan;
+    }
+
+    public function setDetailPlan(?DetailPlan $detailPlan): static
+    {
+        $this->detailPlan = $detailPlan;
 
         return $this;
     }
