@@ -3,10 +3,9 @@
 {% block title %}Détails de la salle{% endblock %}
 
 {% block body %}
-    <link rel="stylesheet" href="{{ asset('/styles/user_liste.css') }}">
-    <h1 class="title">Salles</h1>
+    <h1 class="titleSallesUser">Salles</h1>
 
-    <div class="container">
+    <div class="containerSallesUser">
         <div style="width: 70%">
             {{ form_start(form) }}
             <div class="search">
@@ -15,23 +14,23 @@
             </div>
             {{ form_end(form) }}
         </div>
-        <div class="listeSalles">
+        <div class="listeSallesUser">
             <div class="col1">
                 {% for item in col1 %}
-                    <div class="card" id="card">
-                        <div class="cardMainInfos">
-                            <div class="card-top">
-                                <p class="room-name">{{ item.salle.nom }}</p>
-                                <div class="etat">
-                                    <p class="status" id="status">{{ item.etat.texte }}</p>
-                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                    <div class="salleUserBlock" id="card">
+                        <div class="salleUserMainInfos">
+                            <div class="salleUserTop">
+                                <p class="salleUserName">{{ item.salle.nom }}</p>
+                                <div class="etatSalleUser">
+                                    <p class="salleUserStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="salleUserPastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between">
                                 {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                    <p id="last-update">Aucune donnée enregistrée</p>
+                                    <p id="salleUserLastUpdate">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    <p id="salleUserLastUpdate">Dernière donnée enregistrée il y a
                                     {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
                                         {{ item.time.minutes }} minutes.</p>
                                     {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
@@ -46,50 +45,50 @@
                             </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
-                        <div class="card-content" id="card-content">
+                        <div class="salleUserContent" id="card-content">
                             <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
-                                <div class="metrics">
-                                    <div class="metric m1">
+                                <div class="salleUserMetrics">
+                                    <div class="salleUserMetric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
-                                    <div class="metric m2">
+                                    <div class="salleUserMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
-                                    <div class="metric m3">
+                                    <div class="salleUserMetric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleUserBtnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
             <div class="col2">
                 {% for item in col2 %}
-                    <div class="card" id="card">
-                        <div class="cardMainInfos">
-                            <div class="card-top">
-                                <p class="room-name">{{ item.salle.nom }}</p>
-                                <div class="etat">
-                                    <p class="status" id="status">{{ item.etat.texte }}</p>
-                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                    <div class="salleUserBlock" id="card">
+                        <div class="salleUserMainInfos">
+                            <div class="salleUserTop">
+                                <p class="salleUserName">{{ item.salle.nom }}</p>
+                                <div class="etatSalleUser">
+                                    <p class="salleUserStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="salleUserPastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between">
                                 {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                    <p id="last-update">Aucune donnée enregistrée</p>
+                                    <p id="salleUserLastUpdate">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    <p id="salleUserLastUpdate">Dernière donnée enregistrée il y a
                                     {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
                                         {{ item.time.minutes }} minutes.</p>
                                     {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
@@ -104,50 +103,50 @@
                             </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
-                        <div class="card-content" id="card-content">
+                        <div class="salleUserContent" id="card-content">
                             <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
-                                <div class="metrics">
-                                    <div class="metric m1">
+                                <div class="salleUserMetrics">
+                                    <div class="salleUserMetric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
-                                    <div class="metric m2">
+                                    <div class="salleUserMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
-                                    <div class="metric m3">
+                                    <div class="salleUserMetric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleUserBtnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
             <div class="col3">
                 {% for item in col3 %}
-                    <div class="card" id="card">
-                        <div class="cardMainInfos">
-                            <div class="card-top">
-                                <p class="room-name">{{ item.salle.nom }}</p>
-                                <div class="etat">
-                                    <p class="status" id="status">{{ item.etat.texte }}</p>
-                                    <div class="pastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                    <div class="salleUserBlock" id="card">
+                        <div class="salleUserMainInfos">
+                            <div class="salleUserTop">
+                                <p class="salleUserName">{{ item.salle.nom }}</p>
+                                <div class="etatSalleUser">
+                                    <p class="salleUserStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="salleUserPastilleStatus" style="background-color: {{ item.etat.color }}"></div>
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between">
                                 {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
-                                    <p id="last-update">Aucune donnée enregistrée</p>
+                                    <p id="salleUserLastUpdate">Aucune donnée enregistrée</p>
                                 {% else %}
-                                    <p id="last-update">Dernière donnée enregistrée il y a
+                                    <p id="salleUserLastUpdate">Dernière donnée enregistrée il y a
                                     {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
                                         {{ item.time.minutes }} minutes.</p>
                                     {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
@@ -155,37 +154,37 @@
                                     {% else %}
                                         {{ item.time.jours }} jours.</p>
                                     {% endif %}
-                                    {% if item.danger and item.etat.texte == "Fonctionnelle" %}
-                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
-                                    {% endif %}
+                                {% endif %}
+                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
+                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
                                 {% endif %}
                             </div>
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
-                        <div class="card-content" id="card-content">
+                        <div class="salleUserContent" id="card-content">
                             <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
-                                <div class="metrics">
-                                    <div class="metric m1">
+                                <div class="salleUserMetrics">
+                                    <div class="salleUserMetric m1">
                                         <img src="{{ asset('/img/temp.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.temp }}</h3>
                                         <h4 class="unit">C°</h4>
                                     </div>
-                                    <div class="metric m2">
+                                    <div class="salleUserMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
-                                    <div class="metric m3">
+                                    <div class="salleUserMetric m3">
                                         <img src="{{ asset('/img/humi.png') }}" class="icon">
                                         <h3 class="value">{{ item.data.hum }}</h3>
                                         <h4 class="unit">%</h4>
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="btnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleUserBtnDetail" href="{{ path('app_salle_user_infos', {'id':item.salle.id}) }}">Voir plus</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -197,11 +196,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Sélectionner toutes les cartes
-            const cards = document.querySelectorAll(".card");
+            const cards = document.querySelectorAll(".salleUserBlock");
 
             // Ajouter un gestionnaire d'événements à chaque carte
             cards.forEach((card) => {
-                const cardContent = card.querySelector(".card-content");
+                const cardContent = card.querySelector(".salleUserContent");
                 card.addEventListener("click", function () {
                     // Toggle la classe "expanded" pour agrandir/rétrécir
                     card.classList.toggle("expanded");

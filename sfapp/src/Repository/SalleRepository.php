@@ -30,6 +30,15 @@ class SalleRepository extends ServiceEntityRepository
         parent::__construct($registry, Salle::class);
     }
 
+    public function findByNomRessemblant(?string $str): array
+    {
+        return $this->createQueryBuilder('s')
+            ->setParameter('str', '%'.$str.'%')
+            ->where('s.nom LIKE :str')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Salle[] Returns an array of Salle objects
 //     */

@@ -108,6 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Créez les trois graphiques avec des limites basse et haute
     createChart('co2Chart', 'CO2 (ppm)', 'rgb(255, 99, 132)', 'CO2 (ppm)', 250, 1200);
-    createChart('tempChart', 'Température (°C)', 'rgb(54, 162, 235)', 'Température (°C)', 18, 22);
-    createChart('humChart', 'Humidité (%)', 'rgb(75, 192, 192)', 'Humidité (%)', 40, 75);
+    createChart('tempChart', 'Température (°C)', 'rgb(255, 217, 0)', 'Température (°C)', 18, 22);
+    createChart('humChart', 'Humidité (%)', 'rgb(106,223,255)', 'Humidité (%)', 40, 75);
 });
