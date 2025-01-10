@@ -262,7 +262,7 @@ class GestionController extends AbstractController
             $tempData = [];
             $humidityData = [];
             $gasData = [];
-        $data = $wrapper->transform($data);
+         $data = $wrapper->transform($data);
             foreach ($data as $day => $values) {
                 // Convertir et ajouter les données si disponibles
                 $tempData[] = isset($values['temp']) ? (float) $values['temp'] : null;
@@ -305,7 +305,7 @@ class GestionController extends AbstractController
                 'selectedPeriod' => $period,
                 'temp' => ['ecarttype' => $tempDeviation, 'mean' => $fixedTempMean, 'lastData' => $this->calculateAverage($count["temp"])],
                 'hum' => ['ecarttype' => $humidityDeviation, 'mean' => $fixedHumidityMean,'lastData' => $this->calculateAverage($count["hum"])],
-                'co2' => ['ecarttype' => $gasDeviation, 'mean' => $fixedGasMean,'lastData' => $this->calculateAverage($count["co2"])],
+                'co2' => ['ecarttype' => $gasDeviation, 'mean' => $fixedGasMean,'lastData' => round($this->calculateAverage($count["co2"]))],
                 'tempOutside' =>$tempOutside,
                 'weirdData' => $weirdData,
                 'batiment' => $batiment
