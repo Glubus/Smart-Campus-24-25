@@ -176,6 +176,12 @@
     text-align: center;
 }
 
+.salleContent .saAttribue {
+    font-size: 2em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .salleMetrics {
     display: flex;
     justify-content: space-between;

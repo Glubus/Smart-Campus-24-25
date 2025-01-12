@@ -54,10 +54,10 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            {% if item.sa is not null and item.sa != 0 %}
-                                <p>{{ item.sa.nom }}</p>
+                            {% if item.sa is not null %}
+                                <p class="saAttribue">{{ item.sa }}</p>
                             {% endif %}
-                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
@@ -80,7 +80,7 @@
                                 </div>
                             {% endif %}
                             <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
-                            <a class="salleBtnModif" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Modifier</a>
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -119,7 +119,10 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if item.sa is not null %}
+                                <p class="saAttribue">{{ item.sa }}</p>
+                            {% endif %}
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
@@ -142,7 +145,7 @@
                                 </div>
                             {% endif %}
                             <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
-                            <a class="salleBtnModif" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Modifier</a>
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -181,7 +184,10 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            <p class="location">Bâtiment {{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if item.sa is not null %}
+                                <p class="saAttribue">{{ item.sa }}</p>
+                            {% endif %}
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
                             {% else %}
@@ -204,7 +210,7 @@
                                 </div>
                             {% endif %}
                             <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
-                            <a class="salleBtnModif" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Modifier</a>
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
                 {% endfor %}

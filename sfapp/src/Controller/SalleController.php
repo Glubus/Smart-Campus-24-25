@@ -39,9 +39,9 @@ class SalleController extends AbstractController
     {
         $currentDateTime = new \DateTime('now');
         $currentDateTime->modify('+1 hour');
-        $arr=[];
+        $arr = [];
         $form = $this->createForm(RechercheSalleType::class);
-        $batiment = $batimentRepository->findOneBy(['nom'=>"Batiment D"]);
+        $batiment = $batimentRepository->findOneBy(['nom' => "Batiment D"]);
         foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
             $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
         }
@@ -53,7 +53,7 @@ class SalleController extends AbstractController
             $salleNom = $form->get('salleNom')->getData();
             if ($salleNom) {
                 // Filtrer les salles dont le nom contient la chaîne $salleNom, peu importe où
-                $salles = array_filter($salles, function($salle) use ($salleNom) {
+                $salles = array_filter($salles, function ($salle) use ($salleNom) {
                     return stripos($salle->getNom(), $salleNom) !== false;
                 });
                 $salles = array_values($salles);
@@ -67,15 +67,22 @@ class SalleController extends AbstractController
         $index = 0;
         foreach ($salles as $salle) {
             $sa = null;
-            foreach ($detailPlanRepository->findBy(['salle'=>$salle]) as $detailPlan) {
-                $sa[] = $detailPlan->getSA();
+            if(count($detailPlanRepository->findBy(['salle' => $salle])) == 1){
+                $sa = $detailPlanRepository->findOneBy(['salle' => $salle])->getSA()->getNom();
+            } else {
+                foreach ($detailPlanRepository->findBy(['salle' => $salle]) as $detailPlan) {
+                    $sa[] = $detailPlan->getSA();
+                }
             }
-            $etat = "Hors-Service"; $colEtat = "#F30408";
+            $etat = "Hors-Service";
+            $colEtat = "#F30408";
             $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
             $lastDataTime = null;
             $dp = null;
             $conseils = new Conseils();
-            $jours = null; $heures = null; $minutes = null;
+            $jours = null;
+            $heures = null;
+            $minutes = null;
             $isInDanger = false;
 
             // Trouve la salle dans le repertory en fonction du nom renvoyé par l'API wrapper
@@ -92,7 +99,7 @@ class SalleController extends AbstractController
 
                     $data = $value;
 
-                    if (isset($data['temp']) && isset($data['co2'])&& isset($data['hum'])) {
+                    if (isset($data['temp']) && isset($data['co2']) && isset($data['hum'])) {
                         $etat = "Fonctionnelle";
                         $colEtat = "#00D01F";
                     }
@@ -103,13 +110,12 @@ class SalleController extends AbstractController
                 }
             }
 
-            if($dp)
-            {
+            if ($dp) {
                 $etat = "En intervention";
                 $colEtat = "#FF9000";
             }
 
-            if($index % 3 == 0){
+            if ($index % 3 == 0) {
                 $col1[] = [
                     'salle' => $salle,
                     'sa' => $sa,
@@ -118,7 +124,7 @@ class SalleController extends AbstractController
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
                     'danger' => $isInDanger
                 ];
-            } elseif($index % 3 == 1){
+            } elseif ($index % 3 == 1) {
                 $col2[] = [
                     'salle' => $salle,
                     'sa' => $sa,
@@ -127,7 +133,7 @@ class SalleController extends AbstractController
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
                     'danger' => $isInDanger
                 ];
-            } elseif($index % 3 == 2){
+            } elseif ($index % 3 == 2) {
                 $col3[] = [
                     'salle' => $salle,
                     'sa' => $sa,
@@ -139,13 +145,19 @@ class SalleController extends AbstractController
             }
             $index++;
         }
-
-        return $this->render('salle/liste.html.twig', [
-            'col1' => $col1,
-            'col2' => $col2,
-            'col3' => $col3,
-            'form' => $form->createView(),
-        ]);
+        if ($col1[0] != null) {
+            return $this->render('salle/liste.html.twig', [
+                'col1' => $col1,
+                'col2' => $col2,
+                'col3' => $col3,
+                'form' => $form->createView(),
+            ]);
+        } else {
+            return $this->render('salle/notfound.html.twig', [
+                'form' => $form->createView(),
+            ]);
+        }
+    }
         /*// Création du formulaire de recherche
         $form = $this->createForm(RechercheSalleType::class);
         $associations = $detailPlanRepository->findAll();
@@ -175,12 +187,8 @@ class SalleController extends AbstractController
                 'form' => $form->createView(), // Passer le formulaire à la vue
 
             ]);
-        } else {
-            return $this->render('salle/notfound.html.twig', [
-                'form' => $form->createView(),
-            ]);
-        }*/
-    }
+        }
+    }*/
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
@@ -577,7 +585,7 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/supprimer.html.twig', [
+        return $this->render('salle/suppression.html.twig', [
             'form' => $form->createView(),
             'salles' => $salles,
         ]);
