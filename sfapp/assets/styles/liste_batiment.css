@@ -1,11 +1,11 @@
-.titlePlan {
+.titleBatiment {
     margin-top: 15px;
     font-size: 3rem;
     text-align: center;
     color: white;
 }
 
-.containerPlan {
+.containerBatiment {
     margin: auto;
     width: 75%;
     display: flex;
@@ -40,7 +40,7 @@
     background-color: #DC0004;
 }
 
-.listePlans {
+.listeBatiments {
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -56,7 +56,7 @@
     justify-content: flex-start;
 }
 
-.planBlock {
+.batimentBlock {
     color: white;
     background-color: #0080FF;
     border: 1px solid white;
@@ -66,11 +66,11 @@
     cursor: pointer;
 }
 
-.planBlock.expanded {
+.batimentBlock.expanded {
     background-color: #82C1FF;
 }
 
-.planMainInfos {
+.batimentMainInfos {
     display: flex;
     align-items: center;
     padding: 10px;
@@ -86,7 +86,7 @@
     transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
 }
 
-.planMainInfos:hover {
+.batimentMainInfos:hover {
     box-shadow:
             inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
             inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
@@ -94,16 +94,16 @@
             -2px -2px 20px white;
 }
 
-.checkboxplan {
+.checkboxBatiment {
     width: 15px;
 }
 
-.planName {
+.batimentName {
     font-size: 40px;
     padding: 0;
 }
 
-.planContent {
+.batimentContent {
     padding-bottom: 15px;
     padding-left: 15px;
     padding-right: 15px;
@@ -112,13 +112,13 @@
     margin-top: 15px;
 }
 
-.planContent .adresse {
+.batimentContent .adresse {
     font-size: 1em;
     margin-bottom: 10px;
     text-align: center;
 }
 
-.planBtnDetail {
+.batimentBtnDetail {
     width: 100%;
     padding: 5px;
     border-radius: 10px;
@@ -130,13 +130,13 @@
     border: 1px solid black;
 }
 
-.planBtnDetail:hover {
+.batimentBtnDetail:hover {
     box-shadow:
             1px 1px 5px black,
             -1px -1px 5px black;
 }
 
-.planBtnModif {
+.batimentBtnModif {
     width: 100%;
     margin-top: 5px;
     padding: 5px;
@@ -149,7 +149,7 @@
     border: 1px solid black;
 }
 
-.planBtnModif:hover {
+.batimentBtnModif:hover {
     box-shadow:
             1px 1px 5px black,
             -1px -1px 5px black;
