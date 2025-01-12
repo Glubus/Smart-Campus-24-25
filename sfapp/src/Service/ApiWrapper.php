@@ -422,6 +422,7 @@ private CacheInterface $cache;
                                     $date = new DateTime($result['dateCapture']);
                                     $name=$salle->getNom();
                                     // Ajoute les résultats dans le tableau temporaire
+                                    $result['valeur'] = (int)$result['valeur'];
                                     $temporaryArr[$name][] = $result;
                                 } catch (Exception $e) {
                                     // Ignorer les résultats invalides
