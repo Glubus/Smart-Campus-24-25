@@ -32,7 +32,6 @@ class AjoutPlanType extends AbstractType
                 'choice_label' => 'nom',   // Field to be displayed for each option (the name of the building)
                 'multiple' => true,        // Allows multiple selections
                 'expanded' => true,        // If you want checkboxes instead of a select dropdown
-                'placeholder' => 'Selectionner des bâtiments...', // Placeholder
                 'query_builder' => function (EntityRepository $er) {
                     // Create the query to retrieve the Batiments
                     return $er->createQueryBuilder('ba')
@@ -43,8 +42,8 @@ class AjoutPlanType extends AbstractType
                 'attr' => [
                     'class' => 'form-control sa-searchable', // Optional: Add custom styles
                     'data-live-search' => 'true', // Optional: Add live search
-                    'style' => 'margin-left: 10px; ',
-                ]
+                ],
+                'empty_data' => null, // Ensures that "empty" value is handled correctly
             ])
         ;
     }
