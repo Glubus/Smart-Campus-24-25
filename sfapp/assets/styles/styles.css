@@ -1097,7 +1097,7 @@ h3{
 
 
 /*
-        SECTION LISTES BATIMENTS
+        SECTION LISTE BATIMENTS
  */
 
 .titleBatiment {
@@ -1255,7 +1255,7 @@ h3{
 
 
 /*
-        SECTION LISTES PLANS
+        SECTION LISTE PLANS
  */
 
 .titlePlan {
@@ -1303,17 +1303,10 @@ h3{
 .listePlans {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 5%;
     justify-content: space-between;
     width: 100%;
     flex-wrap: wrap;
-}
-
-.colPlan {
-    width: 45%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
 }
 
 .planBlock {
@@ -1370,12 +1363,6 @@ h3{
     color: black;
     display: none;
     margin-top: 15px;
-}
-
-.planContent .adresse {
-    font-size: 1em;
-    margin-bottom: 10px;
-    text-align: center;
 }
 
 .planBtnDetail {

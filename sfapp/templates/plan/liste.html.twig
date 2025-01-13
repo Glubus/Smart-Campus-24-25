@@ -12,30 +12,55 @@
                         <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
                 </div>
                 <div class="listePlans">
-                        <div class="colPlan">
+                        <div class="col">
                                 {% for plan in col1 %}
-                                        <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
+                                        <div class="planBlock" id="card">
                                                 <div class="planMainInfos">
                                                         {#  <div class="planTop">  #}
                                                         <div style="display: flex; gap: 5px">
-                                                                <input class="checkboxplan" type="checkbox" value="{{ plan.id }}">
+                                                                <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
                                                                 <p class="planName">{{ plan.nom }}</p>
                                                         </div>
                                                 </div>
-                                        </div></a>
+                                                <div class="planContent" id="card-content">
+                                                        <a class="planBtnDetail" href="{{ path('app_lier_liste', {'id':plan.id}) }}">Détails</a>
+                                                        {#  <a class="planBtnModif" href="{{ path('app_plan_modifier') }}">Modifier</a> #}
+                                                </div>
+                                        </div>
                                 {% endfor %}
                         </div>
-                        <div class="colPlan">
+                        <div class="col">
                                 {% for plan in col2 %}
-                                        <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
+                                        <div class="planBlock" id="card">
                                                 <div class="planMainInfos">
                                                         {#  <div class="planTop">  #}
                                                         <div style="display: flex; gap: 5px">
-                                                                <input class="checkboxplan" type="checkbox" value="{{ plan.id }}">
+                                                                <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
                                                                 <p class="planName">{{ plan.nom }}</p>
                                                         </div>
                                                 </div>
-                                        </div></a>
+                                                <div class="planContent" id="card-content">
+                                                        <a class="planBtnDetail" href="{{ path('app_batiment_modifier', {'id':plan.id}) }}">Détails</a>
+                                                        {#  <a class="planBtnModif" href="{{ path('app_plan_modifier') }}">Modifier</a> #}
+                                                </div>
+                                        </div>
+                                {% endfor %}
+                        </div>
+                        <div class="col">
+                                {% for plan in col3%}
+                                        <div class="planBlock" id="card">
+                                                <div class="planMainInfos">
+                                                        {#  <div class="planTop">  #}
+                                                        <div style="display: flex; gap: 5px">
+                                                                <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                <p class="planName">{{ plan.nom }}</p>
+                                                        </div>
+                                                </div>
+                                                <div class="planContent" id="card-content">
+                                                        <a class="planBtnDetail" href="{{ path('app_batiment_modifier', {'id':plan.id}) }}">Détails</a>
+                                                        {#  <a class="planBtnModif" href="{{ path('app_plan_modifier') }}">Modifier</a> #}
+                                                </div>
+                                        </div>
                                 {% endfor %}
                         </div>
                 </div>
@@ -44,7 +69,8 @@
 {% block javascripts %}
         <script>
                 document.addEventListener("DOMContentLoaded", function () {
-                        const checkboxes = document.querySelectorAll('.checkboxplan');
+                        const cards = document.querySelectorAll(".planBlock");
+                        const checkboxes = document.querySelectorAll('.checkboxPlan');
                         const deleteButton = document.getElementById('btnSuppr');
 
                         console.log("Checkboxes trouvées:", checkboxes);
@@ -78,7 +104,7 @@
                         deleteButton.addEventListener('click', function () {
                                 const form = document.createElement('form');
                                 form.method = 'POST';
-                                form.action = '{{ path('app_plan_supprimer_selection') }}';
+                                form.action = '{{ path('app_batiment_supprimer_selection') }}';
 
                                 checkboxes.forEach(checkbox => {
                                         if (checkbox.checked) {
@@ -95,6 +121,21 @@
                         });
 
                         toggleDeleteButton();
+                        cards.forEach((card) => {
+                                const cardContent = card.querySelector(".planContent");
+                                card.addEventListener("click", function () {
+                                        // Toggle la classe "expanded" pour agrandir/rétrécir
+                                        card.classList.toggle("expanded");
+                                        cardContent.classList.toggle("expanded");
+
+                                        // Afficher/masquer le contenu
+                                        if (cardContent.style.display === "block") {
+                                                cardContent.style.display = "none";
+                                        } else {
+                                                cardContent.style.display = "block";
+                                        }
+                                });
+                        });
                 });
         </script>
 {% endblock %}
