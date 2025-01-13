@@ -6,7 +6,9 @@ use App\Entity\DetailIntervention;
 use App\Entity\EtatIntervention;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailInterventionRepository;
+use App\Repository\SalleRepository;
 use App\Service\ApiWrapper;
+use App\Form\CommentaireType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -34,7 +36,7 @@ class TechnicienController extends AbstractController
      *
      * @throws AccessDeniedException If the currently authenticated user does not have the ROLE_TECHNICIEN.
      */
-    #[Route('/technicien/accueil', name: 'app_technicien_acceuil')]
+    #[Route('/technicien', name: 'app_technicien_acceuil')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
     public function accueil(ApiWrapper $wrapper, BatimentRepository $batimentRepository): Response
     {
