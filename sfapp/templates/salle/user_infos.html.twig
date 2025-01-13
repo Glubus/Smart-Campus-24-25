@@ -10,7 +10,8 @@
             <div class="salleUserInfosConseils">
                 {% if conseilGeneral  %}
                     <p>{{ conseilGeneral }}</p>
-                {% elseif data is not null %}
+                {% endif %}
+                {% if data is not null %}
                     {% for plan in data %}
                         {% if plan.conseil.temp.texte %}
                             <p>{{ plan.conseil.temp.texte }}</p>
