@@ -1269,7 +1269,6 @@ h3{
 
 .navbar-brand,
 .navbar-brand:hover {
-    font-size: var(--h3-font-size);
     font-weight: var(--font-weight-bold);
     display: block;
 }
@@ -1280,7 +1279,7 @@ h3{
 
 .navbar-expand-lg .navbar-nav .nav-link {
     border-radius: var(--border-radius-large);
-    margin: 10px;
+    margin: 0px 7px 0px 7px;
     padding: 10px;
 }
 
@@ -1290,7 +1289,6 @@ h3{
     font-family: var(--title-font-family);
     font-size: 20px;
     font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     position: relative;
     padding-top: 15px;
