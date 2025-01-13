@@ -78,7 +78,7 @@ class SalleController extends AbstractController
             $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
             $lastDataTime = null;
             $dp = null;
-            $conseils = new Conseils();
+            $conseils = null;
             $jours = null;
             $heures = null;
             $minutes = null;
@@ -104,7 +104,8 @@ class SalleController extends AbstractController
                     }
 
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null))['danger'];
+                    $conseils = new Conseils();
+                    $conseils = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null));
                     break;
                 }
             }
@@ -121,7 +122,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             } elseif ($index % 3 == 1) {
                 $col2[] = [
@@ -130,7 +131,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             } elseif ($index % 3 == 2) {
                 $col3[] = [
@@ -139,7 +140,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             }
             $index++;
@@ -151,37 +152,6 @@ class SalleController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-        /*// Création du formulaire de recherche
-        $form = $this->createForm(RechercheSalleType::class);
-        $associations = $detailPlanRepository->findAll();
-
-        $form->handleRequest($request);
-        $salles = [];
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $salleNom = $form->get('salleNom')->getData();
-            if ($salleNom) {
-                $salles = $salleRepository->findAll();
-                $salles = array_filter($salles, function($salle) use ($salleNom) {
-                    return stripos($salle->getNom(), $salleNom) !== false;
-                });
-            }
-        } else {
-            $salles = $salleRepository->findAll();
-        }
-
-        if ($salles) {
-            return $this->render('salle/liste.html.twig', [
-                'css' => 'salle',
-                'classItem' => "salle",
-                'routeItem'=> "app_salle_ajouter",
-                'classSpecifique' => "BatimentEtage",
-                'items' => $salles,
-                'form' => $form->createView(), // Passer le formulaire à la vue
-
-            ]);
-        }
-    }*/
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
     public function infos(int $id,  SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
@@ -246,7 +216,7 @@ class SalleController extends AbstractController
             $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
             $lastDataTime = null;
             $dp = null;
-            $conseils = new Conseils();
+            $conseils = null;
             $jours = null; $heures = null; $minutes = null;
             $isInDanger = false;
 
@@ -269,8 +239,8 @@ class SalleController extends AbstractController
                         $colEtat = "#00D01F";
                     }
 
-                    // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null))['danger'];
+                    $conseils = new Conseils();
+                    $conseils = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null));
                     break;
                 }
             }
@@ -287,7 +257,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             } elseif($index % 3 == 1){
                 $col2[] = [
@@ -295,7 +265,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             } elseif($index % 3 == 2){
                 $col3[] = [
@@ -303,7 +273,7 @@ class SalleController extends AbstractController
                     'data' => $data,
                     'etat' => ['texte' => $etat, 'color' => $colEtat],
                     'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
-                    'danger' => $isInDanger
+                    'conseils' => $conseils
                 ];
             }
             $index++;
