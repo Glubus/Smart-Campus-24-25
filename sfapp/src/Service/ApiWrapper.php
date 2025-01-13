@@ -146,7 +146,20 @@ use /**
  */
 class ApiWrapper
 {
-        public const ASSOCIATIONS = [
+    private string $usernameApiIut;
+    private string $passwordApiIut;
+    private string $keyApiOpenweather;
+
+    public function __construct(         CacheInterface $cache)
+    {
+        $this->cache = $cache;
+        $this->usernameApiIut =  $_ENV['USERNAME_API_IUT'];
+        $this->passwordApiIut = $_ENV['PASSWORD_API_IUT'];
+        $this->keyApiOpenweather = $_ENV['KEY_API_OPENWEATHER'];
+
+    }
+
+    public const ASSOCIATIONS = [
         "D205" => "ESP-004",
         "D206" => "ESP-008",
         "D207" => "ESP-006",
@@ -182,10 +195,6 @@ class ApiWrapper
     ];
 private CacheInterface $cache;
 
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
 
     public function requestSalleLastValueByDateAndInterval(Salle $salle): array
     {
@@ -244,8 +253,8 @@ private CacheInterface $cache;
             $headers = [
                 'accept' => 'application/ld+json',
                 'dbname' => self::DB[$sa] ?? '',
-                'username' => 'k2eq3',
-                'userpass' => 'nojsuk-kegfyh-3cyJmu',
+                'username' => $this->usernameApiIut,
+                'userpass' =>  $this->passwordApiIut
             ];
             $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last?nom=' . $type . '&limit=' . $limit . '&page=' . $page;
 
@@ -382,8 +391,8 @@ private CacheInterface $cache;
             $headers = [
                 'accept' => ' application/ld+json',
                 'dbname' => self::DB[$sa],
-                'username' => 'k2eq3',
-                'userpass' => 'nojsuk-kegfyh-3cyJmu',
+                'username' => $this->usernameApiIut,
+                'userpass' =>  $this->passwordApiIut
             ];
 
             $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/interval?date1=' . $dateStart . '&date2=' . $dateEnd . '&page=' . $page;
@@ -586,8 +595,8 @@ private CacheInterface $cache;
                 'https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&appid=%s',
                 urlencode("La Rochelle"),
                 "metric",
-                "3caaaee0f39de46231be3904497ccb56"
-            );
+                $this->keyApiOpenweather
+        );
 
             $response = $client->request('GET', $url);
 
