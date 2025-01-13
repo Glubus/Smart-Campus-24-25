@@ -45,8 +45,10 @@
                                         {{ item.time.jours }} jours.</p>
                                     {% endif %}
                                 {% endif %}
-                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
-                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -67,7 +69,9 @@
                                     </div>
                                     <div class="salleMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.data.co2 }}</h3>
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="salleMetric m3">
@@ -110,8 +114,10 @@
                                         {{ item.time.jours }} jours.</p>
                                     {% endif %}
                                 {% endif %}
-                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
-                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -132,7 +138,9 @@
                                     </div>
                                     <div class="salleMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.data.co2 }}</h3>
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="salleMetric m3">
@@ -175,8 +183,10 @@
                                         {{ item.time.jours }} jours.</p>
                                     {% endif %}
                                 {% endif %}
-                                {% if item.danger and item.etat.texte == "Fonctionnelle" %}
-                                    <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -197,7 +207,9 @@
                                     </div>
                                     <div class="salleMetric m2">
                                         <img src="{{ asset('/img/co2.png') }}" class="icon">
-                                        <h3 class="value">{{ item.data.co2 }}</h3>
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
                                         <h4 class="unit">ppm</h4>
                                     </div>
                                     <div class="salleMetric m3">
