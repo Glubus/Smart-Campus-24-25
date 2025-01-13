@@ -145,18 +145,12 @@ class SalleController extends AbstractController
             }
             $index++;
         }
-        if ($col1[0] != null) {
-            return $this->render('salle/liste.html.twig', [
-                'col1' => $col1,
-                'col2' => $col2,
-                'col3' => $col3,
-                'form' => $form->createView(),
-            ]);
-        } else {
-            return $this->render('salle/notfound.html.twig', [
-                'form' => $form->createView(),
-            ]);
-        }
+        return $this->render('salle/liste.html.twig', [
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+            'form' => $form->createView(),
+        ]);
     }
         /*// Création du formulaire de recherche
         $form = $this->createForm(RechercheSalleType::class);
@@ -359,52 +353,57 @@ class SalleController extends AbstractController
         $plans = $detailPlanRepository->findBy(['salle' => $salle]);
 
         $moyTemp = null; $moyCo2 = null; $moyHum = null;
-        $tempVar = [];
-        $co2Var = [];
-        $humVar = [];
+        $tempVar = []; $co2Var = []; $humVar = [];
+        $tempValue = null; $co2Value = null; $humValue = null;
+
         $dataSalle = null;
         $conseil = new Conseils();
         $conseilGeneral = new Conseils();
 
         foreach ($plans as $plan) {
+
             $tempValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "temp", 1, 2);
             $co2Value = $wrapper->requestSalleByType($plan->getSA()->getNom(), "co2", 1, 2);
             $humValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "hum", 1, 2);
 
-            switch ($tempValue) {
-                case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
-                case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
-                case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
-            } switch ($co2Value) {
-                case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
-                case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
-                case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
-            } switch ($humValue) {
-                case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
-                case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
-                case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
-            }
+            if($tempValue != null && $co2Value != null && $humValue != null){
+                switch ($tempValue) {
+                    case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
+                    case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
+                    case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
+                } switch ($co2Value) {
+                    case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
+                    case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
+                    case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
+                } switch ($humValue) {
+                    case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
+                    case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
+                    case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
+                }
 
-            $moyTemp += $tempValue[0]['valeur'];
-            $moyCo2 += $co2Value[0]['valeur'];
-            $moyHum += $humValue[0]['valeur'];
+                $moyTemp += $tempValue[0]['valeur'];
+                $moyCo2 += $co2Value[0]['valeur'];
+                $moyHum += $humValue[0]['valeur'];
 
-            $conseil = $conseil->getConseilsParCapteur($wrapper, $tempValue[0]['valeur'], $co2Value[0]['valeur'], $humValue[0]['valeur']);
+                $conseil = $conseil->getConseilsParCapteur($wrapper, $tempValue[0]['valeur'], $co2Value[0]['valeur'], $humValue[0]['valeur']);
             
-            $dataSalle[] = [
-                'sa' => $plan->getSA(),
-                'conseil' => $conseil,
-                'temp' => ['val' => $tempValue[0]['valeur'], 'variation' => $tempVar],
-                'co2' => ['val' => $co2Value[0]['valeur'], 'variation' => $co2Var],
-                'humi' => ['val' => $humValue[0]['valeur'], 'variation' => $humVar]
-                ];
+                $dataSalle[] = [
+                    'sa' => $plan->getSA(),
+                    'conseil' => $conseil,
+                    'temp' => ['val' => $tempValue[0]['valeur'], 'variation' => $tempVar],
+                    'co2' => ['val' => $co2Value[0]['valeur'], 'variation' => $co2Var],
+                    'humi' => ['val' => $humValue[0]['valeur'], 'variation' => $humVar]
+                    ];
+            }
         }
 
-        $moyTemp = $moyTemp / count($dataSalle);
-        $moyCo2 = $moyCo2 / count($dataSalle);
-        $moyHum = $moyHum / count($dataSalle);
+        if($dataSalle != null){
+            $moyTemp = $moyTemp / count($dataSalle);
+            $moyCo2 = $moyCo2 / count($dataSalle);
+            $moyHum = $moyHum / count($dataSalle);
 
-        $conseilGeneral = $conseilGeneral->getConseilsGeneraux($wrapper, $moyTemp, $moyCo2, $moyHum);
+            $conseilGeneral = $conseilGeneral->getConseilsGeneraux($wrapper, $moyTemp, $moyCo2, $moyHum);
+        }
 
         return $this->render('salle/user_infos.html.twig', [
             'data' => $dataSalle,
