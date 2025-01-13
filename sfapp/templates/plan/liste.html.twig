@@ -8,7 +8,9 @@
         <h1 class="titlePlan">Plans</h1>
         <div class="containerPlan">
                 <div style="display: flex; justify-content: space-between">
+                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                         <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                        {% endif %}
                         <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
                 </div>
                 <div class="listePlans">
@@ -18,7 +20,9 @@
                                                 <div class="planMainInfos">
                                                         {#  <div class="planTop">  #}
                                                         <div style="display: flex; gap: 5px">
+                                                                {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                                                                 <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                {% endif %}
                                                                 <p class="planName">{{ plan.nom }}</p>
                                                         </div>
                                                 </div>
@@ -35,7 +39,9 @@
                                                 <div class="planMainInfos">
                                                         {#  <div class="planTop">  #}
                                                         <div style="display: flex; gap: 5px">
-                                                                <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                                                        <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                {% endif %}
                                                                 <p class="planName">{{ plan.nom }}</p>
                                                         </div>
                                                 </div>
@@ -52,7 +58,9 @@
                                                 <div class="planMainInfos">
                                                         {#  <div class="planTop">  #}
                                                         <div style="display: flex; gap: 5px">
-                                                                <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                                                        <input class="checkboxPlan" type="checkbox" value="{{ plan.id }}">
+                                                                {% endif %}
                                                                 <p class="planName">{{ plan.nom }}</p>
                                                         </div>
                                                 </div>
@@ -81,6 +89,7 @@
                                 return;
                         }
 
+                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                         function toggleDeleteButton() {
                                 const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
                                 console.log("Checkboxes cochées :", isAnyChecked);
@@ -121,6 +130,7 @@
                         });
 
                         toggleDeleteButton();
+                        {% endif %}
                         cards.forEach((card) => {
                                 const cardContent = card.querySelector(".planContent");
                                 card.addEventListener("click", function () {
