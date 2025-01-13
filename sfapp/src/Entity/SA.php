@@ -21,8 +21,6 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
-    private Collection $valCapteurs;
 
     #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
     private ?DetailPlan $detailPlan = null;
@@ -85,27 +83,6 @@ class SA
         return $this->valCapteurs;
     }
 
-    public function addValCapteur(ValeurCapteur $valCapteur): static
-    {
-        if (!$this->valCapteurs->contains($valCapteur)) {
-            $this->valCapteurs->add($valCapteur);
-            $valCapteur->setSA($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValCapteur(ValeurCapteur $valCapteur): static
-    {
-        if ($this->valCapteurs->removeElement($valCapteur)) {
-            if ($valCapteur->getSA() === $this) {
-                $valCapteur->setSA(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getDetailPlan(): ?DetailPlan
     {
         return $this->detailPlan;
@@ -117,9 +94,6 @@ class SA
 
         return $this;
     }
-
-
-
 
 
 }
