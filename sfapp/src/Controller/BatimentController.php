@@ -28,14 +28,34 @@ class   BatimentController extends AbstractController
     public function liste(EntityManagerInterface $entityManager): Response
     {
         $batiments = $entityManager->getRepository(Batiment::class)->findAll();
+        $index = 0;
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
+        foreach ($batiments as $batiment) {
+            if($index%2 == 0){
+                $col1[] = $batiment;
+            } elseif ($index%2 == 1) {
+                $col2[] = $batiment;
+            } else {
+                $col3[] = $batiment;
+            }
+            $index++;
+        }
 
+        return $this->render('batiment/liste.html.twig', [
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+        ]);
+        /*
         return $this->render('batiment/liste.html.twig', [
             'css' => 'batiment',
             'classItem' => "batiment",
             'items' => $batiments,
             'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
-        ]);
+        ]);*/
     }
 
     #[Route('/batiment/{id}', name: 'app_batiment_infos', requirements: ['id' => '\d+'])]

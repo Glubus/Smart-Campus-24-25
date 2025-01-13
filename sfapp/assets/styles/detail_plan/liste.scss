@@ -195,8 +195,10 @@ fieldset label{
     border: 5px solid #33CBEA;
     background-color: #008CFF;
     border-radius: 0 50px 50px 0;
-    color: white;
     padding: 5px 0 5px 20px;
+    text-decoration: none;
+    color: white;
+    display: block;
 }
 
 .circle-niveau{
@@ -308,6 +310,7 @@ fieldset label{
 
 .caseBleu:hover, .supprAttr:hover, .validerDemande:hover, .switch-menu>i:hover{
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
 }
 
 /* Hidden content */

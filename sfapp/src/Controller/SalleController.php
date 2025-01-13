@@ -35,9 +35,124 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
-    public function index(Request $request, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository): Response
+    public function index(BatimentRepository $batimentRepository, ApiWrapper $wrapper ,Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository, DetailPlanRepository $detailPlanRepository): Response
     {
-        // Création du formulaire de recherche
+        $currentDateTime = new \DateTime('now');
+        $currentDateTime->modify('+1 hour');
+        $arr = [];
+        $form = $this->createForm(RechercheSalleType::class);
+        $batiment = $batimentRepository->findOneBy(['nom' => "Batiment D"]);
+        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        }
+        $salles = $salleRepository->findAll();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $salleNom = $form->get('salleNom')->getData();
+            if ($salleNom) {
+                // Filtrer les salles dont le nom contient la chaîne $salleNom, peu importe où
+                $salles = array_filter($salles, function ($salle) use ($salleNom) {
+                    return stripos($salle->getNom(), $salleNom) !== false;
+                });
+                $salles = array_values($salles);
+            }
+        }
+
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
+
+        $index = 0;
+        foreach ($salles as $salle) {
+            $sa = null;
+            if(count($detailPlanRepository->findBy(['salle' => $salle])) == 1){
+                $sa = $detailPlanRepository->findOneBy(['salle' => $salle])->getSA()->getNom();
+            } else {
+                foreach ($detailPlanRepository->findBy(['salle' => $salle]) as $detailPlan) {
+                    $sa[] = $detailPlan->getSA();
+                }
+            }
+            $etat = "Hors-Service";
+            $colEtat = "#F30408";
+            $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
+            $lastDataTime = null;
+            $dp = null;
+            $conseils = new Conseils();
+            $jours = null;
+            $heures = null;
+            $minutes = null;
+            $isInDanger = false;
+
+            // Trouve la salle dans le repertory en fonction du nom renvoyé par l'API wrapper
+            foreach ($arr as $key => $value) {
+                if ($salle->getNom() === $key) {
+                    $dp = $detailInterventionRepository->findOneBy(['salle' => $salle]);
+
+                    // Calcule la durée depuis le dernier envoi de données
+                    $lastDataTime = new DateTime($value['date']);
+                    $interval = $lastDataTime->diff($currentDateTime);
+                    $jours = $interval->days; // Total des jours
+                    $heures = $interval->h;   // Heures restantes (après division par jours)
+                    $minutes = $interval->i; // Minutes restantes (après division par heures)
+
+                    $data = $value;
+
+                    if (isset($data['temp']) && isset($data['co2']) && isset($data['hum'])) {
+                        $etat = "Fonctionnelle";
+                        $colEtat = "#00D01F";
+                    }
+
+                    // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
+                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null))['danger'];
+                    break;
+                }
+            }
+
+            if ($dp) {
+                $etat = "En intervention";
+                $colEtat = "#FF9000";
+            }
+
+            if ($index % 3 == 0) {
+                $col1[] = [
+                    'salle' => $salle,
+                    'sa' => $sa,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
+            } elseif ($index % 3 == 1) {
+                $col2[] = [
+                    'salle' => $salle,
+                    'sa' => $sa,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
+            } elseif ($index % 3 == 2) {
+                $col3[] = [
+                    'salle' => $salle,
+                    'sa' => $sa,
+                    'data' => $data,
+                    'etat' => ['texte' => $etat, 'color' => $colEtat],
+                    'time' => ['jours' => $jours, 'heures' => $heures, 'minutes' => $minutes],
+                    'danger' => $isInDanger
+                ];
+            }
+            $index++;
+        }
+        return $this->render('salle/liste.html.twig', [
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+            'form' => $form->createView(),
+        ]);
+    }
+        /*// Création du formulaire de recherche
         $form = $this->createForm(RechercheSalleType::class);
         $associations = $detailPlanRepository->findAll();
 
@@ -46,10 +161,8 @@ class SalleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $salleNom = $form->get('salleNom')->getData();
-
             if ($salleNom) {
                 $salles = $salleRepository->findAll();
-
                 $salles = array_filter($salles, function($salle) use ($salleNom) {
                     return stripos($salle->getNom(), $salleNom) !== false;
                 });
@@ -68,12 +181,8 @@ class SalleController extends AbstractController
                 'form' => $form->createView(), // Passer le formulaire à la vue
 
             ]);
-        } else {
-            return $this->render('salle/notfound.html.twig', [
-                'form' => $form->createView(),
-            ]);
         }
-    }
+    }*/
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
     public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
@@ -190,7 +299,7 @@ class SalleController extends AbstractController
                     }
 
                     // Affecte un booléen à isInDanger pour savoir si la salle a un probleme urgent à regler
-                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, ($data['temp'] ?? null), ($data['co2'] ?? null), ($data['hum'] ?? null))['danger'];
+                    $isInDanger = $conseils->getConseilsParCapteur($wrapper, (float)($data['temp'] ?? null), (float)($data['co2'] ?? null), (float)($data['hum'] ?? null))['danger'];
                     break;
                 }
             }
@@ -244,52 +353,57 @@ class SalleController extends AbstractController
         $plans = $detailPlanRepository->findBy(['salle' => $salle]);
 
         $moyTemp = null; $moyCo2 = null; $moyHum = null;
-        $tempVar = [];
-        $co2Var = [];
-        $humVar = [];
+        $tempVar = []; $co2Var = []; $humVar = [];
+        $tempValue = null; $co2Value = null; $humValue = null;
+
         $dataSalle = null;
         $conseil = new Conseils();
         $conseilGeneral = new Conseils();
 
         foreach ($plans as $plan) {
+
             $tempValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "temp", 1, 2);
             $co2Value = $wrapper->requestSalleByType($plan->getSA()->getNom(), "co2", 1, 2);
             $humValue = $wrapper->requestSalleByType($plan->getSA()->getNom(), "hum", 1, 2);
 
-            switch ($tempValue) {
-                case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
-                case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
-                case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
-            } switch ($co2Value) {
-                case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
-                case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
-                case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
-            } switch ($humValue) {
-                case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
-                case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
-                case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
-            }
+            if($tempValue != null && $co2Value != null && $humValue != null){
+                switch ($tempValue) {
+                    case $tempValue[0]['valeur'] > $tempValue[1]['valeur']: $tempVar = "/img/ArrowUp.png"; break;
+                    case $tempValue[0]['valeur'] < $tempValue[1]['valeur']: $tempVar = "/img/ArrowDown.png"; break;
+                    case $tempValue[0]['valeur'] == $tempValue[1]['valeur']: $tempVar = "/img/"; break;
+                } switch ($co2Value) {
+                    case $co2Value[0]['valeur'] > $co2Value[1]['valeur']: $co2Var = "/img/ArrowUp.png"; break;
+                    case $co2Value[0]['valeur'] < $co2Value[1]['valeur']: $co2Var = "/img/ArrowDown.png"; break;
+                    case $co2Value[0]['valeur'] == $co2Value[1]['valeur']: $co2Var = "/img/"; break;
+                } switch ($humValue) {
+                    case $humValue[0]['valeur'] > $humValue[1]['valeur']: $humVar = "/img/ArrowUp.png"; break;
+                    case $humValue[0]['valeur'] < $humValue[1]['valeur']: $humVar = "/img/ArrowDown.png"; break;
+                    case $humValue[0]['valeur'] == $humValue[1]['valeur']: $humVar = "/img/"; break;
+                }
 
-            $moyTemp += $tempValue[0]['valeur'];
-            $moyCo2 += $co2Value[0]['valeur'];
-            $moyHum += $humValue[0]['valeur'];
+                $moyTemp += $tempValue[0]['valeur'];
+                $moyCo2 += $co2Value[0]['valeur'];
+                $moyHum += $humValue[0]['valeur'];
 
-            $conseil = $conseil->getConseilsParCapteur($wrapper, $tempValue[0]['valeur'], $co2Value[0]['valeur'], $humValue[0]['valeur']);
+                $conseil = $conseil->getConseilsParCapteur($wrapper, $tempValue[0]['valeur'], $co2Value[0]['valeur'], $humValue[0]['valeur']);
             
-            $dataSalle[] = [
-                'sa' => $plan->getSA(),
-                'conseil' => $conseil,
-                'temp' => ['val' => $tempValue[0]['valeur'], 'variation' => $tempVar],
-                'co2' => ['val' => $co2Value[0]['valeur'], 'variation' => $co2Var],
-                'humi' => ['val' => $humValue[0]['valeur'], 'variation' => $humVar]
-                ];
+                $dataSalle[] = [
+                    'sa' => $plan->getSA(),
+                    'conseil' => $conseil,
+                    'temp' => ['val' => $tempValue[0]['valeur'], 'variation' => $tempVar],
+                    'co2' => ['val' => $co2Value[0]['valeur'], 'variation' => $co2Var],
+                    'humi' => ['val' => $humValue[0]['valeur'], 'variation' => $humVar]
+                    ];
+            }
         }
 
-        $moyTemp = $moyTemp / count($dataSalle);
-        $moyCo2 = $moyCo2 / count($dataSalle);
-        $moyHum = $moyHum / count($dataSalle);
+        if($dataSalle != null){
+            $moyTemp = $moyTemp / count($dataSalle);
+            $moyCo2 = $moyCo2 / count($dataSalle);
+            $moyHum = $moyHum / count($dataSalle);
 
-        $conseilGeneral = $conseilGeneral->getConseilsGeneraux($wrapper, $moyTemp, $moyCo2, $moyHum);
+            $conseilGeneral = $conseilGeneral->getConseilsGeneraux($wrapper, $moyTemp, $moyCo2, $moyHum);
+        }
 
         return $this->render('salle/user_infos.html.twig', [
             'data' => $dataSalle,
@@ -463,14 +577,14 @@ class SalleController extends AbstractController
                     $entityManager->remove($salle);
                 }
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
             else {
                 $this->addFlash('error', 'La saisie est incorrect.');
             }
         }
 
-        return $this->render('salle/supprimer.html.twig', [
+        return $this->render('salle/suppression.html.twig', [
             'form' => $form->createView(),
             'salles' => $salles,
         ]);

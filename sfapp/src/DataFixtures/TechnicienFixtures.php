@@ -66,7 +66,6 @@ class TechnicienFixtures extends Fixture
         $detailIntervention->setTechnicien($technicien);
         $detailIntervention->setSalle($d307);
         $detailIntervention->setDescription("le Sa ne marche plus ");
-        $detailIntervention->setEtat(EtatIntervention::EN_COURS); // Exemple : état "en cours"
         $detailIntervention->setDateAjout(new \DateTime());
         $manager->persist($detailIntervention);
 
@@ -74,7 +73,6 @@ class TechnicienFixtures extends Fixture
         $detailIntervention->setTechnicien($technicien);
         $detailIntervention->setSalle($d307);
         $detailIntervention->setDescription("plus de données de capteur");
-        $detailIntervention->setEtat(EtatIntervention::EN_ATTENTE); // Exemple : état "en cours"
         $detailIntervention->setDateAjout(new \DateTime());
         $manager->persist($detailIntervention);
 
