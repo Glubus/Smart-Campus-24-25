@@ -6,7 +6,9 @@ use App\Entity\DetailIntervention;
 use App\Entity\EtatIntervention;
 use App\Repository\BatimentRepository;
 use App\Repository\DetailInterventionRepository;
+use App\Repository\SalleRepository;
 use App\Service\ApiWrapper;
+use App\Form\CommentaireType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -34,7 +36,7 @@ class TechnicienController extends AbstractController
      *
      * @throws AccessDeniedException If the currently authenticated user does not have the ROLE_TECHNICIEN.
      */
-    #[Route('/technicien/accueil', name: 'app_technicien_acceuil')]
+    #[Route('/technicien', name: 'app_technicien_acceuil')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
     public function accueil(ApiWrapper $wrapper, BatimentRepository $batimentRepository): Response
     {
@@ -55,123 +57,138 @@ class TechnicienController extends AbstractController
             'diagnostics' => $diagnostics,
         ]);
     }
-
-
-    /**
-     * Handles the display of tasks for the currently logged-in technician.
-     *
-     * This function retrieves the currently authenticated technician's tasks and displays them in a view.
-     * Additionally, it allows the technician to filter tasks by pressing a button in the displayed form
-     * to show all tasks instead of only the incomplete ones.
-     *
-     * @param Request $request The HTTP request object.
-     * @param DetailInterventionRepository $repository Used to query tasks associated with the technician.
-     * @param FormFactoryInterface $formFactory Used to create the form allowing the task filter to be toggled.
-     *
-     * @return Response The rendered response containing the technician's task list and form.
-     *
-     * @throws AccessDeniedException If the currently authenticated user is not logged in.
-     */
-    #[Route('/technicien/taches', name: 'app_technicien_taches')]
-    #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
-    public function viewTaches(Request $request,
-                               DetailInterventionRepository $repository,
-                               FormFactoryInterface $formFactory): Response
-    {
-        // Récupérer l'utilisateur connecté
+    #[Route('/technicien/commentaires', name: 'app_technicien_commentaire')]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function viewCommentaires(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SalleRepository $salleRepository,
+        BatimentRepository $batimentRepository,
+        DetailInterventionRepository $repository,
+        ApiWrapper $apiWrapper // Ajout de l'ApiWrapper pour récupérer les salles avec problèmes
+    ): Response {
         $technicien = $this->getUser();
 
         if (!$technicien) {
-            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à vos tâches.');
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
         }
 
-        $form = $formFactory->createBuilder()
-            ->setMethod('POST')
-            ->add('show_all_tasks', SubmitType::class, [
-                'label' => 'Afficher toutes les tâches',
-                'attr' => ['class' => 'btn btn-primary mb-4'],
-            ])
-            ->getForm();
+        $batiments = $batimentRepository->findAll();
+        $taches = $repository->findAll();
+        $sallesIssues = [];
 
+        if (!empty($batiments)) {
+            foreach ($batiments as $batiment) {
+                // Obtenez les données des salles ayant des problèmes pour le bâtiment actuel
+                $sallesIssuesData = $apiWrapper->getSallesWithIssues($batiment);
+
+                // Ajoutez les salles problématiques au tableau principal
+                $sallesIssues = array_merge($sallesIssues, $sallesIssuesData['issues']);
+            }
+
+            // Supprimez les doublons pour éviter les répétitions
+            $sallesIssues = array_unique($sallesIssues);
+        }
+
+        // Déboguez pour vérifier les résultats
+
+        $form = $this->createForm(CommentaireType::class, new DetailIntervention());
         $form->handleRequest($request);
 
-        // Récupérer les tâches de l'utilisateur connecté
-            $taches = $repository->findNonTermine($technicien);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $taches = $repository->findBy(['technicien' => $technicien]);
+            /** @var DetailIntervention $detailIntervention */
+            $detailIntervention = $form->getData();
+            $detailIntervention->setTechnicien($technicien);
+            $detailIntervention->setDateAjout(new \DateTime());
+
+            $entityManager->persist($detailIntervention);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Commentaire ajouté avec succès.');
+
+            return $this->redirectToRoute('app_technicien_commentaire');
         }
 
-        // Retourner la vue avec les tâches
-        return $this->render('technicien/taches.html.twig', [
-            'taches' => $taches,
+        return $this->render('technicien/commentaires.html.twig', [
             'form' => $form->createView(),
-
+            'technicien' => $technicien,
+            'taches' => $taches,
+            'sallesIssues' => $sallesIssues, // Transmettre les salles avec problèmes
+            'batiments' => $batiments,
         ]);
     }
 
 
-    /**
-     * Updates the state of a task identified by its ID.
-     *
-     * This method validates the existence of the task and the provided state value.
-     * If the task exists and the state is valid, it updates the state in the database.
-     *
-     * @param int $id The ID of the task to update.
-     * @param Request $request The HTTP request object containing the new state data.
-     * @param EntityManagerInterface $em The entity manager for database operations.
-     *
-     * @return JsonResponse A JSON response indicating success or an error message if the task is not found or the state is invalid.
-     */
-    #[Route('/api/taches/{id}/etat', name: 'update_tache_etat', methods: ['POST'])]
-    public function updateEtat(
+
+    #[Route('/technicien/commentaire/{id}', name: 'app_technicien_commentaire_ajout', methods: ['POST'])]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function addComment(
         int $id,
         Request $request,
-        EntityManagerInterface $em
-    ): JsonResponse {
-        // Vérifie que l'ID existe
-        $detailIntervention = $em->getRepository(DetailIntervention::class)->find($id);
-        if (!$detailIntervention) {
-            return new JsonResponse(['message' => 'Tâche introuvable'], 404);
+        EntityManagerInterface $entityManager,
+        SalleRepository $salleRepository
+    ): Response {
+        $technicien = $this->getUser();
+
+        if (!$technicien || $technicien->getId() !== $id) {
+            throw $this->createAccessDeniedException('Vous n’êtes pas autorisé à effectuer cette action.');
         }
 
-        $data = json_decode($request->getContent(), true);
-        $newEtat = $data['etat'] ?? null;
+        $description = $request->request->get('description');
+        $salleId = $request->request->get('salle');
+        $salle = $salleRepository->findByName($salleId);
 
-        // Vérifie l'état
-        if (!in_array($newEtat, array_column(EtatIntervention::cases(), 'value'))) {
-            return new JsonResponse(['message' => 'État invalide'], 400);
+        if (!$description || !$salle) {
+            $this->addFlash('error', 'Les champs sont obligatoires.');
+            return $this->redirectToRoute('app_technicien_commentaire');
         }
 
-        // Mise à jour de l'état
-        $detailIntervention->setEtat(EtatIntervention::from($newEtat));
-        $em->persist($detailIntervention);
-        $em->flush();
+        $detailIntervention = new DetailIntervention();
+        $detailIntervention->setTechnicien($technicien);
+        $detailIntervention->setSalle($salle);
+        $detailIntervention->setDescription($description);
+        $detailIntervention->setDateAjout(new \DateTime());
 
-        return new JsonResponse(['message' => 'État mis à jour avec succès'], 200);
+        $entityManager->persist($detailIntervention);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre commentaire a été ajouté avec succès.');
+
+        return $this->redirectToRoute('app_technicien_commentaire');
     }
 
-//    #[Route('/technicien/taches/{id}', name: 'app_technicien_modifer_taches')]
-//    #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
-//    public function modifierEtat(DetailInterventionRepository $repository,$id): Response
-//    {
-//        $technicien = $this->getUser();
-//
-//        if (!$technicien) {
-//            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à vos tâches.');
-//        }
-//
-//        // Récupérer les tâches de l'utilisateur connecté
-//        $taches = $repository->findBy(['technicien' => $technicien]);
-//
-//        $tache = $repository->findBy(['id' => $id]);
-//
-//
-//        // Retourner la vue avec les tâches
-//        return $this->render('technicien/modifer.html.twig', [
-//            'taches' => $taches,
-//        ]);
-//    }
+
+    #[Route('/technicien/commentaire/supprimer/{id}', name: 'app_technicien_commentaire_supprimer', methods: ['POST'])]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function supprimerCommentaire(
+        int $id,
+        DetailInterventionRepository $repository,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): Response {
+        $commentaire = $repository->find($id);
+
+        if (!$commentaire) {
+            $this->addFlash('error', 'Commentaire introuvable.');
+            return $this->redirectToRoute('app_technicien_commentaire');
+        }
+
+        $technicien = $this->getUser();
+
+        // Vérifiez que le commentaire appartient au technicien connecté
+        if ($commentaire->getTechnicien() !== $technicien) {
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer ce commentaire.');
+            return $this->redirectToRoute('app_technicien_commentaire');
+        }
+
+
+        // Supprimez le commentaire
+        $entityManager->remove($commentaire);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Commentaire supprimé avec succès.');
+        return $this->redirectToRoute('app_technicien_commentaire');
+    }
 
 
 }

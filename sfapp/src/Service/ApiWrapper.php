@@ -768,5 +768,78 @@ private CacheInterface $cache;
         return $externalValue;
     }
 
+    public function detectAllStationsIssues(Batiment $bat): array
+    {
+        $allStationsIssues = [];
+        $currentTime = new DateTime();
+        $allData = $this->requestAllSalleLastValue($bat); // Récupère toutes les données par salle
+
+        // Seuils pour les paramètres
+        $co2Threshold = 1200;
+        $humThreshold = 85;
+        $tempMin = 15.0;
+        $tempMax = 30.0;
+
+        foreach ($allData as $salle => $data) {
+            $issues = []; // Problèmes spécifiques à cette salle
+
+            // 1. Vérifier si des données existent
+            if (empty($data)) {
+                $issues[] = 'Aucune donnée disponible.';
+            } else {
+                // 2. Vérifier la date des données
+                if (!isset($data['date'])) {
+                    $issues[] = 'Date de la donnée manquante.';
+                } else {
+                    try {
+                        $lastDate = new DateTime($data['date']);
+                        $dateDifference = $currentTime->getTimestamp() - $lastDate->getTimestamp();
+
+                        if ($dateDifference > 3600) { // Plus d'une heure
+                            $issues[] = 'Aucun envoi depuis plus d\'une heure.';
+                        }
+                    } catch (Exception $e) {
+                        $issues[] = 'Date des données incorrecte.';
+                    }
+                }
+
+                // 3. Vérifier la température
+                if (!isset($data['temp'])) {
+                    $issues[] = 'Température manquante.';
+                } else {
+                    $temp = (float)$data['temp'];
+                    if ($temp < $tempMin || $temp > $tempMax) {
+                        $issues[] = "Température hors seuil : {$temp}°C.";
+                    }
+                }
+
+                // 4. Vérifier le CO2
+                if (!isset($data['co2'])) {
+                    $issues[] = 'Concentration de CO2 manquante.';
+                } else {
+                    $co2 = (int)$data['co2'];
+                    if ($co2 > $co2Threshold) {
+                        $issues[] = "Concentration de CO2 trop élevée : {$co2} ppm.";
+                    }
+                }
+
+                // 5. Vérifier l'humidité
+                if (!isset($data['hum'])) {
+                    $issues[] = 'Humidité manquante.';
+                } else {
+                    $humidity = (int)$data['hum'];
+                    if ($humidity > $humThreshold) {
+                        $issues[] = "Humidité trop élevée : {$humidity}%.";
+                    }
+                }
+            }
+
+            // Enregistrer les problèmes spécifiques à cette salle
+            $allStationsIssues[$salle] = $issues;
+        }
+
+        return $allStationsIssues;
+    }
+
 
 }
