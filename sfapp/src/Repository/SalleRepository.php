@@ -38,6 +38,16 @@ class SalleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findByName(string $name): ?Salle
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.nom = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
 
 //    /**
 //     * @return Salle[] Returns an array of Salle objects

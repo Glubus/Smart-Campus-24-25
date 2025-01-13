@@ -575,4 +575,66 @@ private CacheInterface $cache;
 
         return $temporaryArr;
     }
+    public function getSallesWithIssues(Batiment $batiment): array
+    {
+        $externalValue = $this->cache->get('salles_with_issues_and_ok', function (ItemInterface $item) use ($batiment) {
+            $item->expiresAfter(3600);
+
+            $allSalles = $batiment->getAllSalle();
+            $types = ["temp", "co2", "hum"];
+            $thresholds = [
+                'co2' => 1200,
+                'hum' => 85,
+                'temp' => [15, 30]
+            ];
+
+            $sallesWithIssues = [];
+            $sallesWithoutIssues = [];
+
+            foreach ($allSalles as $salle) {
+                $sas = $this->getSA($salle);
+                $hasIssue = false;
+
+                foreach ($sas as $sa) {
+                    foreach ($types as $type) {
+                        $results = $this->requestSalleByType($sa, $type, 1, 1);
+
+                        foreach ($results as $result) {
+                            if (isset($result['dateCapture']) && isset($result['valeur'])) {
+                                $value = (float)$result['valeur'];
+                                $dateCapture = new DateTime($result['dateCapture']);
+
+                                if ((new DateTime())->getTimestamp() - $dateCapture->getTimestamp() > 3600 ||
+                                    ($type === 'co2' && $value > $thresholds['co2']) ||
+                                    ($type === 'hum' && $value > $thresholds['hum']) ||
+                                    ($type === 'temp' && ($value < $thresholds['temp'][0] || $value > $thresholds['temp'][1]))
+                                ) {
+                                    $sallesWithIssues[] = $salle->getNom();
+                                    $hasIssue = true;
+                                    break 3;
+                                }
+                            } else {
+                                $sallesWithIssues[] = $salle->getNom();
+                                $hasIssue = true;
+                                break 3;
+                            }
+                        }
+                    }
+                }
+
+                if (!$hasIssue) {
+                    $sallesWithoutIssues[] = $salle->getNom();
+                }
+            }
+
+            return [
+                'issues' => array_unique($sallesWithIssues),
+                'ok' => array_unique($sallesWithoutIssues),
+            ];
+        });
+
+        return $externalValue;
+    }
+
+
 }
