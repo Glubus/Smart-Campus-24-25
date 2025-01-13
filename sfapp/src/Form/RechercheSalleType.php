@@ -27,6 +27,7 @@ class RechercheSalleType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-primary',
                     'type' => 'submit',
+                    'style' => 'width: min-content'
                 ],
             ]);
     }

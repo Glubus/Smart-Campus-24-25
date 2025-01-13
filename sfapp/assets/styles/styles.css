@@ -837,11 +837,8 @@ h3{
 
 
 
-
-
-
 /*
-        SALLE USER LISTE SECTION
+        SECTION LISTE SALLES USER & TECHNICIEN & ADMIN
  */
 
 /* Général */
@@ -855,51 +852,68 @@ h3{
     gap: 10px;
 }
 
-.titleSallesUser {
+.titleSalles {
     margin-top: 15px;
     font-size: 3rem;
     text-align: center;
     color: white;
 }
 
-.containerSallesUser {
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.containerSalles {
     margin: auto;
     width: 75%;
     display: flex;
     flex-direction: column;
 }
 
-.listeSallesUser {
+.listeSalles {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    gap: 5%;
     width: 100%;
-    flex-wrap: wrap;
 }
 
-.col1 {
-    width: 30%;
+.col {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
 }
 
-.col2 {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.col3 {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+.checkboxSalle {
+    width: 15px;
 }
 
 /* Card style */
-.salleUserBlock {
+.salleBlock {
     color: white;
     background-color: #0080FF;
     border: 1px solid white;
@@ -909,11 +923,11 @@ h3{
     cursor: pointer;
 }
 
-.salleUserBlock.expanded {
+.salleBlock.expanded {
     background-color: #82C1FF;
 }
 
-.salleUserMainInfos {
+.salleMainInfos {
     width: 100%;
     height: 100px;
     border: 1px solid white;
@@ -925,7 +939,7 @@ h3{
     transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
 }
 
-.salleUserMainInfos:hover {
+.salleMainInfos:hover {
     box-shadow:
             inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
             inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
@@ -933,12 +947,12 @@ h3{
             -2px -2px 20px white;
 }
 
-.salleUserName {
+.salleName {
     font-size: 40px;
     padding: 0;
 }
 
-.salleUserTop {
+.salleTop {
     background-color: transparent;
     height: 40%;
     padding: 0;
@@ -949,29 +963,29 @@ h3{
     font-weight: bold;
 }
 
-.etatSalleUser {
+.etatSalle {
     display: flex;
     flex-direction: row;
 }
 
-.salleUserStatus {
+.salleStatus {
     font-size: 15px;
     margin-right: 10px;
 }
 
-.salleUserPastilleStatus {
+.sallePastilleStatus {
     width: 20px;
     height: 20px;
     border-radius: 30px;
 }
 
-#salleUserLastUpdate {
+#salleLastUpdate {
     font-size: 0.8em;
     margin-left: 10px;
 }
 
 /* Hidden content */
-.salleUserContent {
+.salleContent {
     padding-bottom: 15px;
     padding-left: 15px;
     padding-right: 15px;
@@ -980,19 +994,25 @@ h3{
     margin-top: 15px;
 }
 
-.salleUserContent .location {
+.salleContent .location {
     font-size: 1em;
     margin-bottom: 10px;
     text-align: center;
 }
 
-.salleUserMetrics {
+.salleContent .saAttribue {
+    font-size: 2em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.salleMetrics {
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
 }
 
-.salleUserMetric {
+.salleMetric {
     color: #000;
     padding: 5px;
     border-radius: 8px;
@@ -1000,12 +1020,12 @@ h3{
     height: min-content;
 }
 
-.salleUserMetric .icon {
+.salleMetric .icon {
     float: right;
     height: 20px;
 }
 
-.salleUserMetric .value {
+.salleMetric .value {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -1013,7 +1033,7 @@ h3{
     font-size: 40px;
 }
 
-.salleUserMetric .unit {
+.salleMetric .unit {
     margin-top: -20px;
     display: flex;
     justify-content: flex-end;
@@ -1035,30 +1055,39 @@ h3{
     border: 2px solid #6ADFFF;
 }
 
-.conseils {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-}
-
-.salleUserBtnDetail {
+.salleBtnDetail {
+    width: 100%;
     padding: 5px;
     border-radius: 10px;
-    box-shadow:
-            inset 0 -7.65px 7.65px #006AD5,
-            inset 0 7.65px 7.65px #0090FF;
     display: flex;
     justify-content: center;
     background-color: #0080FF;
     color: black;
     transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
 }
 
-.salleUserBtnDetail:hover {
+.salleBtnDetail:hover {
     box-shadow:
-            inset 0 -7.65px 7.65px #006AD5,
-            inset 0 7.65px 7.65px #0090FF,
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.salleBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.salleBtnModif:hover {
+    box-shadow:
             1px 1px 5px black,
             -1px -1px 5px black;
 }
@@ -1068,7 +1097,331 @@ h3{
 
 
 /*
-        SALLE USER INFOS SECTION
+        SECTION LISTES BATIMENTS
+ */
+
+.titleBatiment {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.containerBatiment {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.listeBatiments {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.batimentBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.batimentBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.batimentMainInfos {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.batimentMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.checkboxBatiment {
+    width: 15px;
+}
+
+.batimentName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.batimentContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.batimentContent .adresse {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.batimentBtnDetail {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.batimentBtnDetail:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.batimentBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.batimentBtnModif:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+/*
+        SECTION LISTES PLANS
+ */
+
+.titlePlan {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.containerPlan {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.listePlans {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.colPlan {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.planBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.planBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.planMainInfos {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.planMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.checkboxplan {
+    width: 15px;
+}
+
+.planName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.planContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.planContent .adresse {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.planBtnDetail {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.planBtnDetail:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.planBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.planBtnModif:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+
+/*
+        SECTION INFOS SALLE USER
  */
 
 .salleUserInfosAll {
@@ -1159,245 +1512,4 @@ h3{
     background: rgba(255, 255, 255, 0.5);
     width: 100%;
     border-radius: 10px;
-}
-
-
-
-
-
-/*
-        LISTES COMMUN TECHNICIEN & ADMIN
- */
-
-.mainTitle {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.all {
-    height: 100%;
-    color: white;
-}
-
-.rechercheBlock {
-    height: 100%;
-    background-color: #D9D9D9;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-}
-
-.titreRecherche {
-    text-align: center;
-    font-size: 32px;
-    margin: 15px;
-}
-
-.filtresRecherche {
-    border-top: 1px solid black;
-}
-
-.barreRech {
-    margin-top: 20px;
-    margin-left: 15px;
-}
-
-.trier {
-    font-size: 24px;
-    margin-top: 20px;
-    margin-left: 20px;
-}
-
-.btnTri {
-    background-color: white;
-    border-radius: 10px;
-    border: none;
-    margin: 20px;
-}
-
-.liste {
-    padding: 25px;
-    border-top: 1px solid black;
-}
-
-.titreListe {
-    font-size: 40px;
-}
-
-.btns {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.btnAjout {
-    margin-top: 10px;
-    width: 187px;
-    height: 36px;
-    background-color: #289EFF;
-    border-radius: 10px;
-    color: white;
-    border: none;
-}
-
-.btnAjout:hover {
-    background-color: #008CFF;
-}
-
-.hidden {
-    display: none;
-}
-
-.btnSuppr {
-    margin-top: 10px;
-    width: 250px;
-    height: 36px;
-    background-color: #FF282C;
-    border-radius: 10px;
-    color: white;
-    border: none;
-}
-
-.btnSuppr:hover {
-    background-color: #DC0004;
-}
-
-.btnAffPl {
-    border: none;
-    background-color: #868686;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 30px;
-    color: white;
-}
-
-.btnAffPl:hover {
-    background-color: #6A6A6A;
-}
-
-
-.checkbox {
-    margin-left: 15px;
-    margin-top: 15px;
-    transform: scale(1.5);
-}
-
-.DetailsModif {
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid black;
-    padding: 15px;
-}
-
-.btnDetailSA {
-    width: 187px;
-    height: 36px;
-    background-color: #868686;
-    border-radius: 10px;
-    color: white;
-    border: none;
-}
-
-.btnDetailSA:hover {
-    background-color: #6A6A6A;
-}
-
-.btnModif {
-    margin-top: 10px;
-    width: 187px;
-    height: 36px;
-    background-color: #00D01F;
-    border-radius: 10px;
-    color: white;
-    border: none;
-}
-
-.btnModif:hover {
-    background-color: #00AA1A;
-}
-
-.container {
-    display: flex;
-    gap: 20px; /* Espace entre les colonnes */
-    background-color:white;
-    flex-wrap: wrap;
-}
-
-.container > div {
-    flex: 1; /* Chaque div enfant occupe une part égale de l'espace disponible */
-    background-color: #f0f0f0; /* Couleur de fond pour mieux visualiser les colonnes */
-    padding: 10px;
-}
-
-.container > div:nth-child(2) {
-    background-color: #e0e0e0; /* Vous pouvez définir une couleur différente pour la deuxième colonne */
-}
-
-
-
-
-/*
-            LISTE SALLES TECHNICIEN & ADMIN
- */
-
-.salle {
-    display: flex;
-    flex-wrap: wrap;
-    flex-shrink: inherit;
-}
-
-.salleBlock {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 135px;
-    margin-top: 30px;
-    margin-right: 30px;
-    width:45%;
-    border: 1px solid white;
-    border-radius: 20px;
-    background-color: #0080FF;
-    box-shadow:
-            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
-            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
-}
-
-.salleBlock:hover {
-    box-shadow:
-            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
-            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
-            2px 2px 20px white,
-            -2px -2px 20px white;
-}
-
-.checkbox {
-    margin-left: 15px;
-    transform: scale(1.5);
-}
-
-.salleBlock:has(.checkbox:checked) {
-
-}
-
-.salleInfos {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 70px;
-
-    height: 100%;
-}
-
-.BatimentEtage {
-    font-size: 20px;
-}
-
-.SalleSaNom {
-    width: 200px;
-    font-size: 28px;
-    font-weight: bold;
-    margin-left: 20px;
 }

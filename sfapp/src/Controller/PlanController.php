@@ -27,12 +27,22 @@ class PlanController extends AbstractController
     #[Route('/plan', name: 'app_plan_liste')]
     public function index(PlanRepository $repo): Response
     {
-        $plan=$repo->findAll();
+        $plans=$repo->findAll();
+        $index = 0;
+        $col1 = [];
+        $col2 = [];
+        foreach ($plans as $plan) {
+            if($index%2 == 0){
+                $col1[] = $plan;
+            } else {
+                $col2[] = $plan;
+            }
+            $index++;
+        }
+
         return $this->render('plan/liste.html.twig', [
-            'css' => 'plan',
-            'classItem' => "plan",
-            'items' => $plan,
-            'classSpecifique' => "getCount"
+            'col1' => $col1,
+            'col2' => $col2,
         ]);
     }
 

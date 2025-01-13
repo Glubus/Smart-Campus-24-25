@@ -1,6 +1,105 @@
 {# templates/detail_plan/list.html.twig #}
 
+{% extends 'base.html.twig' %}
 
+{% block title %}Détails de la plan{% endblock %}
+
+{% block body %}
+        <h1 class="titlePlan">Plans</h1>
+        <div class="containerPlan">
+                <div style="display: flex; justify-content: space-between">
+                        <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                        <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+                </div>
+                <div class="listePlans">
+                        <div class="colPlan">
+                                {% for plan in col1 %}
+                                        <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
+                                                <div class="planMainInfos">
+                                                        {#  <div class="planTop">  #}
+                                                        <div style="display: flex; gap: 5px">
+                                                                <input class="checkboxplan" type="checkbox" value="{{ plan.id }}">
+                                                                <p class="planName">{{ plan.nom }}</p>
+                                                        </div>
+                                                </div>
+                                        </div></a>
+                                {% endfor %}
+                        </div>
+                        <div class="colPlan">
+                                {% for plan in col2 %}
+                                        <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
+                                                <div class="planMainInfos">
+                                                        {#  <div class="planTop">  #}
+                                                        <div style="display: flex; gap: 5px">
+                                                                <input class="checkboxplan" type="checkbox" value="{{ plan.id }}">
+                                                                <p class="planName">{{ plan.nom }}</p>
+                                                        </div>
+                                                </div>
+                                        </div></a>
+                                {% endfor %}
+                        </div>
+                </div>
+        </div>
+{% endblock %}
+{% block javascripts %}
+        <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                        const checkboxes = document.querySelectorAll('.checkboxplan');
+                        const deleteButton = document.getElementById('btnSuppr');
+
+                        console.log("Checkboxes trouvées:", checkboxes);
+                        console.log("Bouton Supprimer trouvé:", deleteButton);
+
+                        if (!checkboxes || !deleteButton) {
+                                console.error("Éléments manquants dans le DOM !");
+                                return;
+                        }
+
+                        function toggleDeleteButton() {
+                                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                                console.log("Checkboxes cochées :", isAnyChecked);
+
+                                if (isAnyChecked) {
+                                        deleteButton.classList.remove('hidden');
+                                } else {
+                                        deleteButton.classList.add('hidden');
+                                }
+                        }
+
+                        checkboxes.forEach(checkbox => {
+                                // Empêche le clic sur la checkbox de déclencher l'expansion du bloc
+                                checkbox.addEventListener('click', function (event) {
+                                        event.stopPropagation();
+                                });
+
+                                checkbox.addEventListener('change', toggleDeleteButton);
+                        });
+
+                        deleteButton.addEventListener('click', function () {
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = '{{ path('app_plan_supprimer_selection') }}';
+
+                                checkboxes.forEach(checkbox => {
+                                        if (checkbox.checked) {
+                                                const input = document.createElement('input');
+                                                input.type = 'hidden';
+                                                input.name = 'selected[]';
+                                                input.value = checkbox.value;
+                                                form.appendChild(input);
+                                        }
+                                });
+
+                                document.body.appendChild(form);
+                                form.submit();
+                        });
+
+                        toggleDeleteButton();
+                });
+        </script>
+{% endblock %}
+
+{#
 {% extends 'template/liste.html.twig' %}
 
 {% block nom %}
@@ -14,3 +113,4 @@
 {% block modif %}
         <a href="{{ path('app_lier_liste', {'id' : item.id}) }}"><button class="btnModif">Detail plan</button></a>
 {% endblock %}
+#}
