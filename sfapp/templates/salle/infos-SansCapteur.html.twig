@@ -34,7 +34,7 @@
                         </li>
                         <li class="list-group-item">
                             <strong>SA attribué : </strong>
-                                <a href="{{ path('app_lier_ajout', {'id': salle.etage.batiment.plan.id, 'salle' : salle.id}) }}" class="btn btn-primary">Attribuer un SA</a>
+                                <a href="{{ path('app_lier_ajout', {'nom': salle.etage.batiment.plan.nom, 'salle' : salle.id}) }}" class="btn btn-primary">Attribuer un SA</a>
                         </li>
                     </ul>
                 </div>
