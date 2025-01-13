@@ -254,8 +254,6 @@ private CacheInterface $cache;
             ]);
 
             if (200 !== $response->getStatusCode()) {
-                var_dump($headers);
-                var_dump($sa);
                 throw new RuntimeException(sprintf('Erreur API. URL : %s', $url));
             }
 
@@ -266,7 +264,7 @@ private CacheInterface $cache;
 
     public function requestAllSalleLastValueByDateAndInterval(Batiment $batiment, SalleRepository $salleRepository): array
     {
-        $externalValue = $this->cache->get('all_salle_last_value_by_date', function (ItemInterface $item) use ($salleRepository, $batiment) {
+        $externalValue = $this->cache->get('all_salle_last_value_by_date_and_'.$batiment->getNom(), function (ItemInterface $item) use ($salleRepository, $batiment) {
             $item->expiresAfter(3600); // 1 heure
             $end = (new DateTime('now'))->modify('+1 hour');
             $start = (clone $end)->modify('-1 hour');
@@ -472,6 +470,7 @@ private CacheInterface $cache;
         $allData = $this->requestAllSalleLastValue($bat); // Récupère toutes les dernières données des salles
         $co2Threshold = 1200; // Seuil en ppm pour le CO2
         $humThreshold = 85;   // Seuil en pourcentage pour l'humidite
+        $humThresholdBas = 30;
         $arr = [];
 
         foreach ($allData as $salle => $d) {
@@ -479,7 +478,7 @@ private CacheInterface $cache;
                 // Initialiser la liste des problèmes pour la salle
                 $issues = [];
 
-                // 1. Vérification des données disponibles
+
                 if (empty($data)) {
                     $issues[] = 'Aucune donnée disponible.';
                 } else {
@@ -500,18 +499,18 @@ private CacheInterface $cache;
                     }
 
                     // 3. Vérification des seuils de température
-                    if (isset($data['nom']) && $data['nom']=='temp' && $this->isTemperatureNormal((float)$data['valeur'])) {
+                    if (isset($data['nom']) && $data['nom']=='temp' && $this->isTemperatureNotNormal((float)$data['valeur'])) {
                         $issues[] = "Température anormale.";
                     }
 
                     // 4. Vérification des seuils de CO2
-                    if (isset($data['nom']) && $data['nom']=='co2' && !$data['valeur'] > $co2Threshold)
+                    if (isset($data['nom']) && $data['nom']=='co2' && $data['valeur'] > $co2Threshold)
                     {
                         $issues[] = "Concentration de CO2 trop élevée.";
                     }
 
                     // 5. Vérification des seuils d'humidité
-                    if (isset($data['nom']) && $data['nom']=='hum' && !$data['valeur'] > $humThreshold) {
+                    if (isset($data['nom']) && $data['nom']=='hum' && ($data['valeur'] > $humThreshold or $data['valeur']<$humThresholdBas)) {
                         $issues[] = "Humidité trop élevée.";
                     }
                 }
@@ -528,7 +527,7 @@ private CacheInterface $cache;
     public function requestAllSalleLastValue(Batiment $batiment): array
     {
         // Clé de cache unique
-        $externalValue = $this->cache->get('all_salle_last_value', function (ItemInterface $item) use ($batiment) {
+        $externalValue = $this->cache->get('all_salle_last_value_'.$batiment->getNom(), function (ItemInterface $item) use ($batiment) {
             $item->expiresAfter(3600); // Expiration du cache 1 heure
 
             $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
@@ -553,7 +552,7 @@ private CacheInterface $cache;
                                     $date = new DateTime($result['dateCapture']);
                                     $name=$salle->getNom();
                                     // Ajoute les résultats dans le tableau temporaire
-                                    $result['valeur'] = (int)$result['valeur'];
+                                    $result['valeur'] = (float)$result['valeur'];
                                     $temporaryArr[$name][] = $result;
                                 } catch (Exception $e) {
                                     // Ignorer les résultats invalides
@@ -569,9 +568,10 @@ private CacheInterface $cache;
         return $externalValue;
     }
 
-    public function isTemperatureNormal(float $temperature): bool
+    public function isTemperatureNotNormal(float $temperature): bool
     {
-        return $temperature > 25 && $this->getTempOutsideByAPI() < $temperature;
+
+        return $temperature > 22 && $this->getTempOutsideByAPI() < $temperature;
     }
 
     public function getTempOutsideByAPI()
@@ -617,7 +617,7 @@ private CacheInterface $cache;
 
         // Si la plage demandée est entièrement dans le passé
         if ($end < $now) {
-            $cacheKeyPast = sprintf('salle_interval_past_%s_%s', $start->format('Ymd'), $end->format('Ymd'));
+            $cacheKeyPast = sprintf('batiment_%s_salle_interval_past_%s_%s', $batiment->getNom(), $start->format('Ymd'), $end->format('Ymd'));
 
             return $this->cache->get($cacheKeyPast, function (ItemInterface $item) use ($start, $end, $batiment, $salleRepository, $types) {
                 $item->expiresAfter(2592000); // 1 mois
