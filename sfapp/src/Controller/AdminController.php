@@ -19,9 +19,6 @@ class  AdminController extends AbstractController
 {
     private const ROLE_TECHNICIEN = 'ROLE_TECHNICIEN';
 
-
-
-
     private function getTechnicians(UtilisateurRepository $repository, ?string $name): array
     {
         return $name

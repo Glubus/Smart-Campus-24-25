@@ -1,18 +1,149 @@
 <?php
 
+/**
+ * Service to interact with API and manage Salle and Batiment data.
+ */
+
 namespace App\Service;
 
-use App\Entity\Batiment;
-use App\Entity\Salle;
-use App\Repository\SalleRepository;
-use DateTime;
-use DateTimeInterface;
-use Exception;
-use RuntimeException;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
+use /**
+ * Represents the Batiment entity within the application.
+ *
+ * This class is part of the application's data model and corresponds
+ * to the Batiment entity. It is typically used to manage and interact
+ * with data related to Batiment entities in the database.
+ *
+ * Core functionalities and attributes of Batiment entity should be
+ * defined here, along with any necessary business logic methods related
+ * to the entity.
+ *
+ * This entity is managed by Symfony's Doctrine ORM to facilitate database
+ * interactions, including create, read, update, and delete operations.
+ */
+    App\Entity\Batiment;
+use /**
+ * Represents a Salle entity within the application.
+ *
+ * This class defines the attributes and behaviors associated with a salle (room),
+ * which might include properties such as name, capacity, or location.
+ * The Salle entity is mapped to the corresponding database table through Doctrine ORM.
+ *
+ * Make sure to configure all necessary annotations or attributes to properly map
+ * the Salle entity to the database and define its relationships with other entities.
+ */
+    App\Entity\Salle;
+use /**
+ * Repository class for managing Salle entities.
+ *
+ * This class provides functionality for querying and interacting
+ * with Salle entities, such as retrieving or managing related data
+ * from the database. It serves as an abstraction layer between
+ * the codebase and the data storage layer for Salle entities.
+ */
+    App\Repository\SalleRepository;
+use /**
+ * The DateTime class is a built-in PHP class used to represent and manipulate dates and times.
+ * It provides methods for creating, formatting, modifying, and comparing date and time values.
+ *
+ * Symfony v6.4.17 can utilize this class for handling date and time operations
+ * effectively in various parts of the application, such as templates, validators,
+ * custom logic, and entities.
+ */
+    DateTime;
+use /**
+ * Interface DateTimeInterface
+ *
+ * Represents a common interface for date and time objects in PHP.
+ * This interface is implemented by the DateTime and DateTimeImmutable classes.
+ *
+ * Methods within this interface are used to retrieve information from date and time objects,
+ * such as formatting, retrieving DateTime zones, or information about the difference between two dates.
+ */
+    DateTimeInterface;
+use /**
+ * Custom exception for handling specific application errors.
+ *
+ * This exception can be used to encapsulate domain-specific logic
+ * or handle application-specific error scenarios. It extends the
+ * base Exception class in PHP.
+ *
+ * Usage of this exception should be reserved for cases where
+ * standard PHP exceptions are insufficient to describe the error
+ * or when additional context is required.
+ */
+    Exception;
+use /**
+ * This class represents a runtime exception that occurs during the execution of an application.
+ * It is part of the Symfony framework and extends from the base `RuntimeException` in PHP.
+ *
+ * Use this exception when an error arises that cannot be caught or anticipated at compile time,
+ * but rather during the actual runtime of a program.
+ *
+ * Common scenarios in which a `RuntimeException` might be used include:
+ * - Dependencies not found at runtime.
+ * - Unexpected state or logic errors encountered while executing the application.
+ * - Other critical runtime-specific issues.
+ *
+ * Extending or using this exception allows developers to represent and handle errors consistently
+ * throughout a Symfony-based application.
+ *
+ * @throws RuntimeException When a critical runtime error occurs that halts execution.
+ */
+    RuntimeException;
+use /**
+ * The HttpClient component in Symfony provides powerful features
+ * to make HTTP requests programmatically. It allows handling of
+ * GET, POST, PUT, DELETE, or any other HTTP methods and also supports
+ * advanced features like asynchronous requests, streaming responses,
+ * retries, and HTTP/2.
+ *
+ * The Symfony\Component\HttpClient\HttpClient class is used as
+ * the entry point for creating HTTP client instances.
+ *
+ * Features:
+ * - Making HTTP requests effectively.
+ * - Supports synchronous and asynchronous requests.
+ * - Streaming large responses to avoid memory overflows.
+ * - Low-level HTTP/2 and HTTP/1.1 handling.
+ * - Built-in support for retries and timeouts.
+ *
+ * This class also provides shortcuts for easily creating default
+ * HTTP clients with options like base URI, custom headers, or HTTP methods.
+ *
+ * Usage of this component requires installation of the symfony/http-client package.
+ */
+    Symfony\Component\HttpClient\HttpClient;
+use /**
+ * Interface CacheInterface
+ *
+ * This interface defines the contract for caching mechanisms used in Symfony applications.
+ * It provides methods for storing, retrieving, and computing values within a cache,
+ * ensuring efficient data storage and retrieval.
+ *
+ * Implementing classes are expected to handle cache invalidation and expiration
+ * according to an application's requirements.
+ *
+ * @package Symfony\Contracts\Cache
+ *
+ * Methods:
+ * - `get(string $key, callable $callback, float|null $beta = null)`: Retrieves the cached value for a given key or computes it if not found.
+ * - `delete(string $key): bool`: Clears a specific key from the cache.
+ */
+    Symfony\Contracts\Cache\CacheInterface;
+use /**
+ * Represents a cache item and provides methods to manipulate its state.
+ *
+ * The ItemInterface is implemented by cache items, allowing developers to interact
+ * with the cache storage (e.g., setting values, expiration time, tags) when using
+ * the Symfony Cache component.
+ *
+ * Implementations of this interface should ensure compliance with the PSR-6 standard.
+ */
+    Symfony\Contracts\Cache\ItemInterface;
 
+/**
+ * Class for handling API requests related to Salle entities and their associated data.
+ */
 class ApiWrapper
 {
         public const ASSOCIATIONS = [
