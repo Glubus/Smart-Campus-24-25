@@ -578,7 +578,7 @@ class SalleController extends AbstractController
                     $entityManager->remove($salle);
                 }
                 $entityManager->flush();
-                return $this->redirectToRoute('app_salle');
+                return $this->redirectToRoute('app_salle_liste');
             }
             else {
                 $this->addFlash('error', 'La saisie est incorrect.');

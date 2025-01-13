@@ -6,14 +6,13 @@
 
 {% block body %}
         <h1 class="titlePlan">Plans</h1>
-        <link rel="stylesheet" href="{{ asset('/styles/liste_plan.css') }}">
         <div class="containerPlan">
                 <div style="display: flex; justify-content: space-between">
                         <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
                         <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
                 </div>
                 <div class="listePlans">
-                        <div class="col">
+                        <div class="colPlan">
                                 {% for plan in col1 %}
                                         <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
                                                 <div class="planMainInfos">
@@ -26,7 +25,7 @@
                                         </div></a>
                                 {% endfor %}
                         </div>
-                        <div class="col">
+                        <div class="colPlan">
                                 {% for plan in col2 %}
                                         <a href="{{ path('app_plan_infos', {'id':plan.id}) }}"><div class="planBlock" id="card">
                                                 <div class="planMainInfos">

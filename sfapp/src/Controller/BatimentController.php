@@ -31,11 +31,14 @@ class   BatimentController extends AbstractController
         $index = 0;
         $col1 = [];
         $col2 = [];
+        $col3 = [];
         foreach ($batiments as $batiment) {
             if($index%2 == 0){
                 $col1[] = $batiment;
-            } else {
+            } elseif ($index%2 == 1) {
                 $col2[] = $batiment;
+            } else {
+                $col3[] = $batiment;
             }
             $index++;
         }
@@ -43,6 +46,7 @@ class   BatimentController extends AbstractController
         return $this->render('batiment/liste.html.twig', [
             'col1' => $col1,
             'col2' => $col2,
+            'col3' => $col3,
         ]);
         /*
         return $this->render('batiment/liste.html.twig', [

@@ -6,7 +6,6 @@
 
 {% block body %}
 <h1 class="titleBatiment">Batiments</h1>
-<link rel="stylesheet" href="{{ asset('/styles/liste_batiment.css') }}">
 <div class="containerBatiment">
         <div style="display: flex; justify-content: space-between">
                 <a href="{{ path('app_batiment_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
@@ -33,6 +32,24 @@
             </div>
             <div class="col">
                 {% for batiment in col2 %}
+                    <div class="batimentBlock" id="card">
+                        <div class="batimentMainInfos">
+                            {#  <div class="batimentTop">  #}
+                            <div style="display: flex; gap: 5px">
+                                <input class="checkboxBatiment" type="checkbox" value="{{ batiment.id }}">
+                                <p class="batimentName">{{ batiment.nom }}</p>
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="batimentContent" id="card-content">
+                            <p class="adresse">{{ batiment.adresse }}</p>
+                            <a class="batimentBtnModif" href="{{ path('app_batiment_modifier', {'id':batiment.id}) }}">Modifier</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for batiment in col3 %}
                     <div class="batimentBlock" id="card">
                         <div class="batimentMainInfos">
                             {#  <div class="batimentTop">  #}

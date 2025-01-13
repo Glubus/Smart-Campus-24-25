@@ -1,11 +1,9 @@
-{# templates/detail_plan/list.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Détails de la salle{% endblock %}
 
 {% block body %}
     <h1 class="titleSalles">Salles</h1>
-    <link rel="stylesheet" href="{{ asset('/styles/liste_salle_tech&adm.css') }}">
     <div class="containerSalles">
         <div style="width: 70%">
             {{ form_start(form) }}
@@ -16,11 +14,11 @@
             {{ form_end(form) }}
         </div>
         <div style="display: flex; justify-content: space-between">
-            <button class="btnAjout">Ajouter</button>
+            <a href="{{ path('app_salle_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
             <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
         </div>
         <div class="listeSalles">
-            <div class="col1">
+            <div class="col">
                 {% for item in col1 %}
                     <div class="salleBlock" id="card">
                         <div class="salleMainInfos">
@@ -85,7 +83,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="col2">
+            <div class="col">
                 {% for item in col2 %}
                     <div class="salleBlock" id="card">
                         <div class="salleMainInfos">
@@ -150,7 +148,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="col3">
+            <div class="col">
                 {% for item in col3 %}
                     <div class="salleBlock" id="card">
                         <div class="salleMainInfos">
