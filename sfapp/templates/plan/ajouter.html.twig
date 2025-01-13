@@ -1,1 +1,14 @@
 {% extends 'template/ajouter.html.twig' %}
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const div = document.getElementById("ajout_plan_Batiments");
+            if (div.innerHTML == '') {
+                const placeholder = document.createElement('label');
+                placeholder.innerHTML = "Aucun batiment disponible";
+                placeholder.setAttribute('style', 'color: grey');
+                div.appendChild(placeholder);
+            }
+        });
+    </script>
+{% endblock %}
