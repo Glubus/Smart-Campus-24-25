@@ -58,7 +58,7 @@ class TechnicienController extends AbstractController
         ]);
     }
     #[Route('/technicien/commentaires', name: 'app_technicien_commentaire')]
-    #[IsGranted('ROLE_TECHNICIEN')]
+    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
     public function viewCommentaires(
         Request $request,
         EntityManagerInterface $entityManager,
