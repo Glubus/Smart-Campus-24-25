@@ -31,7 +31,8 @@ class DetailPlanController extends AbstractController
         $salle_id = $request->query->get('salle');
 
         $salle = $em->getRepository(Salle::class)->find($salle_id);
-        $plan = $em->getRepository(Plan::class)->findBy(['nom' => $nom]);
+        $plan = $em->getRepository(Plan::class)->findOneBy(['nom' => $nom]);
+
         $detail_plan = new DetailPlan();
         $detail_plan->setSalle($salle);
         $detail_plan->setPlan($plan);
