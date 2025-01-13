@@ -40,9 +40,12 @@ class SalleController extends AbstractController
         $currentDateTime->modify('+1 hour');
         $arr = [];
         $form = $this->createForm(RechercheSalleType::class);
-        $batiment = $batimentRepository->findOneBy(['nom' => "Batiment D"]);
-        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
-            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        $batiments = $batimentRepository->findAll();
+        if (!$batiments){    throw $this->createNotFoundException('Aucun batiment trouvée');}
+        foreach ($batiments as $batiment ){
+            foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+                $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+            }
         }
         $salles = $salleRepository->findAll();
 
@@ -184,12 +187,14 @@ class SalleController extends AbstractController
     public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, DetailInterventionRepository $detailInterventionRepository): Response
     {
         $currentDateTime = new \DateTime('now');
-        $currentDateTime->modify('+1 hour');
         $arr=[];
         $form = $this->createForm(RechercheSalleType::class);
-        $batiment = $batimentRepository->findOneBy(['nom'=>"Batiment D"]);
-        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
-            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        $batiments = $batimentRepository->findAll();
+        if (!$batiments){    throw $this->createNotFoundException('Aucun batiment trouvée');}
+        foreach ($batiments as $batiment ){
+            foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+                $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+            }
         }
         $salles = $salleRepository->findAll();
 
@@ -291,8 +296,10 @@ class SalleController extends AbstractController
     public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository)
     {
         $salle = $salleRepository->find($id);
+        if ($salle==null){
+            throw $this->createNotFoundException('La salle spécifiée n\'existe pas.');
+        }
         $plans = $detailPlanRepository->findBy(['salle' => $salle]);
-
         $moyTemp = null; $moyCo2 = null; $moyHum = null;
         $tempVar = []; $co2Var = []; $humVar = [];
         $tempValue = null; $co2Value = null; $humValue = null;
