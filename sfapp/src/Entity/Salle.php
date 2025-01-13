@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\SalleRepository;
-use ContainerWYV09s8\getTranslation_ProviderFactory_NullService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,8 +30,6 @@ class Salle
     /**
      * @var Collection<int, ValeurCapteur>
      */
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
-    private Collection $valeurCapteurs;
 
     /**
      * @var Collection<int, DetailIntervention>
@@ -46,7 +43,6 @@ class Salle
     public function __construct()
     {
         $this->plans = new ArrayCollection();
-        $this->valeurCapteurs = new ArrayCollection();
         $this->detailInterventions = new ArrayCollection();
     }
 
@@ -146,35 +142,6 @@ class Salle
         return $this;
     }
 
-    /**
-     * @return Collection<int, ValeurCapteur>
-     */
-    public function getValeurCapteurs(): Collection
-    {
-        return $this->valeurCapteurs;
-    }
-
-    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
-    {
-        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
-            $this->valeurCapteurs->add($valeurCapteur);
-            $valeurCapteur->setSalle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
-    {
-        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
-            // set the owning side to null (unless already changed)
-            if ($valeurCapteur->getSalle() === $this) {
-                $valeurCapteur->setSalle(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, DetailIntervention>
