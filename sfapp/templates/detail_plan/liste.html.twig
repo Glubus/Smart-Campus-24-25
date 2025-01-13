@@ -109,7 +109,7 @@
                             <div class="circle-niveau">{{ salle.etage.niveau }}</div>
                             <div class="nom-salle">{{ salle.nom }}
                                 {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                                <a href="{{ path('app_dashboard_salle', { 'batiment' :salle.etage.batiment.nom, 'salle':salle.nom }) }}" class="btn btn-info btn-lg"  style="color: white; font-weight: bolder">
+                                <a href="{{ path('app_diagnostic_salle', { 'batiment' :salle.etage.batiment.nom, 'salle':salle.nom }) }}" class="btn btn-info btn-lg"  style="color: white; font-weight: bolder">
                                 <span class="fas fa-bar-chart"></span>
                                 </a>
                                 {% endif %}
@@ -198,7 +198,7 @@
             const selectedBatiment = batiments.find(b => b.id == selectedId);
 
             {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                diagnosticLink.href = `/admin/dashboard/${selectedBatiment.nom}`;
+                diagnosticLink.href = `/outils/diagnostic/${selectedBatiment.nom}`;
             {% endif %}
 
             if (selectedBatiment) {
