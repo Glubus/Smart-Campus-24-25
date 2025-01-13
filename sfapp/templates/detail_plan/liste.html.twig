@@ -61,11 +61,11 @@
 
             <div id="filter-etage" class="filter-etage {% if form.nom.vars.value is not empty %}hidden{% endif %}">
                 {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                    <a href="#" class="stats">
-                        <span class="fa fa-bar-chart"></span> Diagnostic du batiment
+                    <a href="#" class="stats btn btn-info btn-lg" style="color: white; font-weight: bold">
+                        <span class="fas fa-bar-chart"></span> Diagnostic du batiment
                     </a>
                 {% endif %}
-                <select id="batiment_selection" onchange="updateEtages()">
+                <select id="batiment_selection" onchange="updateEtages ()">
                     <option value="" disabled selected>selectionner un batiment</option>
                     {% for batiment in batiments %}
                         <option value="{{ batiment.id }}"
@@ -109,8 +109,8 @@
                             <div class="circle-niveau">{{ salle.etage.niveau }}</div>
                             <div class="nom-salle">{{ salle.nom }}
                                 {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                                <a href="{{ path('app_dashboard_salle', { 'batiment' :salle.etage.batiment.nom, 'salle':salle.nom }) }}" class="btn btn-info btn-lg">
-                                <span class="fa fa-bar-chart"></span>
+                                <a href="{{ path('app_dashboard_salle', { 'batiment' :salle.etage.batiment.nom, 'salle':salle.nom }) }}" class="btn btn-info btn-lg"  style="color: white; font-weight: bolder">
+                                <span class="fas fa-bar-chart"></span>
                                 </a>
                                 {% endif %}
                             </div>
@@ -198,7 +198,7 @@
             const selectedBatiment = batiments.find(b => b.id == selectedId);
 
             {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                diagnosticLink.href = `${selectedBatiment.nom}`;
+                diagnosticLink.href = `/admin/dashboard/${selectedBatiment.nom}`;
             {% endif %}
 
             if (selectedBatiment) {
