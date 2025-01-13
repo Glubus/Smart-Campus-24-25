@@ -110,43 +110,41 @@
             color: #666;
         }
     </style>
-
-    <!-- Header -->
     <div class="header">
-        <h1>Documentation - Utilisation des Formulaires</h1>
+        <h1><i class="fas fa-book-open"></i> Documentation - Utilisation des Formulaires</h1>
     </div>
 
     <!-- Links Section -->
     <div class="links-container">
         <div class="link-box">
-            <a href="{{ path('app_guide') }}">Guide Site</a>
+            <a href="{{ path('app_guide') }}"><i class="fas fa-info-circle"></i> Guide Site</a>
         </div>
         <div class="link-box">
-            <a href="{{ path('users_auth_ldap') }}">Guide SA</a>
+            <a href="{{ path('users_auth_ldap') }}"><i class="fas fa-shield-alt"></i> Guide SA</a>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="content">
-        <h2 class="text-center">Documentation - Utilisation des Formulaires</h2>
-        <p class="text-muted text-center">Veuillez suivre les étapes dans l'ordre pour éviter toute erreur dans la gestion des entités.</p>
+        <h2 class="text-center"><i class="fas fa-file-alt"></i> Documentation - Utilisation des Formulaires</h2>
+        <p class="text-muted text-center"><i class="fas fa-exclamation-circle"></i> Veuillez suivre les étapes dans l'ordre pour éviter toute erreur dans la gestion des entités.</p>
 
         <div class="accordion" id="accordionExample">
             <!-- Étape 1 -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingBatiments">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBatiments" aria-expanded="true" aria-controls="collapseBatiments">
-                        Étape 1 : Formulaire de Création de Bâtiments
+                        <i class="fas fa-building"></i> Étape 1 : Formulaire de Création de Bâtiments
                     </button>
                 </h2>
                 <div id="collapseBatiments" class="accordion-collapse collapse show" aria-labelledby="headingBatiments" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <p>Avant de créer une salle ou un plan, un bâtiment doit être enregistré dans le système. Le formulaire permet de renseigner :</p>
+                        <p><i class="fas fa-clipboard-list"></i> Avant de créer une salle ou un plan, un bâtiment doit être enregistré dans le système. Le formulaire permet de renseigner :</p>
                         <ul>
                             <li><strong>Nom :</strong> Nom du bâtiment.</li>
                             <li><strong>Adresse :</strong> Localisation complète du bâtiment.</li>
                             <li><a href="{{ path('app_batiment_ajouter') }}" class="btn btn-primary">
-                                    Accès au formulaire de création de batiment
+                                    <i class="fas fa-plus-circle"></i> Accès au formulaire de création de bâtiment
                                 </a></li>
                         </ul>
                     </div>
@@ -157,18 +155,18 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSalles">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSalles" aria-expanded="false" aria-controls="collapseSalles">
-                        Étape 2 : Formulaire de Création de Salles
+                        <i class="fas fa-door-closed"></i> Étape 2 : Formulaire de Création de Salles
                     </button>
                 </h2>
                 <div id="collapseSalles" class="accordion-collapse collapse" aria-labelledby="headingSalles" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <p>Une salle doit être associée à un bâtiment existant. Assurez-vous d'avoir créé un bâtiment avant de créer une salle. Le formulaire permet de renseigner :</p>
+                        <p><i class="fas fa-clipboard-list"></i> Une salle doit être associée à un bâtiment existant. Assurez-vous d'avoir créé un bâtiment avant de créer une salle. Le formulaire permet de renseigner :</p>
                         <ul>
                             <li><strong>Numéro :</strong> Numéro unique de la salle.</li>
                             <li><strong>Étage :</strong> L'étage où se situe la salle.</li>
                             <li><strong>Bâtiment :</strong> Sélection du bâtiment associé.</li>
                             <li><a href="{{ path('app_salle_ajouter') }}" class="btn btn-primary">
-                                    Accès au formulaire de création de salle
+                                    <i class="fas fa-plus-circle"></i> Accès au formulaire de création de salle
                                 </a></li>
                         </ul>
                     </div>
@@ -179,17 +177,17 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingPlans">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlans" aria-expanded="false" aria-controls="collapsePlans">
-                        Étape 3 : Formulaire de Création de Plans
+                        <i class="fas fa-map"></i> Étape 3 : Formulaire de Création de Plans
                     </button>
                 </h2>
                 <div id="collapsePlans" class="accordion-collapse collapse" aria-labelledby="headingPlans" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <p>Un plan doit être associé à une salle existante. Assurez-vous d'avoir créé une salle avant de créer un plan. Le formulaire permet de renseigner :</p>
+                        <p><i class="fas fa-clipboard-list"></i> Un plan doit être associé à une salle existante. Assurez-vous d'avoir créé une salle avant de créer un plan. Le formulaire permet de renseigner :</p>
                         <ul>
                             <li><strong>Date d'ajout :</strong> Date d'enregistrement du plan.</li>
                             <li><strong>Salle associée :</strong> Salle correspondant au plan.</li>
                             <li><a href="{{ path('app_plan_ajouter') }}" class="btn btn-primary">
-                                    Accès au formulaire de création de plan
+                                    <i class="fas fa-plus-circle"></i> Accès au formulaire de création de plan
                                 </a></li>
                         </ul>
                     </div>
@@ -200,17 +198,17 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSA">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSA" aria-expanded="false" aria-controls="collapseSA">
-                        Étape 4 : Formulaire de Création de Systèmes d'Acquisition
+                        <i class="fas fa-cogs"></i> Étape 4 : Formulaire de Création de Systèmes d'Acquisition
                     </button>
                 </h2>
                 <div id="collapseSA" class="accordion-collapse collapse" aria-labelledby="headingSA" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <p>Un système d'acquisition doit être associé à un plan existant. Assurez-vous d'avoir créé un plan avant de créer un système d'acquisition. Le formulaire permet de renseigner :</p>
+                        <p><i class="fas fa-clipboard-list"></i> Un système d'acquisition doit être associé à un plan existant. Assurez-vous d'avoir créé un plan avant de créer un système d'acquisition. Le formulaire permet de renseigner :</p>
                         <ul>
                             <li><strong>Nom :</strong> Identifiant du système.</li>
                             <li><strong>Plan associé :</strong> Plan auquel le système est lié.</li>
                             <li><a href="{{ path('app_sa_ajouter') }}" class="btn btn-primary">
-                                    Accès au formulaire de création de sa
+                                    <i class="fas fa-plus-circle"></i> Accès au formulaire de création de système d'acquisition
                                 </a></li>
                         </ul>
                     </div>
@@ -221,6 +219,10 @@
 
     <!-- Footer -->
     <div class="footer">
-        &copy; 2024 Documentation - Utilisation des Formulaires. Tous droits réservés.
+        <i class="fas fa-copyright"></i> 2024 Documentation - Utilisation des Formulaires. Tous droits réservés.
     </div>
+
+
+    <!-- Footer -->
+
 {% endblock %}
