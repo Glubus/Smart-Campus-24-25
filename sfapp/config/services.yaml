@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    username_api_iut: '%env(USERNAME_API_IUT)%'
+    password_api_iut: '%env(PASSWORD_API_IUT)%'
+    key_api_openweather: '%env(KEY_API_OPENWEATHER)%'
 
 services:
     # default configuration for services in *this* file

@@ -28,15 +28,3 @@ fi
 
 # Login to container as non-root user 
 USER ${USER_ID:-0}:${GROUP_ID:-0}
-
-# Installer les outils nécessaires
-RUN apt-get update && apt-get install -y \
-    curl gnupg
-
-# Ajouter le dépôt officiel Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-
-# Installer Yarn
-RUN apt update && apt install npm
-RUN apt-get update && apt-get install -y yarn
