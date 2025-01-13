@@ -184,7 +184,7 @@ class SalleController extends AbstractController
     }*/
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
-    public function infos(int $id, SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
+    public function infos(int $id,  SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
         $end = new \DateTime();

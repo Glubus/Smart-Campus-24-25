@@ -27,6 +27,9 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?int $radiateur = null;
 
+    /**
+     * @var Collection<int, ValeurCapteur>
+     */
 
     /**
      * @var Collection<int, DetailIntervention>
