@@ -43,7 +43,7 @@ class AjoutPlanType extends AbstractType
                 'attr' => [
                     'class' => 'form-control sa-searchable', // Optional: Add custom styles
                     'data-live-search' => 'true', // Optional: Add live search
-                    'style' => 'margin-left: 10px; display: flex; flex-direction: column;',
+                    'style' => 'margin-left: 10px; ',
                 ]
             ])
         ;
