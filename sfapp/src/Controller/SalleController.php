@@ -190,7 +190,6 @@ class SalleController extends AbstractController
         $end = new \DateTime();
         $start = (clone $end)->modify('-1 days'); // 7 jours avant
         $arr=[];
-        $val = $a->findDataForSalle2($id, $start, $end);
 
         if ($salle->getOnlySa() == -1){
             return $this->render('salle/infos-SansCapteur.html.twig', [
@@ -198,37 +197,10 @@ class SalleController extends AbstractController
             ]);
         }
         // Données des capteurs
-        foreach($val as $valeur) {;
-            $date=$valeur->getDateAjout()->format('Y-m-d H:i');
-
-
-            switch ($valeur->getType()) {
-                case TypeCapteur::TEMPERATURE:
-                    $arr[$date][TypeCapteur::TEMPERATURE->value] = $valeur->getValeur();
-                    break;
-                case TypeCapteur::HUMIDITE:
-                    $arr[$date][TypeCapteur::HUMIDITE->value] = $valeur->getValeur();
-                    break;
-                case TypeCapteur::LUMINOSITY:
-                    $arr[$date][TypeCapteur::LUMINOSITY->value] = $valeur->getValeur();
-                    break;
-                case TypeCapteur::CO2:
-                    $arr[$date][TypeCapteur::CO2->value] = $valeur->getValeur();
-                    break;
-            }
-            if (!isset($latestByType[$valeur->getType()->value]) || $date > $latestByType[$valeur->getType()->value]['date']) {
-                $latestByType[$valeur->getType()->value] = [
-                    'valeur' => $val,
-                    'date' => $date,
-                ];
-            }
-        }
-
-
 
         return $this->render('salle/infos.html.twig', [
             'salle' => $salle,
-            'data'=>$arr,
+            'data'=>$arr
         ]);
     }
 

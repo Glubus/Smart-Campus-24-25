@@ -83,27 +83,6 @@ class SA
         return $this->valCapteurs;
     }
 
-    public function addValCapteur(ValeurCapteur $valCapteur): static
-    {
-        if (!$this->valCapteurs->contains($valCapteur)) {
-            $this->valCapteurs->add($valCapteur);
-            $valCapteur->setSA($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValCapteur(ValeurCapteur $valCapteur): static
-    {
-        if ($this->valCapteurs->removeElement($valCapteur)) {
-            if ($valCapteur->getSA() === $this) {
-                $valCapteur->setSA(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getDetailPlan(): ?DetailPlan
     {
         return $this->detailPlan;
@@ -115,9 +94,6 @@ class SA
 
         return $this;
     }
-
-
-
 
 
 }
