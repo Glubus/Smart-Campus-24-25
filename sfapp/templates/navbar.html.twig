@@ -47,21 +47,21 @@
                         <a class="nav-link click-scroll" href="{{ path('app_guide') }}">Guide</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link click-scroll" href="{{ path('app_dashboard_salle') }}">Dashboard</a>
+                        <a class="nav-link click-scroll" href="{{ path('app_technicien_commentaire') }}">Commentaires</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link click-scroll" href="{{ path('app_technicien_commentaire') }}">Commentaires</a>
+                        <a class="nav-link click-scroll" href="{{ path('app_salle_liste') }}">Salles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link click-scroll" href="{{ path('app_sa_liste') }}">Sa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link click-scroll" href="{{ path('app_plan_liste') }}">Plan</a>
                     </li>
                 {% else %}
                     <!-- Navbar pour les autres rôles -->
                     <li class="nav-item">
                         <a class="nav-link click-scroll" href="{{ path('app_salle_user_liste') }}">Salles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link click-scroll" href="{{ path('app_gestion') }}">Gestion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link click-scroll" href="{{ path('app_batiment_liste') }}">Batiment</a>
                     </li>
 
 
