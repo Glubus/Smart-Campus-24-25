@@ -128,7 +128,7 @@
                                 <div class="actions">
                                     <i class="toggle caseBleu fas fa-eye" data-salle-id="{{ salle.id }}"></i>
                                     {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                                        <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'id' : plan_select.id}) }}" class="caseBleu material-icons" role="button">add_circle</a>
+                                        <a href="{{ path('app_lier_ajout', {'salle':salle.id, 'nom' : plan_select.nom}) }}" class="caseBleu material-icons" role="button">add_circle</a>
                                     {% endif %}
                                 </div>
                             </div>

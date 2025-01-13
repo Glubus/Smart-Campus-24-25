@@ -23,15 +23,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DetailPlanController extends AbstractController
 {
-    #[Route('/lier/{id}/ajout', name: 'app_lier_ajout')]
+    #[Route('/plan/{nom}/ajout', name: 'app_lier_ajout')]
     #[IsGranted('ROLE_CHARGE_DE_MISSION')]
-    public function ajouter(EntityManagerInterface $em, Request $request, int $id): Response
+    public function ajouter(EntityManagerInterface $em, Request $request, string $nom): Response
     {
         $sa_id = $request->query->get('sa_id');
         $salle_id = $request->query->get('salle');
 
         $salle = $em->getRepository(Salle::class)->find($salle_id);
-        $plan = $em->getRepository(Plan::class)->find($id);
+        $plan = $em->getRepository(Plan::class)->findBy(['nom' => $nom]);
         $detail_plan = new DetailPlan();
         $detail_plan->setSalle($salle);
         $detail_plan->setPlan($plan);
@@ -66,14 +66,14 @@ class DetailPlanController extends AbstractController
         ]);
     }
 
-    #[Route('/lier/{id}', name: 'app_lier_liste')]
+    #[Route('/plan/{nom}', name: 'app_lier_liste')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request, int $id): Response
+    public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request,  string $nom): Response
     {
         $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
 
-        $plan = $planRepo->findOneBy(['id' => $id]);
+        $plan = $planRepo->findOneBy(['nom' => $nom]);
 
         $salles = null;
         if($selected_batiment) {
@@ -143,7 +143,7 @@ class DetailPlanController extends AbstractController
         ]);
     }
 
-    #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
+    #[Route('/detail_plan/{id}/suppression', name: 'app_lier_suppression')]
     #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
@@ -181,7 +181,7 @@ class DetailPlanController extends AbstractController
             ]);
     }
 
-    #[Route('/lier/{id}/valider', name: 'app_lier_validation')]
+    #[Route('/detail_plan/{id}/valider', name: 'app_lier_validation')]
     #[IsGranted('ROLE_TECHNICIEN')]
     public function valider(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
