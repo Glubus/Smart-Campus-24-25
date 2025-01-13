@@ -38,9 +38,9 @@ class AjoutBatimentType extends AbstractType
                 'required' => true,
             ])
             ->add('nbEtages', ChoiceType::class, [
-                'label' => 'Nombre d\'étages',
+                'label' => 'Nombre de niveaux',
                 'label_attr' => ['class' => 'form-label text-primary'],
-                'choices' => array_combine(range(1, 100), range(1, 100)), // Dropdown with values 1 to 100
+                'choices' => array_combine(range(1, 10), range(1, 10)), // Dropdown with values 1 to 100
                 'attr' => ['class' => 'form-select'],
                 'required' => true,
             ])

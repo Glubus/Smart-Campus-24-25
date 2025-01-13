@@ -26,6 +26,7 @@
                                 <div class="batimentContent" id="card-content">
                                         <p class="adresse">{{ batiment.adresse }}</p>
                                         <a class="batimentBtnModif" href="{{ path('app_batiment_modifier', {'id':batiment.id}) }}">Modifier</a>
+                                        <a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>
                                 </div>
                         </div>
                 {% endfor %}
@@ -44,6 +45,7 @@
                         <div class="batimentContent" id="card-content">
                             <p class="adresse">{{ batiment.adresse }}</p>
                             <a class="batimentBtnModif" href="{{ path('app_batiment_modifier', {'id':batiment.id}) }}">Modifier</a>
+                            <a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -62,6 +64,7 @@
                         <div class="batimentContent" id="card-content">
                             <p class="adresse">{{ batiment.adresse }}</p>
                             <a class="batimentBtnModif" href="{{ path('app_batiment_modifier', {'id':batiment.id}) }}">Modifier</a>
+                            <a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>
                         </div>
                     </div>
                 {% endfor %}
