@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +30,20 @@ class TechnicienController extends AbstractController
         ]);
     }
 
+    /**
+     * Handles the display of tasks for a technician.
+     *
+     * Retrieves the currently logged-in technician and fetches their pending tasks.
+     * Provides a form to switch between viewing only pending tasks and all tasks.
+     *
+     * @param Request $request The HTTP request object.
+     * @param DetailInterventionRepository $repository The repository for fetching tasks.
+     * @param FormFactoryInterface $formFactory The form factory for creating the form.
+     *
+     * @return Response The response containing the rendered view with tasks and the form.
+     *
+     * @throws AccessDeniedException If the user is not authenticated as a technician.
+     */
     #[Route('/technicien/taches', name: 'app_technicien_taches')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
     public function viewTaches(Request $request,
