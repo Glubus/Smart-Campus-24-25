@@ -163,8 +163,10 @@ class   BatimentController extends AbstractController
     private function deleteBatiments(array $batiments, EntityManagerInterface $entityManager): void
     {
         foreach ($batiments as $batiment) {
-            foreach ($batiment->getSalles() as $salle) {
-                $entityManager->remove($salle);
+            foreach ($batiment->getEtages() as $etage) {
+                foreach ($etage->getSalles() as $salle) {
+                    $entityManager->remove($salle);
+                }
             }
             $entityManager->remove($batiment);
         }
