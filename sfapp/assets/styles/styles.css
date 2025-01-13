@@ -195,224 +195,6 @@ button:hover {
     color: #d1ecf1;
 }
 
-/* Divider Line (styles.css) */
-.line {
-    margin-top: 25px;
-    background: rgba(255, 255, 255, 0.7);
-    width: 2px;
-    height: 450px;
-}
-
-
-/* Styles spécifiques à accueil.css renommés pour éviter les conflits */
-
-/* Ancien body de accueil.css (renommé) */
-body.accueil {
-    width: 100%;
-    margin: 0;
-    background-color: rgb(173, 216, 230); /* Bleu clair initial */
-    transition: background-color 0.1s linear; /* Transition fluide */
-}
-
-/* Bandeau (accueil.css) */
-.banderole {
-    width: 100%;
-    position: absolute;
-    z-index: 1;
-}
-
-.logo {
-    width: 40%;
-}
-
-/* JouerInfos (accueil.css renvoyée sous classe dédiée pour accueil) */
-.jouerInfos-accueil {
-    margin-top: 80px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-}
-
-/* Bouton Jouer (accueil) */
-.boutonJouer-accueil {
-    color: white;
-    background: linear-gradient(45deg, #4E76E3, #1D50D7);
-    border-radius: 50px;
-    border: 2px solid white;
-    width: 420px;
-    height: 100px;
-    font-size: 48px;
-    text-shadow: 2px 2px 3px #3b82f6;
-    transition: background 0.3s ease;
-}
-
-.boutonJouer-accueil:hover {
-    border: 3px solid #00365D;
-    mso-border-shadow: yes;
-}
-
-/* Flèche (accueil.css) */
-.flech-accueil {
-    width: 110px;
-    height: 180px;
-}
-
-.sep-accueil {
-    width: 100%;
-}
-
-.titre1-accueil {
-    font-size: 55px;
-    margin-top: 50px;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 3px #3b82f6;
-}
-
-/* Paragraphes spécifiques pour accueil */
-.p1-accueil {
-    margin: auto;
-    text-align: justify;
-    margin-top: 50px;
-    color: white;
-    font-size: 30px;
-    width: 80%;
-}
-
-.sep2-accueil {
-    width: 100%;
-}
-
-.p2-accueil {
-    margin: auto;
-    margin-bottom: 200px;
-    text-align: justify;
-    margin-top: 50px;
-    color: white;
-    font-size: 30px;
-    width: 80%;
-}
-
-.flech2-accueil {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-/* Keyframes (restent intacts car aucune duplication dans styles.css) */
-@keyframes animateSprite {
-    0% {
-        background-position: -600px;
-    }
-    20% {
-        background-position: 0px;
-    }
-    25% {
-        background-position: -200px;
-    }
-    35% {
-        background-position: -400px;
-    }
-    40% {
-        background-position: -400px;
-    }
-    50% {
-        background-position: -200px;
-    }
-    60% {
-        background-position: -0px;
-    }
-    67% {
-        background-position: -600px;
-    }
-    100% {
-        background-position: -600px;
-    }
-}
-
-@keyframes swim {
-    0% {
-        transform: translate(0, 0);
-    }
-    20% {
-        transform: translate(calc(-50vw - 100px), 0);
-    }
-    25% {
-        transform: translate(calc(-50vw - 100px), 0);
-    }
-    35% {
-        transform: translate(calc(-50vw - 100px), -20vh);
-    }
-    50% {
-        transform: translate(-25vw, 15vh);
-    }
-    60% {
-        transform: translate(-25vw, -20vh);
-    }
-    67% {
-        transform: translate(-25vw, -20vh);
-    }
-    100% {
-        transform: translate(calc(-100vw - 300px), 0);
-    }
-}
-
-/* Ocean Styles */
-.ocean {
-    position: fixed;
-    z-index: -3;
-    width: 100%;
-    height: 100vh;
-    background-image: linear-gradient(0deg, #182848, #2980b9);
-}
-
-/* Bubble animations */
-.bubble {
-    width: 30px;
-    height: 30px;
-    border-radius: 100%;
-    position: absolute;
-    background-color: white;
-    bottom: -30px;
-    opacity: 0.2;
-    animation: bubble 15s ease-in-out infinite, sideWays 4s ease-in-out infinite alternate;
-}
-
-@keyframes bubble {
-    0% {
-        transform: translateY(0%);
-        opacity: 0.06;
-    }
-    100% {
-        transform: translateY(-120vh);
-    }
-}
-
-@keyframes sideWays {
-    0% {
-        margin-left: 0px;
-    }
-    100% {
-        margin-left: 200px;
-    }
-}
-
-/* Individual bubble classes */
-.bubble--1 {
-    left: 10%;
-    animation-delay: 0.5s;
-    animation-duration: 16s;
-    opacity: 0.2;
-}
-
-/* Text and conclusion-specific styles */
-.text-white-conclusion {
-    color: white;
-}
-
 .conclusionInfos-accueil {
     margin-top: 20px;
     height: 600px;
@@ -428,6 +210,12 @@ body.accueil {
 }
 
 
+
+
+
+/*
+
+ */
 
 .accueil {
     margin-left: 15px;
@@ -477,52 +265,6 @@ body.accueil {
     appearance: none; // Fix appearance for date inputs in Safari
     background-clip: padding-box;
 
-}
-/* Bandeau principal */
-.bandeau-accueil {
-    position: relative; /* Permet un positionnement absolu des enfants */
-    width: 100%;
-    height: 300px; /* Hauteur du bandeau (ajustez selon vos besoins) */
-    background-image: url("../img/logo-iut.png"); /* Image de fond du bandeau */
-    background-size: cover; /* L'image couvre tout l'espace */
-    background-position: center; /* Centrer l'image */
-    display: flex; /* Pour positionner les éléments au centre */
-    justify-content: center; /* Centre horizontalement */
-    align-items: center; /* Centre verticalement */
-    overflow: hidden;
-}
-
-/* Assombrir l'image de fond */
-.bandeau-accueil:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Couche assombrie (ajustez l'opacité si nécessaire) */
-    z-index: 1; /* Positionne la couche au-dessus de l'image de fond */
-}
-
-/* Conteneur des éléments du bandeau */
-.bandeau-overlay-accueil {
-    position: relative;
-    z-index: 2; /* Pour que les éléments soient au-dessus de l'assombrissement */
-    text-align: center; /* Centrer le texte et le logo */
-}
-
-/* Style du logo */
-.bandeau-logo-accueil {
-    width: 100px; /* Taille du logo (ajustez selon vos besoins) */
-    margin-bottom: 20px; /* Espacement entre le logo et le titre */
-}
-
-/* Style du titre */
-.bandeau-title-accueil {
-    font-size: 36px; /* Taille du titre */
-    color: #ffffff; /* Texte en blanc */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Effet d'ombre sur le texte */
-    margin: 0;
 }
 
 /* Styles pour le bandeau avec une image de fond */
@@ -832,6 +574,13 @@ h3{
     background-color: #ffffff; /* Fond blanc */
     transition: all 0.3s ease; /* Animation au survol */
 }
+
+
+
+
+
+
+
 
 
 
