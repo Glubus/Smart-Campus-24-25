@@ -181,7 +181,6 @@ class GestionController extends AbstractController
         $count = $this->formateLastValue($wrapper->requestSalleLastValueByDateAndInterval($salle));
 
 
-
         // Logique principale, si les données ne sont pas dans le cache
         $dateIntervalEnd = (new \DateTime('now'))->modify('+1 day +1 hour');
         $dateIntervalStart = (clone $dateIntervalEnd)->modify("-". $period." day"); // Soustraire $period jours

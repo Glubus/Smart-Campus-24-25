@@ -189,7 +189,7 @@ private CacheInterface $cache;
 
     public function requestSalleLastValueByDateAndInterval(Salle $salle): array
     {
-        $end = (new DateTime('now'))->modify('+1 hour');
+        $end = (new DateTime('now'));
         $start = (clone $end)->modify('-1 hour');
         $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
         $temporaryArr = [];
@@ -203,7 +203,6 @@ private CacheInterface $cache;
                     if (isset($result['dateCapture'])) {
                         try {
                             $date = new DateTime($result['dateCapture']);
-
                             if ($date >= $start && $date <= $end) {
                                 $temporaryArr[] = ($result); // Ajoute uniquement si elle est valide
                             }
@@ -215,6 +214,7 @@ private CacheInterface $cache;
             }
 
         }
+
         return $temporaryArr;
     }
 
