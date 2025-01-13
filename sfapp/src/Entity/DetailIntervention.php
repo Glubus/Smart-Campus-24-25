@@ -21,8 +21,7 @@ class DetailIntervention
     #[ORM\ManyToOne(inversedBy: 'detailInterventions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Salle $salle = null;
-    #[ORM\Column(type: 'string', length: 255, enumType: EtatIntervention::class)]
-    private ?EtatIntervention $etat = null;
+
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateAjout = null;
