@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}Diagnostic de {{ batiment }}{% endblock %}
 {% block body %}
     <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
     <header>
@@ -128,7 +128,7 @@
                         <tbody>
                         {% for salle, raison in weirdData %}
                             <tr>
-                                <td><a href="{{ path('app_dashboard_salle', {'batiment' : batiment, 'salle' : salle } ) }}">{{ salle }}</a></td>
+                                <td><a href="{{ path('app_diagnostic_salle', {'batiment' : batiment, 'salle' : salle } ) }}">{{ salle }}</a></td>
                                 <td>{{ raison }}</td>
                             </tr>
                         {% endfor %}

@@ -171,8 +171,8 @@ class GestionController extends AbstractController
 
     }
 
-    #[Route('/admin/dashboard/{batiment}/{salle}', name: 'app_dashboard_salle')]
-        public function dashboardSalle(string $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
+    #[Route('/outils/diagnostic/{batiment}/{salle}', name: 'app_diagnostic_salle')]
+        public function diagnosticSalle(string $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
                                    SalleRepository $salleRepository, Request $req, int $period = 7): Response
     {
         $period = $req->get('period');
@@ -241,10 +241,10 @@ class GestionController extends AbstractController
         ];
 
         // Rendre les données mises en cache dans la vue
-        return $this->render('gestion/dashboard_salle.html.twig', $cachedData);
+        return $this->render('gestion/diagnostic_salle.html.twig', $cachedData);
     }
-    #[Route('/admin/dashboard/{batiment}', name: 'app_dashboard')]
-    public function dashboard(string $batiment, ApiWrapper $wrapper, BatimentRepository $bat, SalleRepository $salleRepository, CacheInterface $cache, Request $req, int $period = 7): Response
+    #[Route('/outils/diagnostic/{batiment}', name: 'app_diagnostic_batiment')]
+    public function diagnosticBatiment(string $batiment, ApiWrapper $wrapper, BatimentRepository $bat, SalleRepository $salleRepository, CacheInterface $cache, Request $req, int $period = 7): Response
     {
             $period = $req->get('period');
             if (!$period){$period=7;}
@@ -262,7 +262,7 @@ class GestionController extends AbstractController
             $tempData = [];
             $humidityData = [];
             $gasData = [];
-         $data = $wrapper->transform($data);
+            $data = $wrapper->transform($data);
             foreach ($data as $day => $values) {
                 // Convertir et ajouter les données si disponibles
                 $tempData[] = isset($values['temp']) ? (float) $values['temp'] : null;
@@ -296,7 +296,6 @@ class GestionController extends AbstractController
 
             $weirdData = $wrapper->detectBizarreStations($bat);
             $tempOutside = $wrapper->getTempOutsideByAPI();
-
             // Regrouper toutes les données calculées dans un tableau pour le cache
             $cachedData= [
                 'co2_data' => json_encode($co2Data),
@@ -312,7 +311,7 @@ class GestionController extends AbstractController
             ];
 
         // Rendre les données mises en cache dans la vue
-        return $this->render('gestion/dashboard.html.twig', $cachedData);
+        return $this->render('gestion/diagnostic_batiment.html.twig', $cachedData);
     }
 
     // array = [total,count]

@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use function PHPUnit\Framework\isNull;
 
 class   BatimentController extends AbstractController
@@ -25,6 +26,7 @@ class   BatimentController extends AbstractController
     private const CONFIRMATION_PHRASE = 'CONFIRMER';
 
     #[Route('/batiment', name: 'app_batiment_liste')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function liste(EntityManagerInterface $entityManager): Response
     {
         $batiments = $entityManager->getRepository(Batiment::class)->findAll();
@@ -59,6 +61,7 @@ class   BatimentController extends AbstractController
     }
 
     #[Route('/batiment/{id}', name: 'app_batiment_infos', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function infos(int $id, BatimentRepository $repository): Response
     {
         $batiment = $repository->find($id);
@@ -72,6 +75,7 @@ class   BatimentController extends AbstractController
         ]);
     }
     #[Route('/batiment/modifier/{id}', name: 'app_batiment_modifier')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function modifier(int $id, Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
     {
         $batiment = $batimentRepository->find($id);
@@ -86,6 +90,7 @@ class   BatimentController extends AbstractController
     }
 
     #[Route('/batiment/ajouter', name: 'app_batiment_ajouter')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function ajouter(Request $request, BatimentRepository $repository, EntityManagerInterface $entityManager): Response
     {
         $batimentId = $request->get('batiment');
@@ -127,6 +132,7 @@ class   BatimentController extends AbstractController
     }
 
     #[Route('/batiment/{id}/suppression', name: 'app_batiment_suppression')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function supprimer(Request $request, BatimentRepository $repository, EntityManagerInterface $entityManager, SessionInterface $session): Response
     {
         $selectedIds = $this->getSelectedIds($request, $session, 'selected_batiment');
@@ -217,6 +223,7 @@ class   BatimentController extends AbstractController
         return new JsonResponse(['maxEtages' => $maxEtages]);
     }
     #[Route('/batiment/supprimer-selection', name: 'app_batiment_supprimer_selection', methods: ['POST', 'GET'])]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function suppSelection(
         Request $request,
         BatimentRepository $batimentRepository,
