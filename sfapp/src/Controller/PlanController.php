@@ -29,13 +29,14 @@ class PlanController extends AbstractController
     {
         $plans=$repo->findAll();
         $index = 0;
-        $col1 = [];
-        $col2 = [];
+        $col1 = []; $col2 = []; $col3 = [];
         foreach ($plans as $plan) {
             if($index%2 == 0){
                 $col1[] = $plan;
-            } else {
+            } elseif ($index%2 == 1) {
                 $col2[] = $plan;
+            } else {
+                $col3[] = $plan;
             }
             $index++;
         }
@@ -43,6 +44,7 @@ class PlanController extends AbstractController
         return $this->render('plan/liste.html.twig', [
             'col1' => $col1,
             'col2' => $col2,
+            'col3' => $col3,
         ]);
     }
 
