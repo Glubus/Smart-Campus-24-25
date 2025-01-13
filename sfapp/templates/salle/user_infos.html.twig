@@ -8,10 +8,23 @@
         {% if data is not null %}
             <h2 style="text-align: center; margin-bottom: 10px;">Recommandations</h2>
             <div class="salleUserInfosConseils">
-                {% if conseilGeneral %}
+                {% if conseilGeneral  %}
                     <p>{{ conseilGeneral }}</p>
+                {% elseif data is not null %}
+                    {% for plan in data %}
+                        {% if plan.conseil.temp.texte %}
+                            <p>{{ plan.conseil.temp.texte }}</p>
+                        {% endif %}
+                        {% if plan.conseil.co2.texte  %}
+                            <p>{{ plan.conseil.co2.texte }}</p>
+                        {% endif %}
+                        {% if plan.conseil.humi.texte %}
+                            <p>{{ plan.conseil.humi.texte }}</p>
+                        {% endif %}
+                    {% endfor %}
                 {% else %}
-                    <p>Aucun conseil pour l'instant.<br/>Vous pouvez visualiser les conseils de chaque donnée en laissant votre souris dessus !</p>
+                    <p>Aucun conseil pour l'instant.<br/>Vous pouvez visualiser les
+                        conseils de chaque donnée en laissant votre souris dessus !</p>
                 {% endif %}
             </div>
         {% endif %}

@@ -21,8 +21,6 @@ class SA
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
-    private Collection $valCapteurs;
 
     #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
     private ?DetailPlan $detailPlan = null;

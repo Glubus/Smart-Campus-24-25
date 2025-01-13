@@ -31,8 +31,6 @@ class Salle
     /**
      * @var Collection<int, ValeurCapteur>
      */
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
-    private Collection $valeurCapteurs;
 
     /**
      * @var Collection<int, DetailIntervention>

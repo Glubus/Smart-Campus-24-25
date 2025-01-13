@@ -13,7 +13,6 @@ use App\Repository\DetailPlanRepository;
 use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\SARepository;
-use App\Repository\ValeurCapteurRepository;
 use App\Service\ApiWrapper;
 use App\Service\Conseils;
 use DateTime;
@@ -185,7 +184,7 @@ class SalleController extends AbstractController
     }*/
 
     #[Route('/salle/{id}', name: 'app_salle_infos', requirements: ['id' => '\d+'])]
-    public function infos(int $id, ValeurCapteurRepository $a,SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
+    public function infos(int $id,  SalleRepository $aRepo, DetailPlanRepository $planRepository): Response
     {
         $salle = $aRepo->find($id);
         $end = new \DateTime();
