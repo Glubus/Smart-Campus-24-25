@@ -15,7 +15,6 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-
     #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
     private Collection $detailPlans;
     #[ORM\Column(length: 20)]
