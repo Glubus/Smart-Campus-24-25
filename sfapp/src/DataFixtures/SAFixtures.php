@@ -10,7 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 class SAFixtures extends Fixture
 {
     public const ASSOCIATIONS = [
-        "D205" => "ESP-004",
+            "D205" => "ESP-004",
         "D206" => "ESP-008",
         "D207" => "ESP-006",
         "D204" => "ESP-014",

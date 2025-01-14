@@ -6,7 +6,7 @@
 
 {% block body %}
         <h1 class="titlePlan">Plans</h1>
-        <div class="containerPlan">
+        <div class="containerPlan" style="color:black">
                 <div style="display: flex; justify-content: space-between">
                         {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                         <a href="{{ path('app_plan_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
