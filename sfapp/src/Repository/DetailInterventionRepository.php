@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Batiment;
 use App\Entity\DetailIntervention;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -36,6 +37,18 @@ class DetailInterventionRepository extends ServiceEntityRepository
             ->andWhere('d.etat != :etatTerminee')
             ->setParameter('etatTerminee', 'terminée') // Replace with the actual value representing the "Terminee" state
             ->orderBy('d.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByBatiment(Batiment $batiment): array
+    {
+        return $this->createQueryBuilder('di')
+            ->join('di.salle', 's')
+            ->join('s.etage', 'e')
+            ->where('e.batiment = :batiment')
+            ->setParameter('batiment', $batiment)
+            ->orderBy('di.dateAjout', 'DESC')
             ->getQuery()
             ->getResult();
     }

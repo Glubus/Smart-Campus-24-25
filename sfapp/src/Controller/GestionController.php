@@ -13,6 +13,8 @@ use App\Form\AssociationSASalle;
 use App\Form\AjoutSAType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
+use App\Repository\DetailInterventionRepository;
+use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\UtilisateurRepository;
 use App\Service\ApiWrapper;
@@ -84,7 +86,6 @@ class GestionController extends AbstractController
     public function gestion_technicien(Request $request, UtilisateurRepository $entityManager): Response
     {
         $items = $entityManager->findByRole('ROLE_USER');
-
         return $this->render('gestion/liste.html.twig', [
             'css' => 'technicien',
             'classItem' => "technicien",
@@ -172,33 +173,41 @@ class GestionController extends AbstractController
     }
 
     #[Route('/outils/diagnostic/{batiment}/{salle}', name: 'app_diagnostic_salle')]
-        public function diagnosticSalle(string $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
-                                   SalleRepository $salleRepository, Request $req, int $period = 7): Response
-    {
-        $period = $req->get('period');
-        if (!$period){$period=7;}
-        $salle=$salleRepository->findOneBy(['nom'=>$salle]);
-        $count = $this->formateLastValue($wrapper->requestSalleLastValueByDateAndInterval($salle));
+    public function diagnosticSalle(
+        string $batiment,
+        string $salle,
+        ApiWrapper $wrapper,
+        CacheInterface $cache,
+        SalleRepository $salleRepository,
+        DetailInterventionRepository $detailInterventionRepository,
+        Request $req,
+        int $period = 7
+    ): Response {
+        $period = $req->get('period') ?? 7;
 
+        $salleEntity = $salleRepository->findOneBy(['nom' => $salle]);
+        if (!$salleEntity) {
+            throw $this->createNotFoundException("La salle spécifiée n'existe pas.");
+        }
 
-        // Logique principale, si les données ne sont pas dans le cache
+        $count = $this->formateLastValue($wrapper->requestSalleLastValueByDateAndInterval($salleEntity));
+
         $dateIntervalEnd = (new \DateTime('now'))->modify('+1 day +1 hour');
-        $dateIntervalStart = (clone $dateIntervalEnd)->modify("-". $period." day"); // Soustraire $period jours
+        $dateIntervalStart = (clone $dateIntervalEnd)->modify("-" . $period . " day");
 
-        $data = $wrapper->requestSalleByInterval($salle, 1,$dateIntervalStart->format('Y-m-d'),
-            $dateIntervalEnd->format('Y-m-d'));
+        $data = $wrapper->requestSalleByInterval($salleEntity, 1, $dateIntervalStart->format('Y-m-d'), $dateIntervalEnd->format('Y-m-d'));
+        $data = $wrapper->transform($data);
 
-        // Extraire les données : température, humidité et gaz
         $tempData = [];
         $humidityData = [];
         $gasData = [];
-        $data = $wrapper->transform($data);
+
         foreach ($data as $day => $values) {
-            // Convertir et ajouter les données si disponibles
-            $tempData[] = isset($values['temp']) ? (float) $values['temp'] : null;
-            $humidityData[] = isset($values['hum']) ? (float) $values['hum'] : null;
-            $gasData[] = isset($values['co2']) ? (float) $values['co2'] : null;
+            $tempData[] = isset($values['temp']) ? (float)$values['temp'] : null;
+            $humidityData[] = isset($values['hum']) ? (float)$values['hum'] : null;
+            $gasData[] = isset($values['co2']) ? (float)$values['co2'] : null;
         }
+
         $filteredTempData = array_filter($tempData, fn($temp) => !is_null($temp));
         $filteredHumidityData = array_filter($humidityData, fn($humidity) => !is_null($humidity));
         $filteredGasData = array_filter($gasData, fn($gas) => !is_null($gas));
@@ -211,8 +220,7 @@ class GestionController extends AbstractController
         $humidityDeviation = $this->calculateStandardDeviationToTarget($filteredHumidityData, 70);
         $gasDeviation = $this->calculateStandardDeviationToTarget($filteredGasData, 400);
 
-
-        $data = $wrapper->calculateAveragesByPeriod($data, $period."D");
+        $data = $wrapper->calculateAveragesByPeriod($data, $period . "D");
         $co2Data = [];
         $tempData = [];
         $humData = [];
@@ -222,96 +230,146 @@ class GestionController extends AbstractController
             $tempData[$date] = $values['temp'] ?? 0;
             $humData[$date] = $values['hum'] ?? 0;
         }
-        ;
+
         $tempOutside = $wrapper->getTempOutsideByAPI();
 
-        // Regrouper toutes les données calculées dans un tableau pour le cache
-        $cachedData= [
+        // Récupérer les commentaires associés à la salle
+        $detailInterventions = $detailInterventionRepository->findBy(['salle' => $salleEntity], ['dateAjout' => 'DESC']);
+
+        // Regrouper toutes les données calculées dans un tableau pour la vue
+        $cachedData = [
             'co2_data' => json_encode($co2Data),
             'temp_data' => json_encode($tempData),
             'hum_data' => json_encode($humData),
             'selectedPeriod' => $period,
-            'temp' => ['ecarttype' => $tempDeviation, 'mean' => $fixedTempMean, 'lastData' => $this->calculateAverage($count["temp"])],
-            'hum' => ['ecarttype' => $humidityDeviation, 'mean' => $fixedHumidityMean,'lastData' => $this->calculateAverage($count["hum"])],
-            'co2' => ['ecarttype' => $gasDeviation, 'mean' => $fixedGasMean,'lastData' => $this->calculateAverage($count["co2"])],
-            'tempOutside' =>$tempOutside,
-            'salle' => $salle->getNom(),
-            'batiment' => $batiment
+            'temp' => [
+                'ecarttype' => $tempDeviation,
+                'mean' => $fixedTempMean,
+                'lastData' => $this->calculateAverage($count["temp"])
+            ],
+            'hum' => [
+                'ecarttype' => $humidityDeviation,
+                'mean' => $fixedHumidityMean,
+                'lastData' => $this->calculateAverage($count["hum"])
+            ],
+            'co2' => [
+                'ecarttype' => $gasDeviation,
+                'mean' => $fixedGasMean,
+                'lastData' => $this->calculateAverage($count["co2"])
+            ],
+            'tempOutside' => $tempOutside,
+            'salle' => $salleEntity->getNom(),
+            'batiment' => $batiment,
+            'detailInterventions' => $detailInterventions, // Ajouter les interventions
         ];
 
-        // Rendre les données mises en cache dans la vue
         return $this->render('gestion/diagnostic_salle.html.twig', $cachedData);
     }
     #[Route('/outils/diagnostic/{batiment}', name: 'app_diagnostic_batiment')]
-    public function diagnosticBatiment(string $batiment, ApiWrapper $wrapper, BatimentRepository $bat, SalleRepository $salleRepository, CacheInterface $cache, Request $req, int $period = 7): Response
-    {
-            $period = $req->get('period');
-            if (!$period){$period=7;}
-            $bat = $bat->findOneBy(['nom'=>$batiment]);
-            $count = $this->formateLastValue($wrapper->requestAllSalleLastValueByDateAndInterval($bat, $salleRepository));
+    public function diagnosticBatiment(
+        string $batiment,
+        ApiWrapper $wrapper,
+        BatimentRepository $bat,
+        SalleRepository $salleRepository,
+        batimentRepository $batimentRepository,
+        EtageRepository $etageRepository,
+        CacheInterface $cache,
+        DetailInterventionRepository $detailInterventionRepository,
+        Request $req,
+        int $period = 7
+    ): Response {
+        $period = $req->get('period') ?? 7;
+
+        $batEntity = $batimentRepository->findOneBy(['nom' => $batiment]);
+        if (!$batEntity) {
+            throw $this->createNotFoundException("Le bâtiment spécifié n'existe pas.");
+        }
+
+        // Récupérer les étages du bâtiment
+        $etages = $etageRepository->findBy(['batiment' => $batEntity]);
+
+        // Récupérer les salles associées aux étages du bâtiment
+        $salles = [];
+        foreach ($etages as $etage) {
+            $salles = array_merge($salles, $salleRepository->findBy(['etage' => $etage]));
+        }
+
+        $count = $this->formateLastValue($wrapper->requestAllSalleLastValueByDateAndInterval($batEntity, $salleRepository));
+
+        $dateIntervalEnd = (new \DateTime('now'))->modify('+1 hour');
+        $dateIntervalStart = (clone $dateIntervalEnd)->modify("-{$period} day");
+
+        $data = $wrapper->requestAllSalleByIntervalv2($batEntity, $salleRepository, $dateIntervalStart, $dateIntervalEnd);
+
+        $tempData = [];
+        $humidityData = [];
+        $gasData = [];
+        $data = $wrapper->transform($data);
+        foreach ($data as $day => $values) {
+            $tempData[] = isset($values['temp']) ? (float)$values['temp'] : null;
+            $humidityData[] = isset($values['hum']) ? (float)$values['hum'] : null;
+            $gasData[] = isset($values['co2']) ? (float)$values['co2'] : null;
+        }
+
+        $filteredTempData = array_filter($tempData, fn($temp) => !is_null($temp));
+        $filteredHumidityData = array_filter($humidityData, fn($humidity) => !is_null($humidity));
+        $filteredGasData = array_filter($gasData, fn($gas) => !is_null($gas));
+
+        $fixedTempMean = $this->calculateMean($filteredTempData);
+        $fixedHumidityMean = $this->calculateMean($filteredHumidityData);
+        $fixedGasMean = $this->calculateMean($filteredGasData);
+
+        $tempDeviation = $this->calculateStandardDeviationToTarget($filteredTempData, 21);
+        $humidityDeviation = $this->calculateStandardDeviationToTarget($filteredHumidityData, 70);
+        $gasDeviation = $this->calculateStandardDeviationToTarget($filteredGasData, 400);
+
+        $data = $wrapper->calculateAveragesByPeriod($data, "{$period}D");
+        $co2Data = [];
+        $tempData = [];
+        $humData = [];
+        foreach ($data as $date => $values) {
+            $co2Data[$date] = $values['co2'] ?? 0;
+            $tempData[$date] = $values['temp'] ?? 0;
+            $humData[$date] = $values['hum'] ?? 0;
+        }
+
+        $weirdData = $wrapper->detectBizarreStations($batEntity);
+        $tempOutside = $wrapper->getTempOutsideByAPI();
+
+        // Récupérer les interventions associées au bâtiment
+        $detailInterventions = $detailInterventionRepository->findByBatiment($batEntity);
 
 
-            $dateIntervalEnd = (new \DateTime('now'))->modify('+1 hour');
-            $dateIntervalStart = (clone $dateIntervalEnd)->modify("-". $period." day"); // Soustraire $period jours
+        $cachedData = [
+            'co2_data' => json_encode($co2Data),
+            'temp_data' => json_encode($tempData),
+            'hum_data' => json_encode($humData),
+            'selectedPeriod' => $period,
+            'temp' => [
+                'ecarttype' => $tempDeviation,
+                'mean' => $fixedTempMean,
+                'lastData' => $this->calculateAverage($count['temp'])
+            ],
+            'hum' => [
+                'ecarttype' => $humidityDeviation,
+                'mean' => $fixedHumidityMean,
+                'lastData' => $this->calculateAverage($count['hum'])
+            ],
+            'co2' => [
+                'ecarttype' => $gasDeviation,
+                'mean' => $fixedGasMean,
+                'lastData' => round($this->calculateAverage($count['co2']))
+            ],
+            'tempOutside' => $tempOutside,
+            'weirdData' => $weirdData,
+            'batiment' => $batiment,
+            'salles' => $salles,
+            'detailInterventions' => $detailInterventions, // Ajouter les interventions
+        ];
 
-
-            $data = ($wrapper->requestAllSalleByIntervalv2($bat, $salleRepository, $dateIntervalStart, $dateIntervalEnd));
-
-            // Extraire les données : température, humidité et gaz
-            $tempData = [];
-            $humidityData = [];
-            $gasData = [];
-            $data = $wrapper->transform($data);
-            foreach ($data as $day => $values) {
-                // Convertir et ajouter les données si disponibles
-                $tempData[] = isset($values['temp']) ? (float) $values['temp'] : null;
-                $humidityData[] = isset($values['hum']) ? (float) $values['hum'] : null;
-                $gasData[] = isset($values['co2']) ? (float) $values['co2'] : null;
-            }
-            $filteredTempData = array_filter($tempData, fn($temp) => !is_null($temp));
-            $filteredHumidityData = array_filter($humidityData, fn($humidity) => !is_null($humidity));
-            $filteredGasData = array_filter($gasData, fn($gas) => !is_null($gas));
-
-            $fixedTempMean = $this->calculateMean($filteredTempData);
-            $fixedHumidityMean = $this->calculateMean($filteredHumidityData);
-            $fixedGasMean = $this->calculateMean($filteredGasData);
-
-            $tempDeviation = $this->calculateStandardDeviationToTarget($filteredTempData, 21);
-            $humidityDeviation = $this->calculateStandardDeviationToTarget($filteredHumidityData, 70);
-            $gasDeviation = $this->calculateStandardDeviationToTarget($filteredGasData, 400);
-
-
-            $data = $wrapper->calculateAveragesByPeriod($data, $period."D");
-            $co2Data = [];
-            $tempData = [];
-            $humData = [];
-
-            foreach ($data as $date => $values) {
-                $co2Data[$date] = $values['co2'] ?? 0;
-                $tempData[$date] = $values['temp'] ?? 0;
-                $humData[$date] = $values['hum'] ?? 0;
-            }
-
-
-            $weirdData = $wrapper->detectBizarreStations($bat);
-            $tempOutside = $wrapper->getTempOutsideByAPI();
-            // Regrouper toutes les données calculées dans un tableau pour le cache
-            $cachedData= [
-                'co2_data' => json_encode($co2Data),
-                'temp_data' => json_encode($tempData),
-                'hum_data' => json_encode($humData),
-                'selectedPeriod' => $period,
-                'temp' => ['ecarttype' => $tempDeviation, 'mean' => $fixedTempMean, 'lastData' => $this->calculateAverage($count["temp"])],
-                'hum' => ['ecarttype' => $humidityDeviation, 'mean' => $fixedHumidityMean,'lastData' => $this->calculateAverage($count["hum"])],
-                'co2' => ['ecarttype' => $gasDeviation, 'mean' => $fixedGasMean,'lastData' => round($this->calculateAverage($count["co2"]))],
-                'tempOutside' =>$tempOutside,
-                'weirdData' => $weirdData,
-                'batiment' => $batiment
-            ];
-
-        // Rendre les données mises en cache dans la vue
         return $this->render('gestion/diagnostic_batiment.html.twig', $cachedData);
     }
+
 
     // array = [total,count]
     private function calculateAverage(array $data, int $round=1){

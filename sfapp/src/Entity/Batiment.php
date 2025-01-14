@@ -24,9 +24,6 @@ class Batiment
     #[ORM\Column]
     private ?int $nbEtages = null;
 
-
-
-
     #[ORM\ManyToOne(inversedBy: 'batiments')]
     private ?Plan $plan = null;
 

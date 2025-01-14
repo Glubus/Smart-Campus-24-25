@@ -95,7 +95,7 @@
             <div class="left-column">
                 <div class="data-header">
 
-                    <h1>            <i class="fas fa-chart-line icon-mean"></i>Visualisation des Données</h1>
+                    <h1<i class="fas fa-chart-line icon-mean"></i>Visualisation des Données</h1>
 
                         <select id="timePeriod" onchange="updateCharts()">
                             <option value="1">Dernier Jour</option>
@@ -135,6 +135,85 @@
                         </tbody>
                     </table>
                 {% endif %}
+                <div >
+                    <div class="add-comment-section">
+                        <h2 class="h4 mb-3">Ajouter un commentaire</h2>
+                        <form method="post" action="{{ path('app_technicien_commentaire_ajout', {'id': app.user.id}) }}" class="shadow-sm p-4 rounded bg-light">
+                            <input type="hidden" name="batiment" value="{{ batiment }}" />
+
+                            <!-- Sélectionner une salle -->
+                            <div class="form-group mb-3">
+                                <label for="salle-select" class="form-label">Sélectionner une salle</label>
+                                <select name="salle" id="salle-select" class="form-control" required>
+                                    <option value="" disabled selected>Choisissez une salle</option>
+                                    {% for salle in salles %}
+                                        <option value="{{ salle.id }}">{{ salle.nom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Commentaire -->
+                            <div class="form-group mb-3">
+                                <label for="description" class="form-label">Commentaire</label>
+                                <textarea name="description" id="description" class="form-control" rows="4" placeholder="Écrivez votre commentaire ici..." required></textarea>
+                            </div>
+
+                            <!-- Bouton Ajouter -->
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Section des commentaires -->
+                    <div class="comment-section mt-4">
+                        <h3>Commentaires du bâtiment {{ batiment }}</h3>
+
+                        <!-- Filtrer par salle -->
+                        <div class="filter-salle mb-3">
+                            <form method="get" action="{{ path('app_diagnostic_batiment', {'batiment': batiment}) }}">
+                                <label for="filter-salle-select" class="form-label">Filtrer par salle</label>
+                                <select name="salle" id="filter-salle-select" class="form-control" onchange="this.form.submit()">
+                                    <option value="">Toutes les salles</option>
+                                    {% for salle in salles %}
+                                        <option value="{{ salle.id }}" selected>
+                                            {{ salle.nom }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+
+                        <!-- Liste des interventions -->
+                        {% if detailInterventions|length > 0 %}
+                            {% for intervention in detailInterventions %}
+                                <div style="border-bottom: 1px solid #ddd; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>{{ intervention.technicien.nom }}</strong>, {{ intervention.dateAjout|date('Y-m-d H:i') }}
+                                        <div style="padding: 10px">
+                                            Salle <strong>{{ intervention.salle.nom }}</strong> : {{ intervention.description }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Bouton Supprimer (si utilisateur autorisé) -->
+                                    {% if intervention.technicien.id == app.user.id or is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': intervention.id}) }}"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                              style="margin-left: 15px;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ intervention.id) }}">
+                                            <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="padding: 10px; text-align: center;">
+                                Aucun commentaire disponible pour ce bâtiment ou cette salle.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
         </section>
         <!-- Élément contenant les données JSON -->
