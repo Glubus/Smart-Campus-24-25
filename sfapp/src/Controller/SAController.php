@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\VarDumper\VarDumper;
 
 class SAController extends AbstractController
@@ -30,7 +31,8 @@ class SAController extends AbstractController
     public function modifier(int $id, SARepository $SARepository, EntityManagerInterface $entityManager,Request $request): Response
     {
         $SA=$SARepository->find($id);
-        if ($SA==null) {
+        if (!$SA)
+        {
             return new Response('Page Not Found', 404);
         }
         $form = $this->createForm(AjoutSAType::class, $SA);
@@ -94,6 +96,7 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa', name: 'app_sa_liste')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function lister(SARepository $saRepo, Request $request): Response
     {
         // Create the form for searching

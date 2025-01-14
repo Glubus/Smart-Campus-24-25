@@ -50,6 +50,15 @@ class TechnicienFixtures extends Fixture
         $technicien->generateUsername(); // Génération automatique du username
         $manager->persist($technicien);
 
+        $technicien = new Utilisateur();
+        $technicien->setNom('Axaz');
+        $technicien->setPrenom('Max');
+        $technicien->setEmail('Max.Axaz@example.com');
+        $technicien->setAdresse('2 rue de la petite etoile lorgnac ');
+        $technicien->setRoles(['ROLE_CHARGE_DE_MISSION']);
+        $technicien->setPassword($this->passwordHasher->hashPassword($technicien, '12345'));
+        $technicien->generateUsername(); // Génération automatique du username
+        $manager->persist($technicien);
 
         $technicien = new Utilisateur();
         $technicien->setNom('Benito');

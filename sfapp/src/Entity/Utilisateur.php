@@ -62,8 +62,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $prenomInitial = substr($this->prenom, 0, 1); // Prendre la première lettre du prénom
         $nomPart = substr($this->nom, 0, 5); // Prendre les cinq premières lettres du nom de famille
-        $digit = rand(0, 9); // Générer un chiffre aléatoire
-        $this->username=strtolower($prenomInitial . $nomPart . $digit);
+        $this->username=strtolower($prenomInitial . $nomPart);
     }
 
     public function getId(): ?int

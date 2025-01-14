@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AjoutSalleType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -34,15 +35,20 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
+    #[IsGranted('ROLE_TECHNICIEN')]
     public function index(BatimentRepository $batimentRepository, ApiWrapper $wrapper ,Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         $currentDateTime = new \DateTime('now');
         $currentDateTime->modify('+1 hour');
         $arr = [];
         $form = $this->createForm(RechercheSalleType::class);
-        $batiment = $batimentRepository->findOneBy(['nom' => "Batiment D"]);
-        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
-            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        $batiments = $batimentRepository->findAll();
+        if (!$batiments){    throw $this->createNotFoundException('Aucun batiment trouvée');}
+        foreach ($batiments as $batiment ){
+            foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+                $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+
+            }
         }
         $salles = $salleRepository->findAll();
 
@@ -182,12 +188,14 @@ class SalleController extends AbstractController
     public function indexUser(ApiWrapper $wrapper, Request $request, SalleRepository $salleRepository, BatimentRepository $batimentRepository, DetailInterventionRepository $detailInterventionRepository): Response
     {
         $currentDateTime = new \DateTime('now');
-        $currentDateTime->modify('+1 hour');
         $arr=[];
         $form = $this->createForm(RechercheSalleType::class);
-        $batiment = $batimentRepository->findOneBy(['nom'=>"Batiment D"]);
-        foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
-            $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+        $batiments = $batimentRepository->findAll();
+        if (!$batiments){    throw $this->createNotFoundException('Aucun batiment trouvée');}
+        foreach ($batiments as $batiment ){
+            foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
+                $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+            }
         }
         $salles = $salleRepository->findAll();
 
@@ -289,8 +297,10 @@ class SalleController extends AbstractController
     public function infosUser(ApiWrapper $wrapper, int $id, SalleRepository $salleRepository, DetailPlanRepository $detailPlanRepository)
     {
         $salle = $salleRepository->find($id);
+        if ($salle==null){
+            throw $this->createNotFoundException('La salle spécifiée n\'existe pas.');
+        }
         $plans = $detailPlanRepository->findBy(['salle' => $salle]);
-
         $moyTemp = null; $moyCo2 = null; $moyHum = null;
         $tempVar = []; $co2Var = []; $humVar = [];
         $tempValue = null; $co2Value = null; $humValue = null;

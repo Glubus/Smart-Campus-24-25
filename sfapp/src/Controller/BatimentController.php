@@ -225,7 +225,8 @@ class   BatimentController extends AbstractController
         return new JsonResponse(['maxEtages' => $maxEtages]);
     }
     #[Route('/batiment/supprimer-selection', name: 'app_batiment_supprimer_selection', methods: ['POST', 'GET'])]
-    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
+
+
     public function suppSelection(
         Request $request,
         BatimentRepository $batimentRepository,
