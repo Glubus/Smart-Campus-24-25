@@ -16,13 +16,7 @@ use App\Form\LdapLoginType;
 
 class GuideController extends AbstractController
 {
-//    private LdapService $ldapService;
-//
-//    public function __construct(LdapService $ldapService)
-//    {
-//        $this->ldapService = $ldapService;
-//    }
-
+    
     #[Route('/guide', name: 'app_guide')]
     public function show(): Response
     {
