@@ -15,7 +15,8 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
+
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle', cascade: ['remove'])]
     private Collection $detailPlans;
     #[ORM\Column(length: 20)]
     private ?string $nom = null;
@@ -27,13 +28,9 @@ class Salle
     private ?int $radiateur = null;
 
     /**
-     * @var Collection<int, ValeurCapteur>
-     */
-
-    /**
      * @var Collection<int, DetailIntervention>
      */
-    #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'salle')]
+    #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'salle', cascade: ['remove'])]
     private Collection $detailInterventions;
 
     #[ORM\ManyToOne(inversedBy: 'salles')]

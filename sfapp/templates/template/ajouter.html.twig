@@ -5,9 +5,9 @@
 {% block body %}
     <link rel="stylesheet" href="{{ asset('/styles/ajouter/'~ css ~'.scss') }}">
     <div class="container my-5 card-body">
-        <div class="card shadow">
+        <div class="card shadow full-width">
             <div class="card-body">
-                <h1 class="text-center mb-4">Ajouter une {{ classItem }}</h1>
+                <h1 class="text-center mb-4">Ajouter {{ classItem }}</h1>
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
                 {% for message in app.flashes('error') %}
@@ -20,8 +20,8 @@
                 {% endblock %}
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary mr-1 mt-1" role="button">Créer la {{ classItem }}</button>
-                    <a href="{{ path('app_'~classItem~'_liste')}}" class="btn btn-secondary mr-1 mt-1" role="button">Annuler</a>
+                    <a href="{{ path('app_'~classItem~'_liste')}}" class="btn btn-secondary mr-1 mt-1 action" role="button">Annuler</a>
+                    <button type="submit" class="btn btn-primary mr-1 mt-1 action" role="button">Créer</button>
                 </div>
                 {{ form_end(form) }}
             </div>

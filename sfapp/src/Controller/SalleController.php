@@ -71,14 +71,12 @@ class SalleController extends AbstractController
 
         $index = 0;
         foreach ($salles as $salle) {
-            $sa = null;
-            if(count($detailPlanRepository->findBy(['salle' => $salle])) == 1){
-                $sa = $detailPlanRepository->findOneBy(['salle' => $salle])->getSA()->getNom();
-            } else {
+            $sa = [];
+
                 foreach ($detailPlanRepository->findBy(['salle' => $salle]) as $detailPlan) {
                     $sa[] = $detailPlan->getSA();
                 }
-            }
+
             $etat = "Hors-Service";
             $colEtat = "#F30408";
             $data = ['temp' => null, 'date' => null, 'co2' => null, 'hum' => null];
@@ -376,6 +374,10 @@ class SalleController extends AbstractController
         'class' => Batiment::class, // Class of the entity
         'choice_label' => 'nom',   // Field to be displayed for each option (the name of the building)
         'label' => 'Bâtiments',  // Label for the field
+                'label_attr' => [
+                    'class' => 'form-label text-primary',
+                    'style' => 'margin-top: 10px;',
+                ],
         'placeholder' => 'Selectionner un batiment',
         'attr' => [
             'class' => 'form-control sa-searchable', // Optional: Add custom styles
@@ -383,9 +385,10 @@ class SalleController extends AbstractController
             'style' => 'margin-left: 10px; display: flex; flex-direction: column;',
             'id' => 'batiment_select',
         ]
-    ])
+        ])
             ->add('salle', AjoutSalleType::class, [
                 'batiment' => $selection,
+                'label' => false,
             ])
         ->getForm();
 
@@ -445,61 +448,7 @@ class SalleController extends AbstractController
             'salle' => $salle,
         ]);
     }
-    #[Route('/salle/supprimer-liees/{id}', name: 'app_salle_supprimer_liees', requirements: ['id' => '\d+'])]
-    public function supprimerSallesLiees(
-        int $id,
-        Request $request,
-        SalleRepository $salleRepository,
-        BatimentRepository $batimentRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        // Récupérer le bâtiment
-        $batiment = $batimentRepository->find($id);
 
-        // Vérifier si le bâtiment existe
-        if (!$batiment) {
-            $this->addFlash('error', 'Le bâtiment spécifié n\'existe pas.');
-            return $this->redirectToRoute('app_batiment_liste');
-        }
-
-        // Créer le formulaire de confirmation
-        $form = $this->createForm(SuppressionType::class, null, [
-            'phrase' => $batiment->getNom(), // Passer le nom du bâtiment comme phrase de confirmation
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer la saisie utilisateur
-            $submittedString = $form->get('inputString')->getData();
-
-            // Vérifier si la saisie correspond au nom du bâtiment
-            if ($submittedString === $batiment->getNom()) {
-                // Récupérer les salles associées
-                $salles = $salleRepository->findBy(['batiment' => $batiment]);
-
-                // Supprimer toutes les salles
-                foreach ($salles as $salle) {
-                    $entityManager->remove($salle);
-                }
-                $entityManager->flush();
-
-                // Ajouter un message de succès
-                $this->addFlash('success', 'Toutes les salles associées au bâtiment ont été supprimées.');
-
-                // Rediriger vers la liste des bâtiments
-                return $this->redirectToRoute('app_batiment_liste');
-            } else {
-                $this->addFlash('error', 'La saisie est incorrecte. Opération annulée.');
-            }
-        }
-
-        // Afficher le formulaire
-        return $this->render('salle/suppression_liees.html.twig', [
-            'form' => $form->createView(),
-            'batiment' => $batiment,
-        ]);
-    }
     #[Route('/salle/supprimer-selection', name: 'app_salle_supprimer_selection', methods: ['POST', 'GET'])]
     public function supprimerSelection(
         Request $request,
@@ -508,12 +457,12 @@ class SalleController extends AbstractController
         SessionInterface $session
     ): Response
     {
-        $ids = $request->request->all('selected_salles');
+        $ids = $request->request->all('selected');
         if(empty($ids)) {
-            $ids = $session->get('selected_salles', []);
+            $ids = $session->get('selected', []);
         }
         else
-            $session->set('selected_salles', $ids);
+            $session->set('selected', $ids);
 
         $salles = array_map(fn($id) => $salleRepository->find($id), $ids);
         $form = $this->createForm(SuppressionType::class, null, [
@@ -525,6 +474,9 @@ class SalleController extends AbstractController
             $submittedString = $form->get('inputString')->getData();
             if ($submittedString=='CONFIRMER'){
                 foreach ($salles as $salle ) {
+                    foreach ($salle->getDetailPlans() as $dp) {
+                        $entityManager->remove($dp);
+                    }
                     $entityManager->remove($salle);
                 }
                 $entityManager->flush();
@@ -535,9 +487,12 @@ class SalleController extends AbstractController
             }
         }
 
-        return $this->render('salle/suppression.html.twig', [
+        return $this->render('template/suppression.html.twig', [
             'form' => $form->createView(),
             'salles' => $salles,
+            'css' => 'common',
+            'classItem' => "salle",
+            'items' => $salles,
         ]);
     }
     #[Route('/salle/saAttribues/{id}', name: 'app_salle_sa')]
