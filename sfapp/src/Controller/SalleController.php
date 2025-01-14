@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AjoutSalleType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -34,6 +35,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
+    #[IsGranted('ROLE_TECHNICIEN')]
     public function index(BatimentRepository $batimentRepository, ApiWrapper $wrapper ,Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         $currentDateTime = new \DateTime('now');

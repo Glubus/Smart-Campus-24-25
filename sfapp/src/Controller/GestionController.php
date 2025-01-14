@@ -173,7 +173,7 @@ class GestionController extends AbstractController
 
     #[Route('/outils/diagnostic/{batiment}/{salle}', name: 'app_diagnostic_salle')]
         public function diagnosticSalle(string $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
-                                   SalleRepository $salleRepository, Request $req, int $period = 7): Response
+                                        SalleRepository $salleRepository, Request $req, int $period = 7): Response
     {
         $period = $req->get('period');
         if (!$period){$period=7;}

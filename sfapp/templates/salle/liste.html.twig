@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
