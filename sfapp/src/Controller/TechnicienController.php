@@ -58,7 +58,7 @@ class TechnicienController extends AbstractController
         ]);
     }
     #[Route('/technicien/commentaires', name: 'app_technicien_commentaire')]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
     public function viewCommentaires(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -121,7 +121,7 @@ class TechnicienController extends AbstractController
 
 
     #[Route('/technicien/commentaire/{id}', name: 'app_technicien_commentaire_ajout', methods: ['POST'])]
-    #[IsGranted('ROLE_TECHNICIEN')]
+    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
     public function addComment(
         int $id,
         Request $request,
@@ -140,7 +140,7 @@ class TechnicienController extends AbstractController
 
         if (!$description || !$salle) {
             $this->addFlash('error', 'Les champs sont obligatoires.');
-            return $this->redirectToRoute('app_technicien_commentaire');
+            return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_commentaire'));
         }
 
         $detailIntervention = new DetailIntervention();
@@ -154,12 +154,14 @@ class TechnicienController extends AbstractController
 
         $this->addFlash('success', 'Votre commentaire a été ajouté avec succès.');
 
-        return $this->redirectToRoute('app_technicien_commentaire');
+        // Rediriger vers la page précédente
+        return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_commentaire'));
     }
 
 
+
     #[Route('/technicien/commentaire/supprimer/{id}', name: 'app_technicien_commentaire_supprimer', methods: ['POST'])]
-    #[IsGranted('ROLE_TECHNICIEN')]
+    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
     public function supprimerCommentaire(
         int $id,
         DetailInterventionRepository $repository,
@@ -176,7 +178,7 @@ class TechnicienController extends AbstractController
         $technicien = $this->getUser();
 
         // Vérifiez que le commentaire appartient au technicien connecté
-        if ($commentaire->getTechnicien() !== $technicien) {
+        if ($commentaire->getTechnicien() !== $technicien or $this->isGranted('ROLE_CHARGE_DE_MISSION')) {
             $this->addFlash('error', 'Vous ne pouvez pas supprimer ce commentaire.');
             return $this->redirectToRoute('app_technicien_commentaire');
         }

@@ -110,11 +110,51 @@
 
             <!-- Colonne des SA bizarres -->
             <div class="right-column">
-                <div class="data-header">
-                    <h1>Commentaires</h1>
+                <div class="add-comment-section">
+                    <h2 class="h4 mb-3" style="color: black">Ajouter un commentaire</h2>
+                    <form method="post" action="{{ path('app_technicien_commentaire_ajout', {'id': app.user.id}) }}" class="shadow-sm p-4 rounded bg-light">
+                        <input type="hidden" name="salle" value="{{ salle }}" />
+                        <div class="form-group mb-3">
+                            <label for="description" class="form-label" style="color: black">Commentaire</label>
+                            <textarea name="description" id="description" class="form-control" rows="4" placeholder="Écrivez votre commentaire ici..." required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success ">Ajouter</button> <!-- Taille et espacement ajustés -->
+                        </div>
+                    </form>
                 </div>
+                <div><p>
+                    <h3>Commentaires sur la salle {{ salle }}</h3></p>
 
+                {% for intervention in detailInterventions %}
+                    <div style="color: black; border-bottom: 1px solid #000000; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
+                        <!-- Formulaire pour ajouter un commentaire -->
+
+                        <div>
+
+                            {{ intervention.technicien.nom }}, {{ intervention.dateAjout|date('Y-m-d H:i') }}
+                            <div style="padding: 10px">
+                                {{ intervention.salle.nom }} : {{ intervention.description }}
+                            </div>
+                        </div>
+                        {% if intervention.technicien.id == app.user.id or is_granted('ROLE_CHARGE_DE_MISSION') %}
+                            <!-- Bouton Supprimer -->
+                            <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': intervention.id}) }}"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                  style="margin-left: 15px;">
+                                <input type="hidden" name="_token" value="{{ csrf_token(intervention.id) }}">
+                                <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div style="padding: 10px; text-align: center;">
+                        Aucun commentaire disponible pour cette salle.
+                    </div>
+                {% endfor %}
             </div>
+            </div>
+
         </section>
         <!-- Élément contenant les données JSON -->
     </main>

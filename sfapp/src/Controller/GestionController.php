@@ -13,6 +13,8 @@ use App\Form\AssociationSASalle;
 use App\Form\AjoutSAType;
 use App\Form\SuppressionType;
 use App\Repository\BatimentRepository;
+use App\Repository\DetailInterventionRepository;
+use App\Repository\EtageRepository;
 use App\Repository\SalleRepository;
 use App\Repository\UtilisateurRepository;
 use App\Service\ApiWrapper;
@@ -84,7 +86,6 @@ class GestionController extends AbstractController
     public function gestion_technicien(Request $request, UtilisateurRepository $entityManager): Response
     {
         $items = $entityManager->findByRole('ROLE_USER');
-
         return $this->render('gestion/liste.html.twig', [
             'css' => 'technicien',
             'classItem' => "technicien",
@@ -199,19 +200,17 @@ class GestionController extends AbstractController
         $dateIntervalEnd = (new \DateTime('now'))->modify('+1 day'); // utilisé pour inclure aussi le jour actuelle
         $dateIntervalStart = (clone $dateIntervalEnd)->modify("-". $period." day"); // Soustraire $period jours
 
-        $data = $wrapper->requestSalleByInterval($salle, 1,$dateIntervalStart->format('Y-m-d'),
-            $dateIntervalEnd->format('Y-m-d'));
+        $data = $wrapper->requestSalleByInterval($salleEntity, 1, $dateIntervalStart->format('Y-m-d'), $dateIntervalEnd->format('Y-m-d'));
+        $data = $wrapper->transform($data);
 
-        // Extraire les données : température, humidité et gaz
         $tempData = [];
         $humidityData = [];
         $gasData = [];
-        $data = $wrapper->transform($data);
+
         foreach ($data as $day => $values) {
-            // Convertir et ajouter les données si disponibles
-            $tempData[] = isset($values['temp']) ? (float) $values['temp'] : null;
-            $humidityData[] = isset($values['hum']) ? (float) $values['hum'] : null;
-            $gasData[] = isset($values['co2']) ? (float) $values['co2'] : null;
+            $tempData[] = isset($values['temp']) ? (float)$values['temp'] : null;
+            $humidityData[] = isset($values['hum']) ? (float)$values['hum'] : null;
+            $gasData[] = isset($values['co2']) ? (float)$values['co2'] : null;
         }
 
         // Virée celle qui sont nulles
@@ -243,21 +242,36 @@ class GestionController extends AbstractController
         // temp dehors -> pour l'afficher
         $tempOutside = $wrapper->getTempOutsideByAPI();
 
-        // Regrouper toutes les données calculées dans un tableau pour le cache
-        $cachedData= [
+        // Récupérer les commentaires associés à la salle
+        $detailInterventions = $detailInterventionRepository->findBy(['salle' => $salleEntity], ['dateAjout' => 'DESC']);
+
+        // Regrouper toutes les données calculées dans un tableau pour la vue
+        $cachedData = [
             'co2_data' => json_encode($co2Data),
             'temp_data' => json_encode($tempData),
             'hum_data' => json_encode($humData),
             'selectedPeriod' => $period,
-            'temp' => ['ecarttype' => $tempDeviation, 'mean' => $fixedTempMean, 'lastData' => $this->calculateAverage($count["temp"])],
-            'hum' => ['ecarttype' => $humidityDeviation, 'mean' => $fixedHumidityMean,'lastData' => $this->calculateAverage($count["hum"])],
-            'co2' => ['ecarttype' => $gasDeviation, 'mean' => $fixedGasMean,'lastData' => $this->calculateAverage($count["co2"])],
-            'tempOutside' =>$tempOutside,
-            'salle' => $salle->getNom(),
-            'batiment' => $batiment->getNom()
+            'temp' => [
+                'ecarttype' => $tempDeviation,
+                'mean' => $fixedTempMean,
+                'lastData' => $this->calculateAverage($count["temp"])
+            ],
+            'hum' => [
+                'ecarttype' => $humidityDeviation,
+                'mean' => $fixedHumidityMean,
+                'lastData' => $this->calculateAverage($count["hum"])
+            ],
+            'co2' => [
+                'ecarttype' => $gasDeviation,
+                'mean' => $fixedGasMean,
+                'lastData' => $this->calculateAverage($count["co2"])
+            ],
+            'tempOutside' => $tempOutside,
+            'salle' => $salleEntity->getNom(),
+            'batiment' => $batiment,
+            'detailInterventions' => $detailInterventions, // Ajouter les interventions
         ];
 
-        // Rendre les données mises en cache dans la vue
         return $this->render('gestion/diagnostic_salle.html.twig', $cachedData);
     }
     #[Route('/outils/diagnostic/{batiment}', name: 'app_diagnostic_batiment')]
@@ -360,6 +374,7 @@ class GestionController extends AbstractController
         // Rendre les données mises en cache dans la vue
         return $this->render('gestion/diagnostic_batiment.html.twig', $cachedData);
     }
+
 
     // array = [total,count]
     private function calculateAverage(array $data, int $round=1){
