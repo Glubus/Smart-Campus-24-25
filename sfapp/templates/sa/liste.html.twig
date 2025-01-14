@@ -3,7 +3,7 @@
 {% block title %}Liste des batiments{% endblock %}
 
 {% block body %}
-<h1 class="titleBatiment">SA</h1>
+<h1 class="titleBatiment">Listes des SA</h1>
 <div class="containerBatiment">
     <div style="width: 70%">
         {{ form_start(form) }}
@@ -107,7 +107,7 @@
                 });
 
                 checkbox.addEventListener('change', toggleDeleteButton);
-            %});
+            });
 
             deleteButton.addEventListener('click', function () {
                 const form = document.createElement('form');

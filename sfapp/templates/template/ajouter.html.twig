@@ -7,12 +7,12 @@
     <div class="container my-5 card-body">
         <div class="card shadow full-width">
             <div class="card-body">
-                <h1 class="text-center mb-4">Ajouter {{ classItem }}</h1>
+                <h1 class="text-center mb-4">{{ Type }} {{ classItem }}</h1>
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
                 {% for message in app.flashes('error') %}
                     <div class="alert alert-danger mt-1">
-                        {{ message }}
+                        <p class="error" >{{ message }}</p>
                     </div>
                 {% endfor %}
 
