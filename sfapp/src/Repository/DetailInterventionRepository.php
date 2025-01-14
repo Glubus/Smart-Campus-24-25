@@ -53,6 +53,16 @@ class DetailInterventionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findTachesByTechnicienWithPagination( $limit, $offset)
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.dateAjout', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    public function findOneBySomeField($value): ?DetailIntervention
     //    {
     //        return $this->createQueryBuilder('d')

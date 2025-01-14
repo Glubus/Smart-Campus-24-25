@@ -55,7 +55,10 @@ class TechnicienController extends AbstractController
 
         // Fetch all buildings
         $batiments = $batimentRepository->findAll();
-        $taches = $repository->findAll();
+        $taches = $repository->findBy(
+            ['technicien' => $technicien], // Filtrage par technicien
+            ['dateAjout' => 'DESC'],        // Tri par date d'ajout, décroissant
+        );
 
 
         // Prepare diagnostics for each building
@@ -189,8 +192,8 @@ class TechnicienController extends AbstractController
         Request $request,
         DetailInterventionRepository $detailInterventionRepository
     ): JsonResponse {
-        $offset = (int) $request->query->get('offset', 0);
 
+        $offset = (int) $request->query->get('offset', 0);
         try {
             // Récupérer le technicien connecté
             $technicien = $this->getUser();
@@ -201,12 +204,11 @@ class TechnicienController extends AbstractController
             }
 
             // Récupérer les tâches pour le technicien donné, avec la pagination
-            $taches = $detailInterventionRepository->findBy(
-                ['technicien' => $technicien], // Filtrage par technicien
-                ['dateAjout' => 'DESC'],        // Tri par date d'ajout, décroissant
-                5,                              // Nombre de tâches à afficher à chaque appel AJAX
-                $offset                          // Offset pour la pagination
+            $taches = $detailInterventionRepository->findTachesByTechnicienWithPagination(
+                5, // Limite de résultats
+                $offset // Offset pour la pagination
             );
+
 
             if (!$taches) {
                 return new JsonResponse(['message' => 'Aucune tâche trouvée.'], 404);

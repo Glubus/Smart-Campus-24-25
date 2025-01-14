@@ -14,7 +14,7 @@
                     <h2>Bâtiment : {{ batiment }}</h2>
                     <div class="sallesrow">
                         {% for salle, issues in salles %}
-                            <div class="card" id="card">
+                            <div class="card" id="card" >
                                 <div class="cardMainInfos">
                                     <div class="card-top">
                                         <p class="room-name">{{ salle }}</p>
@@ -94,10 +94,10 @@
                     }) }}
                 </div>
 
-                <div>
+                <div class="mb-3 w-25 ">
                     {{ form_widget(form.submit, {
                         'attr': {
-                            'class': 'btn bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md'
+                            'class': 'btn btn-info  ', 'style width' : '50px'
                         }
                     }) }}
                 </div>
@@ -109,33 +109,32 @@
             <div>
                 <h2 class="text-2xl font-semibold text-gray-700 mb-4">Commentaires récents</h2>
 
-                {% for tache in taches [:5]%}
-
-                        <div class="border-b border-gray-300 py-4 flex justify-between items-start">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-2">{{ tache.technicien.nom }}, {{ tache.dateAjout|date('Y-m-d H:i') }}</p>
-                                <p class="text-gray-800">{{ tache.salle.nom }} : {{ tache.description }}</p>
-                            </div>
-                            {% if tache.technicien.id == technicien.id %}
-                                <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': tache.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token(tache.id) }}">
-                                    <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md">Supprimer</button>
-                                </form>
-                            {% endif %}
+                {% for tache in taches[:5] %}
+                    <div class="border-b border-gray-300 py-4 flex flex-col" style="border-bottom: 1px solid">
+                        <div class="flex justify-between items-center" style="display: flex">
+                            <p class="text-sm text-gray-600">{{ tache.technicien.nom }}, {{ tache.dateAjout|date('Y-m-d H:i') }}</p>
+                            <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': tache.id}) }}"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token(tache.id) }}">
+                                <button type="submit"
+                                        class="btn btn-danger px-4 py-2 text-sm"
+                                        style="width : 100%;">
+                                    Supprimer
+                                </button>
+                            </form>
                         </div>
+                        <p class="text-gray-800 mt-2">{{ tache.salle.nom }} : {{ tache.description }}</p>
+                    </div>
                 {% endfor %}
 
                 <div id="comments-container"></div>
-                <button id="voir-plus" class="btn bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md mt-4" data-id="{{ app.user.id }}" data-offset="0">Voir plus</button>
+                <button id="voir-plus" class="voir-plus btn btn-info" data-id="{{ app.user.id }}" data-offset="0">Voir plus</button>
             </div>
         </div>
     </div>
-    {% endblock %}
+{% endblock %}
 
-    {% block javascripts %}
-        <style>/* Container for the list of rooms */
-            /* Container for the list of rooms */
-        </style>
+{% block javascripts %}
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const cards = document.querySelectorAll(".card");
@@ -178,58 +177,64 @@
                     });
                 });
             });
+        </script>
+    <script>
+        const userId = "{{ app.user.id }}";
+        document.getElementById('voir-plus').addEventListener('click', function () {
+            const btn = this;
+            const offset = parseInt(btn.getAttribute('data-offset'), 10);
 
-            document.getElementById('voir-plus').addEventListener('click', function () {
-                const btn = this;
-                const technicienId = btn.getAttribute('data-technicien-id'); // ID du technicien
-                const offset = parseInt(btn.getAttribute('data-offset'), 10); // Offset actuel pour pagination
+            fetch(`/taches/${userId}/ajax?offset=${offset + 5}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log("ca rentre");
+                        throw new Error(`HTTP Error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        alert('No more tasks to display.');
+                        return;
+                    }
 
-                // Envoi de la requête AJAX pour récupérer les tâches
-                fetch(`/taches/${technicienId}/ajax?offset=${offset + 5}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Erreur HTTP! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (!Array.isArray(data) || data.length === 0) {
-                            alert('Aucune tâche à afficher.');
-                            return;
-                        }
+                    const container = document.getElementById('comments-container');
+                    data.forEach(tache => {
+                        const row = document.createElement('div');
+                        row.classList.add('border-b', 'border-gray-300', 'py-4', 'flex', 'justify-between', 'items-start');
 
-                        const container = document.getElementById('taches-container');
-                        data.forEach(tache => {
-                            const row = document.createElement('div');
-                            row.classList.add('border-b', 'border-gray-300', 'py-4', 'flex', 'justify-between', 'items-start');
+                        const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+                            dateStyle: 'short',
+                            timeStyle: 'short'
+                        }).format(new Date(tache.dateAjout));
 
-                            // Formatage de la date et de l'heure
-                            const formattedDate = new Intl.DateTimeFormat('fr-FR', {
-                                dateStyle: 'short',
-                                timeStyle: 'short'
-                            }).format(new Date(tache.dateAjout));
-
-                            row.innerHTML = `
-                    <div>
-                        <p class="text-sm text-gray-600 mb-2">${tache.nomTechnicien}, ${formattedDate}</p>
-                        <p class="text-gray-800">${tache.salleNom} : ${tache.description}</p>
-                    </div>
-                    <form method="post" action="/technicien/${technicienId}/commentaire-supprimer/${tache.id}"
+                        row.innerHTML = `
+                    <div  style="display: flex" >
+                        <p class="text-sm text-gray-600 mb-2">${tache.nomTechnicien}, ${formattedDate}<form method="post" action="/technicien/${userId}/commentaire-supprimer/${tache.id}"
                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
                         <input type="hidden" name="_token" value="${tache.id}">
-                        <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md">Supprimer</button>
-                    </form>
+<button type="submit"
+                                        class="btn btn-danger px-4 py-2 text-sm"
+                                        style="width : 100%;">
+                                    Supprimer
+                                </button>                    </form></p>
+                    </div>
+                    <div style="border-bottom: 1px solid;>
+                        <p class="text-gray-800">${tache.salleNom} : ${tache.description}</p>
+                    </div>
+
                 `;
-                            container.appendChild(row);
-                        });
-
-                        // Mise à jour de l'offset
-                        btn.setAttribute('data-offset', offset + data.length);
-                    })
-                    .catch(error => {
-                        console.error('Erreur AJAX :', error);
-                        alert('Une erreur est survenue lors du chargement des tâches.');
+                        container.appendChild(row);
                     });
-            });
 
-            {% endblock %}
+                    btn.setAttribute('data-offset', offset + data.length);
+                })
+                .catch(error => {
+                    console.error('AJAX Error:', error);
+                    alert('An error occurred while loading tasks.');
+                });
+        });
+
+    </script>
+
+{% endblock %}
