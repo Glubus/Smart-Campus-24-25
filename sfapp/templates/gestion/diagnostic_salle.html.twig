@@ -111,11 +111,11 @@
             <!-- Colonne des SA bizarres -->
             <div class="right-column">
                 <div class="add-comment-section">
-                    <h2 class="h4 mb-3">Ajouter un commentaire</h2>
+                    <h2 class="h4 mb-3" style="color: black">Ajouter un commentaire</h2>
                     <form method="post" action="{{ path('app_technicien_commentaire_ajout', {'id': app.user.id}) }}" class="shadow-sm p-4 rounded bg-light">
                         <input type="hidden" name="salle" value="{{ salle }}" />
                         <div class="form-group mb-3">
-                            <label for="description" class="form-label">Commentaire</label>
+                            <label for="description" class="form-label" style="color: black">Commentaire</label>
                             <textarea name="description" id="description" class="form-control" rows="4" placeholder="Écrivez votre commentaire ici..." required></textarea>
                         </div>
                         <div class="text-end">
@@ -127,7 +127,7 @@
                     <h3>Commentaires sur la salle {{ salle }}</h3></p>
 
                 {% for intervention in detailInterventions %}
-                    <div style="border-bottom: 1px solid #ddd; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: black; border-bottom: 1px solid #000000; padding: 5px; display: flex; justify-content: space-between; align-items: center;">
                         <!-- Formulaire pour ajouter un commentaire -->
 
                         <div>

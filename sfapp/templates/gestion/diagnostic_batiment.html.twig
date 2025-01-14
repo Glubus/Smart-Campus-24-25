@@ -166,18 +166,16 @@
                     </div>
 
                     <!-- Section des commentaires -->
-                    <div class="comment-section mt-4">
+                    <div class="feedback-section mt-4">
                         <h3>Commentaires du bâtiment {{ batiment }}</h3>
-
-
 
                         <!-- Liste des interventions -->
                         {% if detailInterventions|length > 0 %}
                             {% for intervention in detailInterventions %}
-                                <div style="border-bottom: 1px solid #ddd; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="feedback-item" style="color: black; border-bottom: 1px solid #000000; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <strong>{{ intervention.technicien.nom }}</strong>, {{ intervention.dateAjout|date('Y-m-d H:i') }}
-                                        <div style="padding: 10px">
+                                        <div class="feedback-details" style="padding: 10px">
                                             Salle <strong>{{ intervention.salle.nom }}</strong> : {{ intervention.description }}
                                         </div>
                                     </div>
@@ -186,32 +184,29 @@
                                     {% if intervention.technicien.id == app.user.id or is_granted('ROLE_CHARGE_DE_MISSION') %}
                                         <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': intervention.id}) }}"
                                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                                              class="feedback-delete-form"
                                               style="margin-left: 15px;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ intervention.id) }}">
-                                            <button type="submit" class="btn btn-danger" style="font-size: 14px;">Supprimer</button>
+                                            <button type="submit" class="btn btn-danger feedback-delete-btn" style="font-size: 14px;">Supprimer</button>
                                         </form>
                                     {% endif %}
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <div style="padding: 10px; text-align: center;">
+                            <div class="feedback-empty" style="padding: 10px; text-align: center;">
                                 Aucun commentaire disponible pour ce bâtiment ou cette salle.
                             </div>
                         {% endif %}
                     </div>
-                </div>
 
-            </div>
+
+                </div>
         </section>
         <!-- Élément contenant les données JSON -->
     </main>
 {% endblock %}
 
-{% block stylesheet %}
-    <style>
 
-    </style>
-{% endblock %}
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
