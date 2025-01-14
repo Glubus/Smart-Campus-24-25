@@ -169,20 +169,7 @@
                     <div class="comment-section mt-4">
                         <h3>Commentaires du bâtiment {{ batiment }}</h3>
 
-                        <!-- Filtrer par salle -->
-                        <div class="filter-salle mb-3">
-                            <form method="get" action="{{ path('app_diagnostic_batiment', {'batiment': batiment}) }}">
-                                <label for="filter-salle-select" class="form-label">Filtrer par salle</label>
-                                <select name="salle" id="filter-salle-select" class="form-control" onchange="this.form.submit()">
-                                    <option value="">Toutes les salles</option>
-                                    {% for salle in salles %}
-                                        <option value="{{ salle.id }}" selected>
-                                            {{ salle.nom }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </form>
-                        </div>
+
 
                         <!-- Liste des interventions -->
                         {% if detailInterventions|length > 0 %}
