@@ -35,11 +35,10 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
     public function index(BatimentRepository $batimentRepository, ApiWrapper $wrapper ,Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         $currentDateTime = new \DateTime('now');
-        $currentDateTime->modify('+1 hour');
         $arr = [];
         $form = $this->createForm(RechercheSalleType::class);
         $batiments = $batimentRepository->findAll();

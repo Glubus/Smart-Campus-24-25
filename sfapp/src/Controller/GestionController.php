@@ -173,8 +173,8 @@ class GestionController extends AbstractController
     }
 
     #[Route('/outils/diagnostic/{batiment}/{salle}', name: 'app_diagnostic_salle')]
-        public function diagnosticSalle(string $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
-                                   SalleRepository $salleRepository, BatimentRepository $batimentRepository, Request $req, int $period = 7): Response
+        public function diagnosticSalle(string          $batiment, string $salle, ApiWrapper $wrapper, CacheInterface $cache,
+                                        SalleRepository $salleRepository, BatimentRepository $batimentRepository, Request $req,DetailInterventionRepository $detailInterventionRepository, int $period = 7): Response
     {
 
         $period = $req->get('period'); // recupere l'attribut periode qui passe en get ?period=7 ou 1 ou 30
@@ -200,7 +200,7 @@ class GestionController extends AbstractController
         $dateIntervalEnd = (new \DateTime('now'))->modify('+1 day'); // utilisé pour inclure aussi le jour actuelle
         $dateIntervalStart = (clone $dateIntervalEnd)->modify("-". $period." day"); // Soustraire $period jours
 
-        $data = $wrapper->requestSalleByInterval($salleEntity, 1, $dateIntervalStart->format('Y-m-d'), $dateIntervalEnd->format('Y-m-d'));
+        $data = $wrapper->requestSalleByInterval($salle, 1, $dateIntervalStart->format('Y-m-d'), $dateIntervalEnd->format('Y-m-d'));
         $data = $wrapper->transform($data);
 
         $tempData = [];
@@ -243,7 +243,7 @@ class GestionController extends AbstractController
         $tempOutside = $wrapper->getTempOutsideByAPI();
 
         // Récupérer les commentaires associés à la salle
-        $detailInterventions = $detailInterventionRepository->findBy(['salle' => $salleEntity], ['dateAjout' => 'DESC']);
+        $detailInterventions = $detailInterventionRepository->findBy(['salle' => $salle], ['dateAjout' => 'DESC']);
 
         // Regrouper toutes les données calculées dans un tableau pour la vue
         $cachedData = [
@@ -267,8 +267,8 @@ class GestionController extends AbstractController
                 'lastData' => $this->calculateAverage($count["co2"])
             ],
             'tempOutside' => $tempOutside,
-            'salle' => $salleEntity->getNom(),
-            'batiment' => $batiment,
+            'salle' => $salle->getNom(),
+            'batiment' => $batiment->getNom(),
             'detailInterventions' => $detailInterventions, // Ajouter les interventions
         ];
 
