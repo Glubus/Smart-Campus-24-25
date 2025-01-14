@@ -189,6 +189,9 @@ class GestionController extends AbstractController
         if (!$batiment){
             throw $this->createNotFoundException('Le batiment spécifiée n\'existe pas.');
         }
+        if (!in_array($salle, $batiment->getAllSalle(), true)) {
+            throw $this->createNotFoundException('La salle spécifiée n\'appartient pas au bâtiment sélectionné.');
+        }
 
         //  j'ai besoin avec une fonction crée
         $count = $this->formateLastValue($wrapper->requestSalleLastValueByDateAndInterval($salle));
@@ -417,15 +420,6 @@ class GestionController extends AbstractController
         }
 
         return $range;
-    }
-
-    private function generateNormalDistribution(array $temperatureRange, float $mean, float $stdDev): array
-    {
-        // Calcul des valeurs Y (densités) à partir de la loi normale
-        return array_map(
-            fn($x) => exp(-0.5 * pow(($x - $mean) / $stdDev, 2)) / ($stdDev * sqrt(2 * pi())),
-            $temperatureRange
-        );
     }
 
     private function formateLastValue(array $requestLast){

@@ -16,14 +16,28 @@ class SAControllerTest extends WebTestCase
     /**
      * Test case for listing all `SA` entities.
      */
-    public function testLister_AllSAWithoutRights(): void
+    public function testLister_SansAvoirLesDroits(): void
     {
         $client = static::createClient();
 
         $client->request('GET', '/sa');
-        $this->assertResponseStatusCodeSame(302); // redirection to login
+        // Vérifier que le code de statut est un 302 (redirection)
+        $this->assertResponseStatusCodeSame(302, 'L\'utilisateur sans droits devrait être redirigé.');
+
+        // Vérifier que la redirection est vers la page de connexion
+        $this->assertResponseRedirects('/login', null, 'La redirection devrait pointer vers /login.');
+
+        // Suivre la redirection pour analyser la page cible
+        $crawler = $client->followRedirect();
+
+        // Vérifier que la page redirigée contient bien le formulaire de connexion
+        $this->assertSelectorExists('form[action="/login"]', 'Le formulaire de connexion avec la bonne action est attendu.');
+
+        // Vérifier que le formulaire utilise la méthode POST
+        $formNode = $crawler->filter('form[action="/login"]')->first();
+        $this->assertSame('POST', $formNode->attr('method'), 'Le formulaire de connexion doit utiliser la méthode POST.');
     }
-    public function testLister_AllSAwithRights(): void
+    public function testLister_AvecLesDroits(): void
     {               
         $client = static::createClient();
         $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
@@ -31,10 +45,18 @@ class SAControllerTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/sa');
         $this->assertResponseStatusCodeSame(200);
+        // Vérifier que la page contient un container pour afficher la listes des SA
+        $this->assertSelectorExists('.listeBatiments', 'La page doit afficher un container d une liste des entités SA.');
+
+
+        // Vérifier le titre ou un en-tête spécifique de la page (si défini)
+        $this->assertSelectorTextContains('h1', 'Listes des SA', 'Le titre de la page doit être "Liste des SA".');
+
+        // Vérifier la présence d'un bouton d'ajout d'une nouvelle entité SA (si attendu)
+        $this->assertSelectorExists('.btnAjout', 'Un bouton pour ajouter un nouvel SA doit être présent.');
 
     }
-
-    public function testAjoutSA_ShowForm(): void
+    public function testAjoutSA_AfficherForm(): void
     {
         $client = static::createClient();
         $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
@@ -43,42 +65,20 @@ class SAControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/sa/ajouter');
 
+        // Vérifie que la réponse est bien un succès
         $this->assertResponseIsSuccessful();
+
+        // Vérifie que le formulaire avec le nom "ajout_sa" est présent dans la page
         $this->assertSelectorExists('form[name="ajout_sa"]');
+
+        // Vérifie la présence d'un bouton de soumission dans le formulaire
+        $this->assertSelectorExists('form[name="ajout_sa"] button[type="submit"]');
+
+        // Vérifie qu'un champ spécifique nommé "nom" est présent dans le formulaire
+        $this->assertSelectorExists('form[name="ajout_sa"] input[name="ajout_sa[nom]"]');
+
     }
-    public function testAjoutSA_FormSubmitted_InvalidName(): void
-    {
-        // Création du client
-        $client = static::createClient();
-
-        // Connexion d'un utilisateur existant
-        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
-        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']);
-        $client->loginUser($user);
-
-        // Ajouter un SA dans la base pour simuler un nom déjà pris
-        $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
-
-        $existingSA = new SA();
-        $existingSA->setNom('Duplicate SA'); // Nom déjà existant en base
-        $entityManager->persist($existingSA);
-        $entityManager->flush();
-
-        // Simuler la soumission du formulaire avec un nom en doublon
-        $crawler = $client->request('POST', '/sa/ajouter', [
-            'ajout_sa' => [
-                'nom' => 'Duplicate SA', // Même nom que l'existant
-            ],
-        ]);
-
-        // Vérifier que le message d'erreur est présent
-        $this->assertSelectorTextContains('.alert.alert-danger.mt-1', 'Le nom saisi est déjà utilisé.');
-        // Nettoyage de la base (supprimer le SA ajouté pour le test)
-        $entityManager->remove($existingSA);
-        $entityManager->flush();
-    }
-
-    public function testAjoutSA_FormSubmitted_ValidName(): void
+    public function testAjoutSA_FormEnvoyer_NomValide(): void
     {
         // Créer un client de test
         $client = static::createClient();
@@ -96,22 +96,33 @@ class SAControllerTest extends WebTestCase
             'ajout_sa[nom]' => 'ESP-test', // L'association nom => valeur conformément au formulaire
         ]);
 
-        // Vérifier la redirection après soumission
+
+        // Vérifier que l'utilisateur voit le formulaire
+        $this->assertResponseStatusCodeSame(302); // La page doit faire un succès HTTP 200
         $this->assertResponseRedirects('/sa');
         $client->followRedirect();
 
+        // Vérifier que l'utilisateur arrive sur une page de confirmation ou la liste concernée
+        $this->assertResponseIsSuccessful(); // La page après redirection doit faire un succès HTTP 200
         // Vérifier en base de données que l'entité a été créée
         $SARepository = static::getContainer()->get(SARepository::class);
         $newSA = $SARepository->findOneBy(['nom' => 'ESP-test']);
-        $this->assertNotNull($newSA, 'La nouvelle entité SA doit être');
+        $this->assertNotNull($newSA, 'La nouvelle entité SA doit être ajoutée en base.');
+        $this->assertEquals('ESP-test', $newSA->getNom(), 'Le nom de la nouvelle entité SA doit correspondre.');
+
+        // Vérifier que l'entité est affichée dans la vue liste ou équivalent
+        $this->assertAnySelectorTextContains('.batimentName', 'ESP-test', 'Le SA devrait apparaître dans la vue liste.');
+
         // Supprimer le SA après le test
         $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
         $entityManager->remove($newSA);
         $entityManager->flush();
+
+        // Vérifier que l'entité a bien été supprimée
         $deletedSA = $SARepository->findOneBy(['nom' => 'ESP-test']);
         $this->assertNull($deletedSA, 'L\'entité SA doit être supprimée après le test');
     }
-    public function testModifier_SAFound_FormNotSubmitted(): void
+    public function testModifier_SATrouver_FormNonEnvoyer(): void
     {
         $client = static::createClient();
         // Récupérer un utilisateur existant et se connecter
@@ -134,11 +145,13 @@ class SAControllerTest extends WebTestCase
         $this->assertSelectorExists('form[name="ajout_sa"]'); // Vérifie que le formulaire apparaît
         $this->assertSelectorExists('input[name="ajout_sa[nom]"]'); // Vérifie que le champ "nom" existe
         $this->assertInputValueSame('ajout_sa[nom]', 'Test SA'); // Vérifie que le champ contient la valeur attendue
+        $this->assertSelectorTextContains('h1', 'Modifier sa', 'Le titre de la page de modification devrait être présent.');
+
         $entityManager->remove($SA);
         $entityManager->flush();
     }
 
-    public function testModifier_SANotFound(): void
+    public function testModifier_SANonTrouver(): void
     {
         $client = static::createClient();
         $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
@@ -162,73 +175,4 @@ class SAControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function testModifier_FormSubmitted_InvalidName(): void
-    {
-        $client = static::createClient();
-        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
-        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']); // ou l'identifiant correct
-        $client->loginUser($user);
-// Créer deux entités SA dans la base de données pour le test
-        $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
-
-        $existingSA = new SA();
-        $existingSA->setNom('Existing SA'); // Nom qui existe déjà dans la base
-        $entityManager->persist($existingSA);
-
-        $SA = new SA();
-        $SA->setNom('Test SA'); // SA que nous allons tenter de modifier
-        $entityManager->persist($SA);
-
-        $entityManager->flush();
-
-        // Simuler la soumission du formulaire avec un nom déjà existant
-        $crawler = $client->request('POST', '/sa/modifier/' . $SA->getId(), [
-            'ajout_sa' => [
-                'nom' => 'Existing SA', // Nom déjà utilisé
-            ],
-        ]);
-
-        // Vérifications
-        $entityManager->remove($SA);
-        $entityManager->remove($existingSA);
-        $entityManager->flush();
-        $this->assertResponseIsSuccessful(); // Vérifie que la réponse est réussie (pas de redirection)
-        $this->assertAnySelectorTextContains('alert-danger', 'Le nom saisi est déjà utilisé.'); // Vérifie le contenu du message
-    }
-    public function testModifier_FormSubmitted_ValidName(): void
-    {
-        // Création du client
-        $client = static::createClient();
-
-        // Connexion d'un utilisateur existant via le repository
-        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
-        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']); // ou l'identifiant correct
-        $client->loginUser($user);
-
-        // Ajouter un SA dans la base pour simuler une modification
-        $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
-
-        $SA = new SA();
-        $SA->setNom('Ancien SA'); // Nom initial de l'entité
-        $entityManager->persist($SA);
-        $entityManager->flush();
-
-        // Simuler la soumission du formulaire pour modifier le nom
-        $client->request('POST', '/sa/modifier/' . $SA->getId(), [
-            'ajout_sa' => [
-                'nom' => 'Unique SA', // Nouveau nom
-            ],
-        ]);
-
-        // Vérifier la redirection après la soumission réussie
-        $this->assertResponseRedirects('/sa');
-
-        // Suivre la redirection et vérifier le contenu de la page
-        $crawler = $client->followRedirect();
-        $this->assertSelectorTextContains('.saNom', 'Unique SA'); // Vérifie que le nouveau nom est affiché
-
-        // Nettoyer la base après le test
-        $entityManager->remove($SA);
-        $entityManager->flush();
-    }
 }

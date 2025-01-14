@@ -30,7 +30,6 @@ class SA
     {
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
-        $this->valCapteurs = new ArrayCollection();
     }
 
 
@@ -76,11 +75,6 @@ class SA
         }
 
         return $this;
-    }
-
-    public function getValCapteurs(): Collection
-    {
-        return $this->valCapteurs;
     }
 
     public function getDetailPlan(): ?DetailPlan

@@ -61,7 +61,8 @@ class SAController extends AbstractController
             'css' => 'sa',
             'classItem' => "sa",
             'routeItem'=> "app_sa_modifier",
-            'classSpecifique' => ""
+            'classSpecifique' => "",
+            'Type' => "Modifier"
         ]);
     }
     #[Route('/sa/ajouter', name: 'app_sa_ajouter')]
@@ -91,7 +92,8 @@ class SAController extends AbstractController
             'css' => 'common',
             'classItem' => "sa",
             'routeItem'=> "app_sa_ajouter",
-            'classSpecifique' => ""
+            'classSpecifique' => "",
+            'Type' => "Ajouter"
         ]);
     }
 
@@ -338,9 +340,6 @@ class SAController extends AbstractController
                     // Remove related SALog entries
                     foreach ($sas->getSALogs() as $log) {
                         $entityManager->remove($log);
-                    }
-                    foreach ($sas->getValCapteurs() as $valCapteur) {
-                        $entityManager->remove($valCapteur);
                     }
                     // Remove the SA entity
                     $entityManager->remove($sas);
