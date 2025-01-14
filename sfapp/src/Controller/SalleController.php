@@ -47,6 +47,7 @@ class SalleController extends AbstractController
         foreach ($batiments as $batiment ){
             foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
                 $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
+
             }
         }
         $salles = $salleRepository->findAll();

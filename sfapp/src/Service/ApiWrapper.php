@@ -200,6 +200,7 @@ private CacheInterface $cache;
     {
         $end = (new DateTime('now'));
         $start = (clone $end)->modify('-1 hour');
+
         $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
         $temporaryArr = [];
         $sas = $this->getSA($salle);
@@ -275,7 +276,7 @@ private CacheInterface $cache;
     {
         $externalValue = $this->cache->get('all_salle_last_value_by_date_and_'.$batiment->getNom(), function (ItemInterface $item) use ($salleRepository, $batiment) {
             $item->expiresAfter(3600); // 1 heure
-            $end = (new DateTime('now'))->modify('+1 hour');
+            $end = (new DateTime('now'));
             $start = (clone $end)->modify('-1 hour');
             $temporaryArr = [];
             $types = ["temp", "co2", "hum"]; // Les types de données à récupérer
