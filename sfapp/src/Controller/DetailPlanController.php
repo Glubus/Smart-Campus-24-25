@@ -65,6 +65,8 @@ class DetailPlanController extends AbstractController
 
         return $this->render('detail_plan/ajouter.html.twig', [
             'form' => $form->createView(),
+            'nom' =>  $nom,
+            "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
         ]);
     }
 
@@ -96,6 +98,7 @@ class DetailPlanController extends AbstractController
             }
         }
 
+        $batimentsArray = [];
         foreach ($plan->getBatiments() as $b) {
             $etageNames = [];
             foreach ($b->getEtages() as $etage) {
