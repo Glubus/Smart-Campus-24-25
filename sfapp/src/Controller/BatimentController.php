@@ -50,9 +50,9 @@ class   BatimentController extends AbstractController
         $col2 = [];
         $col3 = [];
         foreach ($batiments as $batiment) {
-            if($index%2 == 0){
+            if($index%3 == 0){
                 $col1[] = $batiment;
-            } elseif ($index%2 == 1) {
+            } elseif ($index%3 == 1) {
                 $col2[] = $batiment;
             } else {
                 $col3[] = $batiment;

@@ -1,15 +1,150 @@
-{% extends 'template/liste.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block nom %}
-    <h3 class="{{ classItem }}Nom">
-        {{ item.nom }}
-    </h3>
-{% endblock  %}
+{% block title %}Liste des batiments{% endblock %}
 
-{% block entry %}
-
+{% block body %}
+<h1 class="titleBatiment">SA</h1>
+<div class="containerBatiment">
+    <div style="width: 70%">
+        {{ form_start(form) }}
+        <div class="search">
+            {{ form_widget(form.nom) }}
+            {{ form_widget(form.rechercher) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+    <div style="display: flex; justify-content: space-between">
+        <a href="{{ path('app_sa_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+        <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+    </div>
+    {% endif %}
+    <div class="listeBatiments">
+        <div class="col">
+            {% for sa in col1 %}
+                <div class="batimentBlock" id="card">
+                    <div class="batimentMainInfos">
+                        {#  <div class="batimentTop">  #}
+                        <div style="display: flex; gap: 5px">
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<input class="checkboxBatiment" type="checkbox" value="{{ sa.id }}">{% endif %}
+                            <p class="batimentName">{{ sa.nom }}</p>
+                        </div>
+                    </div>
+                    <!-- Contenu caché qui s'affichera au clic -->
+                    <div class="batimentContent" id="card-content">
+                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<a class="batimentBtnModif" href="{{ path('app_sa_modifier', {'id':sa.id}) }}">Modifier</a>{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col">
+            {% for sa in col2 %}
+                <div class="batimentBlock" id="card">
+                    <div class="batimentMainInfos">
+                        {#  <div class="batimentTop">  #}
+                        <div style="display: flex; gap: 5px">
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<input class="checkboxBatiment" type="checkbox" value="{{ sa.id }}">{% endif %}
+                            <p class="batimentName">{{ sa.nom }}</p>
+                        </div>
+                    </div>
+                    <!-- Contenu caché qui s'affichera au clic -->
+                    <div class="batimentContent" id="card-content">
+                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<a class="batimentBtnModif" href="{{ path('app_sa_modifier', {'id':sa.id}) }}">Modifier</a>{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col">
+            {% for sa in col3 %}
+                <div class="batimentBlock" id="card">
+                    <div class="batimentMainInfos">
+                        {#  <div class="batimentTop">  #}
+                        <div style="display: flex; gap: 5px">
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<input class="checkboxBatiment" type="checkbox" value="{{ sa.id }}">{% endif %}
+                            <p class="batimentName">{{ sa.nom }}</p>
+                        </div>
+                    </div>
+                    <!-- Contenu caché qui s'affichera au clic -->
+                    <div class="batimentContent" id="card-content">
+                        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}<a class="batimentBtnModif" href="{{ path('app_sa_modifier', {'id':sa.id}) }}">Modifier</a>{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cards = document.querySelectorAll(".batimentBlock");
+            const checkboxes = document.querySelectorAll('.checkboxBatiment');
+            const deleteButton = document.getElementById('btnSuppr');
 
-{% block modif %}
+            console.log("Checkboxes trouvées:", checkboxes);
+            console.log("Bouton Supprimer trouvé:", deleteButton);
 
+            if (!checkboxes || !deleteButton) {
+                console.error("Éléments manquants dans le DOM !");
+                return;
+            }
+            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                console.log("Checkboxes cochées :", isAnyChecked);
+
+                if (isAnyChecked) {
+                    deleteButton.classList.remove('hidden');
+                } else {
+                    deleteButton.classList.add('hidden');
+                }
+            }
+
+            checkboxes.forEach(checkbox => {
+                // Empêche le clic sur la checkbox de déclencher l'expansion du bloc
+                checkbox.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                });
+
+                checkbox.addEventListener('change', toggleDeleteButton);
+            %});
+
+            deleteButton.addEventListener('click', function () {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ path('app_sa_supprimer_selection') }}';
+
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected[]';
+                        input.value = checkbox.value;
+                        form.appendChild(input);
+                    }
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            toggleDeleteButton();
+            {% endif %}
+            cards.forEach((card) => {
+                const cardContent = card.querySelector(".batimentContent");
+                card.addEventListener("click", function () {
+                    // Toggle la classe "expanded" pour agrandir/rétrécir
+                    card.classList.toggle("expanded");
+                    cardContent.classList.toggle("expanded");
+
+                    // Afficher/masquer le contenu
+                    if (cardContent.style.display === "block") {
+                        cardContent.style.display = "none";
+                    } else {
+                        cardContent.style.display = "block";
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,6 +18,14 @@ class RechercheSaType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Rechercher par nom...'
+                ],
+            ])
+            ->add('rechercher', ButtonType::class, [
+                'label' => '🔍',
+                'attr' => [
+                    'class' => 'btn btn-primary',
+                    'type' => 'submit',
+                    'style' => 'width: min-content'
                 ],
             ]);
     }

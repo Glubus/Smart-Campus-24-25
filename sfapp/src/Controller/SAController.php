@@ -96,7 +96,7 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa', name: 'app_sa_liste')]
-    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function lister(SARepository $saRepo, Request $request): Response
     {
         // Create the form for searching
@@ -108,20 +108,32 @@ class SAController extends AbstractController
             $data = $form->getData();
 
             // Filter the `SA` entities based on the search term
-            $sa = $saRepo->findByNomSA($data['nom']);
+            $sas = $saRepo->findByNomSA($data['nom']);
         } else {
             // If no filtering, get all entities
-            $sa = $saRepo->findAll();
+            $sas = $saRepo->findAll();
         }
 
-        // Render the page with the form and filtered results
+        $index = 0;
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
+        foreach ($sas as $sa) {
+            if($index%3 == 0){
+                $col1[] = $sa;
+            } elseif ($index%3 == 1) {
+                $col2[] = $sa;
+            } else {
+                $col3[] = $sa;
+            }
+            $index++;
+        }
+
         return $this->render('sa/liste.html.twig', [
-            'css' => 'sa',
-            'classItem' => "sa",
-            'items' => $sa,
-            'routeItem'=> "app_sa_ajouter",
-            'classSpecifique' => "",
-            'form' => $form->createView()
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+            'form' => $form->createView(),
         ]);
     }
     #[Route('/sa/{id}/suppression', name: 'app_sa_suppression')]

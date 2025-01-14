@@ -35,7 +35,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 class SalleController extends AbstractController
 {
     #[Route('/salle', name: 'app_salle_liste')]
-    #[IsGranted('ROLE_TECHNICIEN')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function index(BatimentRepository $batimentRepository, ApiWrapper $wrapper ,Request $request, SalleRepository $salleRepository, DetailInterventionRepository $detailInterventionRepository, DetailPlanRepository $detailPlanRepository): Response
     {
         $currentDateTime = new \DateTime('now');
