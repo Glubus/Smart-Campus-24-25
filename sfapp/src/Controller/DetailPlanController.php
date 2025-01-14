@@ -58,7 +58,8 @@ class DetailPlanController extends AbstractController
             $em->flush();
 
             return $this->redirectToRoute('app_lier_liste', [
-                'nom' =>  $nom
+                'nom' =>  $nom,
+                "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
             ]);// Redirection après soumission
         }
 
@@ -169,16 +170,14 @@ class DetailPlanController extends AbstractController
                 $em->flush();
 
 
-
-
                 return $this->redirectToRoute('app_lier_liste', [
-                    'id' => $detail_plan->getPlan()->getId()
+                    'nom' => $detail_plan->getPlan()->getNom(),
+                    "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
                 ]);
             }
         }
             return $this->render('detail_plan/supprimer.html.twig', [
                 "detail_plan" => $detail_plan,
-                "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
             ]);
     }
 
@@ -202,7 +201,8 @@ class DetailPlanController extends AbstractController
                 }
 
                 return $this->redirectToRoute('app_lier_liste', [
-                    'id' => $detail_plan->getPlan()->getId()
+                    'nom' => $detail_plan->getPlan()->getNom(),
+                    "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
                 ]);
             }
         }

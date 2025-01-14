@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}Supprimer {{ classItem }}{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('/styles/supprimer/common.scss') }}">
+    <div class="container my-5 card-body">
+        <div class="card shadow full-width">
+            <div class="card-body">
+        {% if items | filter(o => o is null) | length > 0 %}
+            <h1 class="text-center mb-4">
+                Aucune {{ classItem }} sélectionnée pour la suppression
+            </h1>
+            <a class="btn btn-primary" href="{{ path('app_'~classItem~'_liste') }}" style="margin-right: 10px; margin-top: 10px">Visualiser les {{ classItem }}</a>
+        {% else %}
+            <h1 class="text-center mb-4">
+                 {{ classItem }}(s) sélectionné(e)(s):
+                {{ items | map(o => o.nom) | join(', ') }}
+            </h1>
+            <p>Êtes-vous sûr de vouloir supprimer ces {{ classItem }}s ?</p>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger" style="margin-top: 10px">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_'~classItem~'_liste')}}" class="btn btn-secondary mr-1 mt-1 action" role="button">Annuler</a>
+                <button type="submit" class="btn btn-primary mr-1 mt-1 action" role="button">Supprimer</button>
+            </div>
+            {{ form_end(form) }}
+        {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

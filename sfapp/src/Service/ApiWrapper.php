@@ -533,8 +533,10 @@ private CacheInterface $cache;
         return $bizarreSalles;
     }
 
-    public function requestAllSalleLastValue(Batiment $batiment): array
+    public function requestAllSalleLastValue(?Batiment $batiment): array
     {
+        if($batiment == null)
+            return [];
         // Clé de cache unique
         $externalValue = $this->cache->get('all_salle_last_value_'.$batiment->getNom(), function (ItemInterface $item) use ($batiment) {
             $item->expiresAfter(3600); // Expiration du cache 1 heure

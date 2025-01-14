@@ -113,7 +113,7 @@
                         deleteButton.addEventListener('click', function () {
                                 const form = document.createElement('form');
                                 form.method = 'POST';
-                                form.action = '{{ path('app_batiment_supprimer_selection') }}';
+                                form.action = '{{ path('app_plan_supprimer') }}';
 
                                 checkboxes.forEach(checkbox => {
                                         if (checkbox.checked) {

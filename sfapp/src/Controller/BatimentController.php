@@ -124,7 +124,7 @@ class   BatimentController extends AbstractController
 
         return $this->render('batiment/ajouter.html.twig', [
             'form' => $form->createView(),
-            'css' => 'batiment',
+            'css' => 'common',
             'classItem' => "batiment",
             'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
@@ -151,7 +151,7 @@ class   BatimentController extends AbstractController
 
         $this->addFlash('error', 'La saisie est incorrecte.');
 
-        return $this->render('batiment/supprimer.html.twig', [
+        return $this->render('template/supprimer.html.twig', [
             'form' => $form->createView(),
             'batiments' => $batiments,
         ]);
@@ -254,10 +254,11 @@ class   BatimentController extends AbstractController
             $this->addFlash('error', 'La saisie est incorrecte.');
         }
 
-        return $this->render('batiment/supprimer_multiple.html.twig', [
+        return $this->render('template/suppression.html.twig', [
             'form' => $form->createView(),
             'items' => $batiments,
-            'classItem' => 'batiment'
+            'classItem' => 'batiment',
+            'css' => ''
         ]);
     }
 
