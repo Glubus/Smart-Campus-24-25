@@ -213,4 +213,53 @@ class GestionControllerTest extends WebTestCase
         $this->assertSelectorExists('form[name="association_sa_salle"]');
         $this->assertSelectorExists('form[name="ajout_sa"]');
     }
+    /**
+     * Tests the diagnosticSalle method with valid data.
+     */
+    public function testDiagnosticSalleWithValidData(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', "/outils/diagnostic/Batiment D/D206");
+
+        // Assert response and data rendering
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Outil de Diagnostic - Salle D206');
+        $this->assertSelectorExists('#co2Chart');
+        $this->assertSelectorExists('#tempChart');
+        $this->assertSelectorExists('#humChart');
+
+    }
+
+    /**
+     * Tests the diagnosticSalle method with an invalid salle name.
+     */
+    public function testDiagnosticSalleWithInvalidSalle(): void
+    {
+        $client = static::createClient();
+
+
+        // Perform the request with an invalid salle
+        $client->request('GET', "/outils/diagnostic/Batiment D/D707");
+
+        // Assert that a 404 or appropriate error response is returned
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    /**
+     * Tests the diagnosticSalle method with an invalid batiment name.
+     */
+    public function testDiagnosticSalleWithInvalidBatiment(): void
+    {
+        $client = static::createClient();
+
+        $invalidBatimentName = 'Batiment C';
+        $salleName = 'D303';
+
+        // Perform the request with an invalid batiment
+        $client->request('GET', "/outils/diagnostic/$invalidBatimentName/$salleName");
+
+        // Assert that a 404 or appropriate error response is returned
+        $this->assertResponseStatusCodeSame(404);
+    }
 }

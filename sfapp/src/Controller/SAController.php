@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\VarDumper\VarDumper;
 
 class SAController extends AbstractController
@@ -30,7 +31,8 @@ class SAController extends AbstractController
     public function modifier(int $id, SARepository $SARepository, EntityManagerInterface $entityManager,Request $request): Response
     {
         $SA=$SARepository->find($id);
-        if ($SA==null) {
+        if (!$SA)
+        {
             return new Response('Page Not Found', 404);
         }
         $form = $this->createForm(AjoutSAType::class, $SA);
@@ -86,7 +88,7 @@ class SAController extends AbstractController
 
         return $this->render('sa/ajouter.html.twig', [
             'form' => $form->createView(),
-            'css' => 'sa',
+            'css' => 'common',
             'classItem' => "sa",
             'routeItem'=> "app_sa_ajouter",
             'classSpecifique' => ""
@@ -94,6 +96,7 @@ class SAController extends AbstractController
     }
 
     #[Route('/sa', name: 'app_sa_liste')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function lister(SARepository $saRepo, Request $request): Response
     {
         // Create the form for searching
@@ -142,7 +145,7 @@ class SAController extends AbstractController
                 }
             }
 
-            return $this->render('sa/supprimer.html.twig', [
+            return $this->render('template/supprimer.html.twig', [
                 "form" => $form->createView(),
                 "SA" => $SA,
             ]);
@@ -302,12 +305,12 @@ class SAController extends AbstractController
         SessionInterface $session
     ): Response
     {
-        $ids = $request->request->all('selected_sa');
+        $ids = $request->request->all('selected');
         if(empty($ids)) {
-            $ids = $session->get('selected_sa', []);
+            $ids = $session->get('selected', []);
         }
         else
-            $session->set('selected_sa', $ids);
+            $session->set('selected', $ids);
 
         $sa = array_map(fn($id) => $saRepository->find($id), $ids);
         $form = $this->createForm(SuppressionType::class, null, [
@@ -339,9 +342,10 @@ class SAController extends AbstractController
             }
         }
 
-        return $this->render('sa/suppression_sa.html.twig', [
+        return $this->render('template/suppression.html.twig', [
             'form' => $form->createView(),
-            'sa' => $sa,
+            'items' => $sa,
+            'classItem'=> "sa",
         ]);
     }
 }

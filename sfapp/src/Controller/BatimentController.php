@@ -181,7 +181,7 @@ class   BatimentController extends AbstractController
 
         return $this->render('batiment/ajouter.html.twig', [
             'form' => $form->createView(),
-            'css' => 'batiment',
+            'css' => 'common',
             'classItem' => "batiment",
             'routeAjouter' => "app_batiment_ajouter",
             'classSpecifique' => ""
@@ -223,7 +223,7 @@ class   BatimentController extends AbstractController
 
         $this->addFlash('error', 'La saisie est incorrecte.');
 
-        return $this->render('batiment/supprimer.html.twig', [
+        return $this->render('template/supprimer.html.twig', [
             'form' => $form->createView(),
             'batiments' => $batiments,
         ]);
@@ -407,7 +407,8 @@ class   BatimentController extends AbstractController
      * @return Response The rendered view or a redirection upon successful action.
      */
     #[Route('/batiment/supprimer-selection', name: 'app_batiment_supprimer_selection', methods: ['POST', 'GET'])]
-    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
+
+
     public function suppSelection(
         Request $request,
         BatimentRepository $batimentRepository,
@@ -436,10 +437,11 @@ class   BatimentController extends AbstractController
             $this->addFlash('error', 'La saisie est incorrecte.');
         }
 
-        return $this->render('batiment/supprimer_multiple.html.twig', [
+        return $this->render('template/suppression.html.twig', [
             'form' => $form->createView(),
             'items' => $batiments,
-            'classItem' => 'batiment'
+            'classItem' => 'batiment',
+            'css' => ''
         ]);
     }
 

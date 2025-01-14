@@ -198,7 +198,7 @@
             const selectedBatiment = batiments.find(b => b.id == selectedId);
 
             {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
-                diagnosticLink.href = `/admin/dashboard/${selectedBatiment.nom}`;
+                diagnosticLink.href = `/outils/diagnostic/${selectedBatiment.nom}`;
             {% endif %}
 
             if (selectedBatiment) {

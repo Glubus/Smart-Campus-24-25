@@ -13,10 +13,12 @@
             </div>
             {{ form_end(form) }}
         </div>
-        <div style="display: flex; justify-content: space-between">
-            <a href="{{ path('app_salle_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
-            <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
-        </div>
+        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+            <div style="display: flex; justify-content: space-between">
+                <a href="{{ path('app_salle_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+            </div>
+        {% endif %}
         <div class="listeSalles">
             <div class="col">
                 {% for item in col1 %}
@@ -24,7 +26,9 @@
                         <div class="salleMainInfos">
                             <div class="salleTop">
                                 <div style="display: flex; gap: 5px">
-                                    <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
                                     <p class="salleName">{{ item.salle.nom }}</p>
                                 </div>
                                 <div class="etatSalle">
@@ -54,9 +58,12 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            {% if item.sa is not null %}
-                                <p class="saAttribue">{{ item.sa }}</p>
-                            {% endif %}
+                            {% if item.sa is not empty %}
+    <p class="saAttribue">
+        {{ item.sa | map(o => o.nom) | join(', ') }}
+    </p>
+{% endif %}
+
                             <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
@@ -81,7 +88,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
@@ -93,7 +100,9 @@
                         <div class="salleMainInfos">
                             <div class="salleTop">
                                 <div style="display: flex; gap: 5px">
-                                    <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
                                     <p class="salleName">{{ item.salle.nom }}</p>
                                 </div>
                                 <div class="etatSalle">
@@ -123,9 +132,12 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            {% if item.sa is not null %}
-                                <p class="saAttribue">{{ item.sa }}</p>
-                            {% endif %}
+                            {% if item.sa is not empty %}
+    <p class="saAttribue">
+        {{ item.sa | map(o => o.nom) | join(', ') }}
+    </p>
+{% endif %}
+
                             <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
@@ -150,8 +162,10 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -162,7 +176,9 @@
                         <div class="salleMainInfos">
                             <div class="salleTop">
                                 <div style="display: flex; gap: 5px">
-                                    <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
                                     <p class="salleName">{{ item.salle.nom }}</p>
                                 </div>
                                 <div class="etatSalle">
@@ -192,9 +208,12 @@
                         </div>
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
-                            {% if item.sa is not null %}
-                                <p class="saAttribue">{{ item.sa }}</p>
-                            {% endif %}
+                            {% if item.sa is not empty %}
+    <p class="saAttribue">
+        {{ item.sa | map(o => o.nom) | join(', ') }}
+    </p>
+{% endif %}
+
                             <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
                                 <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
@@ -219,7 +238,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                            <a class="salleBtnDetail" href="{{ path('app_salle_infos', {'id':item.salle.id}) }}">Voir plus</a>
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
                             <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
                         </div>
                     </div>
@@ -235,14 +254,8 @@
         const checkboxes = document.querySelectorAll('.checkboxSalle');
         const deleteButton = document.getElementById('btnSuppr');
 
-        console.log("Checkboxes trouvées:", checkboxes);
-        console.log("Bouton Supprimer trouvé:", deleteButton);
 
-        if (!checkboxes || !deleteButton) {
-            console.error("Éléments manquants dans le DOM !");
-            return;
-        }
-
+        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
         function toggleDeleteButton() {
             const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
             console.log("Checkboxes cochées :", isAnyChecked);
@@ -283,6 +296,8 @@
         });
 
         toggleDeleteButton();
+        {% endif %}
+
         cards.forEach((card) => {
             const cardContent = card.querySelector(".salleContent");
             card.addEventListener("click", function () {
@@ -300,6 +315,7 @@
         });
     });
 </script>
+
 {% endblock %}
 
 {#

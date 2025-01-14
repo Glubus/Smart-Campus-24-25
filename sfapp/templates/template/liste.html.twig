@@ -15,9 +15,11 @@
     <div class="all">
         <main class="liste">
             <div class="btns">
-                <a href="{{ path("app_"~classItem~"_ajouter") }}">
-                    <button class="btnAjout">Ajouter</button>
-                </a>
+                {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                    <a href="{{ path("app_"~classItem~"_ajouter") }}">
+                        <button class="btnAjout">Ajouter</button>
+                    </a>
+                {% endif %}
                 <button class="btnSuppr hidden" id="btnSuppr">
                     Supprimer
                 </button>
@@ -28,7 +30,9 @@
                     <div class="{{ classItem }}Block">
                         <a href="{{ path( "app_"~classItem~"_infos", {'id': item.id}) }}">
                         <div class="{{ classItem }}Infos">
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
                             <input type="checkbox" class="checkbox" value="{{ item.id }}"/>
+                            {% endif %}
                             <div class="{{ classItem }}_1">
                                   {% block nom %}
 
