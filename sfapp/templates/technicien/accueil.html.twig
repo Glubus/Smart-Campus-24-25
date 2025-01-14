@@ -3,74 +3,138 @@
 {% block title %}Accueil Technicien{% endblock %}
 
 {% block body %}
-<h1 class="title">Accueil Technicien</h1>
+    <div class="containerAccueil">
 
-<div class="container">
-    <div class="listeSalles">
-        {% for batiment, salles in diagnostics %}
-            <!-- Titre du bâtiment -->
-            <div class="batiment">
-                <h2>Bâtiment : {{ batiment }}</h2>
-                <div class="sallesrow">
-                    {% for salle, issues in salles %}
-                        <div class="card" id="card">
-                            <div class="cardMainInfos">
-                                <div class="card-top">
-                                    <p class="room-name">{{ salle }}</p>
-                                    {% if issues is same as([]) %}
-                                        <!-- Aucune donnée disponible -->
-                                        <span class="text-danger">Aucune donnée disponible</span>
-                                    {% else %}
-                                        {% if issues is empty %}
-                                            <!-- Aucun problème -->
-                                            <span class="text-success">Aucun problème détecté</span>
+        <!-- Contenu principal à 60% -->
+        <div class="listeBat" style="flex: 0 0 60%; padding-right: 20px;">
+            <h1 class="text-3xl font-bold text-gray-800">Bienvenue, {{ app.user.username }}</h1>
+            {% for batiment, salles in diagnostics %}
+                <!-- Contenu déjà existant -->
+                <div class="batiment">
+                    <h2>Bâtiment : {{ batiment }}</h2>
+                    <div class="sallesrow">
+                        {% for salle, issues in salles %}
+                            <div class="card" id="card">
+                                <div class="cardMainInfos">
+                                    <div class="card-top">
+                                        <p class="room-name">{{ salle }}</p>
+                                        {% if issues is same as([]) %}
+                                            <span class="text-danger">Aucune donnée disponible</span>
                                         {% else %}
-                                            <!-- Problèmes détectés -->
-                                            <span class="text-warning">Problèmes détectés : {{ issues|join(', ') }}</span>
+                                            {% if issues is empty %}
+                                                <span class="text-success">Aucun problème détecté</span>
+                                            {% else %}
+                                                <span class="text-warning">Problèmes détectés : {{ issues|join(', ') }}</span>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
-                                    <div class="etat">
-                                        <p class="status" id="status">
-                                        <div class="pastilleStatus"
-                                             style="background-color: {% if issues is same as([]) %}red{% elseif issues is empty %}green{% else %}orange{% endif %}">
+                                        <div class="etat">
+                                            <p class="status" id="status">
+                                            <div class="pastilleStatus"
+                                                 style="background-color: {% if issues is same as([]) %}red{% elseif issues is empty %}green{% else %}orange{% endif %}">
+                                            </div>
+                                            </p>
                                         </div>
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Contenu caché qui s'affichera au clic -->
-                            <div class="card-content" style="display: none;">
-                                <p class="location">Salle : {{ salle }}</p>
-                                {% if issues is same as([]) %}
-                                    <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
-                                {% elseif issues is empty %}
-                                    <h3 style="font-size: 18px;">Aucun problème détecté.</h3>
-                                {% else %}
-                                    <h3 style="font-size: 18px;">Détails des problèmes détectés :</h3>
-                                    <ul>
-                                        {% for issue in issues %}
-                                            <li>{{ issue }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
+                                <div class="card-content" style="display: none;">
+                                    <p class="location">Salle : {{ salle }}</p>
+                                    {% if issues is same as([]) %}
+                                        <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                                    {% elseif issues is empty %}
+                                        <h3 style="font-size: 18px;">Aucun problème détecté.</h3>
+                                    {% else %}
+                                        <h3 style="font-size: 18px;">Détails des problèmes détectés :</h3>
+                                        <ul>
+                                            {% for issue in issues %}
+                                                <li>{{ issue }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-        {% else %}
-            <p>Aucun bâtiment trouvé.</p>
-        {% endfor %}
+            {% else %}
+                <p>Aucun bâtiment trouvé.</p>
+            {% endfor %}
+        </div>
 
+        <!-- Sidebar éventuelle à 40% -->
+        <div class="sidebar" style="flex: 0 0 40%; padding-left: 20px;">
+            <div class="text-center mb-8">
+
+            </div>
+
+            <!-- Form Section -->
+            <div class=" shadow-md rounded-lg p-6 mb-10">
+                <h2 class="">Ajouter un commentaire</h2>
+
+                {{ form_start(form) }}
+
+                <div class="mb-6">
+                    <label for="salle" class="">Choisissez une salle</label>
+                    {{ form_widget(form.salle, {
+                        'attr': {
+                            'class': 'form-select block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
+                            'id': 'salle',
+                        }
+                    }) }}
+                </div>
+
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    {{ form_widget(form.description, {
+                        'attr': {
+                            'class': 'form-control block w-full rounded-md border-gray-300 ',
+                            'rows': 3,
+                            'placeholder': 'Écrivez votre commentaire ici...'
+                        }
+                    }) }}
+                </div>
+
+                <div>
+                    {{ form_widget(form.submit, {
+                        'attr': {
+                            'class': 'btn bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md'
+                        }
+                    }) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+
+            <!-- Comments Section -->
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Commentaires récents</h2>
+
+                {% for tache in taches [:5]%}
+
+                        <div class="border-b border-gray-300 py-4 flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-2">{{ tache.technicien.nom }}, {{ tache.dateAjout|date('Y-m-d H:i') }}</p>
+                                <p class="text-gray-800">{{ tache.salle.nom }} : {{ tache.description }}</p>
+                            </div>
+                            {% if tache.technicien.id == technicien.id %}
+                                <form method="post" action="{{ path('app_technicien_commentaire_supprimer', {'id': tache.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token(tache.id) }}">
+                                    <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md">Supprimer</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                {% endfor %}
+
+                <div id="comments-container"></div>
+                <button id="voir-plus" class="btn bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md mt-4" data-id="{{ app.user.id }}" data-offset="0">Voir plus</button>
+            </div>
+        </div>
     </div>
     {% endblock %}
 
     {% block javascripts %}
         <style>/* Container for the list of rooms */
             /* Container for the list of rooms */
-
-
         </style>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -115,5 +179,57 @@
                 });
             });
 
-        </script>
-    {% endblock %}
+            document.getElementById('voir-plus').addEventListener('click', function () {
+                const btn = this;
+                const technicienId = btn.getAttribute('data-technicien-id'); // ID du technicien
+                const offset = parseInt(btn.getAttribute('data-offset'), 10); // Offset actuel pour pagination
+
+                // Envoi de la requête AJAX pour récupérer les tâches
+                fetch(`/taches/${technicienId}/ajax?offset=${offset + 5}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erreur HTTP! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!Array.isArray(data) || data.length === 0) {
+                            alert('Aucune tâche à afficher.');
+                            return;
+                        }
+
+                        const container = document.getElementById('taches-container');
+                        data.forEach(tache => {
+                            const row = document.createElement('div');
+                            row.classList.add('border-b', 'border-gray-300', 'py-4', 'flex', 'justify-between', 'items-start');
+
+                            // Formatage de la date et de l'heure
+                            const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+                                dateStyle: 'short',
+                                timeStyle: 'short'
+                            }).format(new Date(tache.dateAjout));
+
+                            row.innerHTML = `
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">${tache.nomTechnicien}, ${formattedDate}</p>
+                        <p class="text-gray-800">${tache.salleNom} : ${tache.description}</p>
+                    </div>
+                    <form method="post" action="/technicien/${technicienId}/commentaire-supprimer/${tache.id}"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
+                        <input type="hidden" name="_token" value="${tache.id}">
+                        <button type="submit" class="btn bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md">Supprimer</button>
+                    </form>
+                `;
+                            container.appendChild(row);
+                        });
+
+                        // Mise à jour de l'offset
+                        btn.setAttribute('data-offset', offset + data.length);
+                    })
+                    .catch(error => {
+                        console.error('Erreur AJAX :', error);
+                        alert('Une erreur est survenue lors du chargement des tâches.');
+                    });
+            });
+
+            {% endblock %}
