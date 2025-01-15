@@ -71,7 +71,8 @@ class PlanController extends AbstractController
             'css' => 'plan',
             'classItem' => "plan",
             'routeItem'=> "app_plan_ajouter",
-            'classSpecifique' => ""
+            'classSpecifique' => "",
+            'Type'=>'Plan'
         ]);
     }
 

@@ -97,8 +97,10 @@ class DetailPlanController extends AbstractController
             }
 
             if ($selected_etage == null) {
-                $salles = array_merge(...array_map(fn($etage) => $etage->getSalles()->toArray(),
-                    $batiment->getEtages()->toArray()));
+                if ($batiment !== null) {
+                    $salles = array_merge(...array_map(fn($etage) => $etage->getSalles()->toArray(),
+                        $batiment->getEtages()->toArray()));
+                }
             } else {
                 $salles = $batiment->getEtages()[$selected_etage]->getSalles()->toArray();
             }

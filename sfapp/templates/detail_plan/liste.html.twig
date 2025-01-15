@@ -108,7 +108,7 @@
                         <div class="block-salle">
                             <div class="circle-niveau">{{ salle.etage.niveau }}</div>
                             <div class="nom-salle">{{ salle.nom }}
-                                {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                {% if is_granted('ROLE_CHARGE_DE_MISSION') and salle.detailPlans|length > 0 and salle.detailPlans|first.sa is defined %}
                                 <a href="{{ path('app_diagnostic_salle', { 'batiment' :salle.etage.batiment.nom, 'salle':salle.nom }) }}" class="btn btn-info btn-lg"  style="color: white; font-weight: bolder">
                                 <span class="fas fa-bar-chart"></span>
                                 </a>

@@ -11,7 +11,6 @@
                 {# Formulaire Symfony #}
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
-                {{ form_end(form) }}
 
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ path('app_lier_liste', {'nom':nom, 'batiment':batiment})}}" class="btn btn-secondary mr-1 mt-1 action" role="button">Annuler</a>

@@ -380,7 +380,10 @@ private CacheInterface $cache;
             if ($response->getStatusCode() != 200) {
                 throw new RuntimeException(sprintf('Erreur API pour l\'URL : %s', $url));
             }
-            $result= [...$result, ...$response->toArray()];
+                $resulttest =$response->toArray();
+                if (reset($resulttest)['localisation'] === $salle->getNom()){
+                    $result= [...$result, ...$response->toArray()];
+                }
             }
             return $result; // Renvoie les données sous forme d'array
         });
