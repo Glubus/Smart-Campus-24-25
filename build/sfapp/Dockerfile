@@ -3,7 +3,7 @@ FROM forge-registry.iut-larochelle.fr/php-fpm-composer/iutlr-info-php8.2-fpm-com
 # Login to container as root user
 USER root
 
-# Symfony dev environement 
+# Symfony dev environement
 ENV APP_ENV=dev
 
 # Copy php default configuration
@@ -26,5 +26,5 @@ RUN if [ ! -z 0 ] && [ ! -z 0 ] && [ 0 -ne 0 ] && [ 0 -ne 0 ]; then \
 fi
 
 
-# Login to container as non-root user 
+# Login to container as non-root user
 USER ${USER_ID:-0}:${GROUP_ID:-0}
