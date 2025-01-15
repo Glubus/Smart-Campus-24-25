@@ -46,7 +46,6 @@ class SalleController extends AbstractController
         foreach ($batiments as $batiment ){
             foreach ($wrapper->requestAllSalleLastValue($batiment) as $salle) {
                 $arr = [...$arr, ...$wrapper->transformBySalle($salle)];
-
             }
         }
         $salles = $salleRepository->findAll();
@@ -71,10 +70,9 @@ class SalleController extends AbstractController
         $index = 0;
         foreach ($salles as $salle) {
             $sa = [];
-
-                foreach ($detailPlanRepository->findBy(['salle' => $salle]) as $detailPlan) {
-                    $sa[] = $detailPlan->getSA();
-                }
+            foreach ($detailPlanRepository->findBy(['salle' => $salle]) as $detailPlan) {
+                $sa[] = $detailPlan->getSA();
+            }
 
             $etat = "Hors-Service";
             $colEtat = "#F30408";
@@ -85,7 +83,6 @@ class SalleController extends AbstractController
             $jours = null;
             $heures = null;
             $minutes = null;
-            $isInDanger = false;
 
             // Trouve la salle dans le repertory en fonction du nom renvoyé par l'API wrapper
             foreach ($arr as $key => $value) {
