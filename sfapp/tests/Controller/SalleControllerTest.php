@@ -37,7 +37,7 @@ class SalleControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function testListeSalleUser_NeContientPasSalleSansSa(): void
+    public function testListeSalleUser_ContientSalleSansSa(): void
     {
         $client = static::createClient();
         $entityManager = self::getContainer()->get(EntityManagerInterface::class);
@@ -65,7 +65,7 @@ class SalleControllerTest extends WebTestCase
         $entityManager->flush();
 
         $crawler = $client->request('GET', '/salle/user');
-        $this->assertSelectorTextNotContains('.salleName', 'Salle 1');
+        $this->assertAnySelectorTextContains('.salleName', 'Salle 1');
 
         $entityManager->remove($salle);
         $entityManager->remove($etage);
@@ -114,11 +114,41 @@ class SalleControllerTest extends WebTestCase
         $entityManager->flush();
 
         $crawler = $client->request('GET', '/salle/user');
-        $this->assertSelectorTextContains('div', 'Salle 1');
+        $this->assertAnySelectorTextContains('.salleName', 'Salle 1');
+        $this->assertAnySelectorTextContains('.location', 'Batiment D - Etage Etage 1');
 
+        $entityManager->remove($detailPlan);
         $entityManager->remove($salle);
         $entityManager->remove($etage);
         $entityManager->remove($batiment);
+        $entityManager->remove($plan);
         $entityManager->flush();
+    }
+
+    public function testListeSalleUser_RedirigeVersInfos(): void
+    {
+        $client = static::createClient();
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        $batiment = new Batiment();
+        $batiment->setNom('Batiment D');
+        $batiment->setAdresse('Adresse 1');
+        $batiment->setNbEtages(2);
+        $entityManager->persist($batiment);
+
+        $etage = new Etage();
+        $etage->setNom('Etage 1');
+        $etage->setNiveau(1);
+        $etage->setBatiment($batiment);
+        $entityManager->persist($etage);
+
+        $salle = new Salle();
+        $salle->setNom('Salle 1');
+        $salle->setEtage($etage);
+        $entityManager->persist($salle);
+
+        $entityManager->flush();
+        $crawler = $client->request('GET', '/salle/user');
+        $client->followRedirect();
     }
 }

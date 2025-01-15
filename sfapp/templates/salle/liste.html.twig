@@ -59,10 +59,10 @@
                         <!-- Contenu caché qui s'affichera au clic -->
                         <div class="salleContent" id="card-content">
                             {% if item.sa is not empty %}
-    <p class="saAttribue">
-        {{ item.sa | map(o => o.nom) | join(', ') }}
-    </p>
-{% endif %}
+                                <p class="saAttribue">
+                                    {{ item.sa | map(o => o.nom) | join(', ') }}
+                                </p>
+                            {% endif %}
 
                             <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
                             {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
