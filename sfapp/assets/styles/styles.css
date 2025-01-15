@@ -1,0 +1,1677 @@
+*{
+    font-family: 'JejuGothic', serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+body {
+    background: linear-gradient(50deg, #001932, #0041B5); /* Dégradé existant */
+    background-attachment: fixed; /* Fixe le fond pour qu'il ne bouge pas lors du scroll */
+    background-size: cover; /* S'assure que le dégradé couvre tout l'écran */
+    background-repeat: no-repeat; /* Évite toute répétition */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+
+main {
+    padding: 20px;
+}
+
+
+.period-options {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.period-options select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.graph-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.graph-container {
+    flex: 1;
+    max-width: 30%;
+    margin: 10px;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Container (styles.css) */
+.login-container {
+    z-index: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    width: 900px;
+    height: 500px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.35);
+    overflow: hidden;
+}
+.accueil-container {
+    padding:0 0 0 0;
+    height:92%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.20);
+    overflow: hidden;
+}
+
+/* Form Section (styles.css) */
+.form-section {
+    flex: 1;
+    padding: 40px;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+.form-section h2 {
+    font-size: 55px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+
+.input-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6ba0ff;
+    font-size: 20px;
+}
+
+/* Input fields (styles merged to preserve additional rules) */
+input {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 40px;
+    border: none;
+    font-size: 16px;
+}
+
+input:focus {
+    outline: 2px solid #6ba0ff;
+}
+
+/* Buttons (priority: styles.css, with hover states preserved) */
+button {
+    width: 60%;
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #005bb5;
+}
+
+/* Welcome Section (styles.css) */
+.welcome-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.welcome-section img {
+    width: 220px;
+    margin-bottom: 20px;
+    filter: contrast(200%) brightness(240%) saturate(90%) drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    transition: filter 0.3s ease;
+}
+
+.welcome-section h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.welcome-section p {
+    font-size: 16px;
+}
+
+/* Alert Styles (styles.css) */
+.alert {
+    width: 100%;
+    background-color: #17a2b8;
+    color: #ffffff;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.alert a:hover {
+    color: #d1ecf1;
+}
+
+.conclusionInfos-accueil {
+    margin-top: 20px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+@font-face {
+    font-family: 'JejuGothic'; /* Name your font family */
+    src: url('font/JejuGothic.ttf') format('truetype');
+}
+
+
+
+
+
+/*
+
+ */
+
+.accueil {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.logo {
+    width: 65px;
+}
+
+.el1 {
+    font-size: 32px;
+    margin-left: 25px;
+    margin-right: 25px;
+    font-family: "Train One", system-ui;
+    color: black;
+}
+
+.el1:hover {
+    text-shadow: 1px 1px 2px gray;
+}
+
+.elNav {
+    color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-left: 1px solid black;
+    font-size: 20px;
+    padding-left: 45px;
+    margin-right: 45px;
+}
+
+.elNav:hover {
+    text-shadow: 1px 1px 2px gray;
+}
+
+.line-edit {
+    border-radius: 10px;
+    padding: 10px 10px 10px 40px;
+    display: block;
+    width: 100%;
+    font-weight: 400;
+    line-height: 1.5;
+    appearance: none; // Fix appearance for date inputs in Safari
+background-clip: padding-box;
+
+}
+
+/* Styles pour le bandeau avec une image de fond */
+.image-bandeau {
+    position: relative; /* Pour permettre l'utilisation de :before */
+    width: 100%;
+    height: 100%; /* Ajuste la hauteur automatiquement */
+    background-image: url("../img/image_iut.jpg");
+    background-size:     cover;                      /* <------ */
+    background-repeat:   no-repeat;
+    background-position: center center;
+    display: flex; /* Active Flexbox pour le centrage */
+    justify-content: center; /* Centre horizontalement le contenu */
+    align-items: center; /* Centre verticalement le contenu */
+    overflow: hidden; /* Cache le contenu débordant */
+}
+
+/* Calque sombre au-dessus de l'image */
+.image-bandeau:before {
+    content: ""; /* Nécessaire pour générer le pseudo-élément */
+    position: absolute; /* Rend la pseudo-classe positionnée */
+    top: 0; /* Calque commence en haut */
+    left: 0; /* Calque commence à gauche */
+    width: 100%; /* Recouvre toute la largeur */
+    height: 100%; /* Recouvre toute la hauteur */
+    background: rgba(0, 0, 0, 0.6); /* Couleur noire semi-transparente */
+    z-index: 1; /* Place le calque au-dessus de l'image */
+}
+
+/* Le contenu à l'intérieur de .image-bandeau doit rester visible */
+.image-bandeau/* Contenu à afficher par-dessus le calque sombre */
+.content {
+    position: relative; /* Met la couche de contenu au-dessus du calque assombri */
+    z-index: 2; /* Assure que le contenu est visible au-dessus de `:before` */
+    color: #ffffff; /* Couleur de texte blanche */
+    text-align: center; /* Centre le texte à l'intérieur */
+}
+
+/* Style du titre */
+.content h1 {
+    font-size: 84px; /* Taille du titre en gros (modifiable) */
+    font-weight: bold; /* Mettre en gras */
+    margin: -2em 0 0 0 ; /* Supprime les marges par défaut */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Effet d'ombre légère */
+}
+
+.accueil-row{
+    height:100%;
+}
+
+/* Section pour aligner les graphiques */
+
+.dashboard-content {
+    display: flex; /* Met les deux colonnes côte à côte */
+    justify-content: space-between; /* Espace entre les colonnes */
+    gap: 20px; /* Espacement entre les deux colonnes */
+    margin-top: 20px;
+}
+
+/* Colonne gauche (graphique) */
+.left-column {
+    flex: 3; /* Prend 3 parts de l'espace total */
+    display: flex;
+    flex-direction: column; /* Affiche les graphiques un en dessous de l'autre */
+    gap: 20px; /* Espacement entre les graphiques */
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    padding:40px;
+    border-radius: 8px;
+
+}
+
+/* Dashboard styles not in styles.css */
+header {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #003973;
+    padding: 20px 10px;
+    text-align: center;
+}
+
+header h1 {
+    margin:0
+}
+/* Canvas graphique */
+.left-column canvas {
+    background: #ffffff; /* Fond blanc pour les graphiques */
+    border: 1px solid #ccc; /* Bordure douce */
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet d'ombre subtile */
+    height: 250px; /* Hauteur fixe pour une uniformité visuelle */
+    width: 100%; /* Largeur 100 % de la colonne */
+}
+
+/* Ajustez les titres pour chaque colonne */
+.right-column h1,
+.left-column h1,
+.period-options h3 {
+    color: #003973;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+h3{
+    color: #003973;
+
+}
+
+.graphiques {
+    display: flex;
+    justify-content: space-between; /* Aligne les graphiques avec un espace équilibré */
+    flex-wrap: wrap; /* Permet le passage à la ligne si l'écran est trop petit */
+    height:400px;
+}
+
+/* Style uniformisé pour les containers des graphiques */
+.graphiques canvas {
+    background: #ffffff; /* Ajout d'un fond blanc autour des graphiques */
+    border-radius: 8px; /* Légère courbure des coins */
+    border: 1px solid #ccc; /* Ajoute une bordure subtile */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour un effet flottant */
+    max-width: 32%; /* Chaque graphique occupe jusqu'à 32% de la largeur */
+    flex: 1; /* S'adapte automatiquement à la largeur disponible */
+    height: 300px; /* Hauteur fixe pour harmoniser visuellement */
+}
+
+.statistiques-globales {
+    margin-bottom: 40px;
+    padding: 20px 15px;
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    border-radius: 10px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effets d'ombre */
+}
+
+.statistiques-globales h2 {
+    text-transform: uppercase; /* Texte en majuscules */
+    letter-spacing: 1.5px; /* Espacement des lettres */
+    color: #003973; /* Texte bleu foncé */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-between; /* Répartit les cartes équitablement */
+    gap: 15px; /* Espacement entre les cartes */
+    flex-wrap: wrap; /* Permet une disposition en ligne sur écrans petits */
+}
+
+.card {
+    background-color: #efefef; /* Fond gris clair */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 15px;
+    width: 30%; /* Chaque carte occupe environ 30% de la section */
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
+
+
+.card-ajouts {
+    background-color: rgba(255, 255, 255, 0.8); /* Fond gris clair */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 30px;
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
+.card h3 {
+    text-transform: uppercase;
+    color: #007bff; /* Accent bleu */
+    margin-bottom: 10px;
+}
+.period-options {
+    background: #f6f8fa; /* Fond gris doux */
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtile ombre */
+}
+
+.period-options h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.period-options select {
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    transition: all 0.3s ease-in-out;
+}
+
+.period-options select:hover {
+    border-color: #007bff; /* Bordure bleue au survol */
+}
+.right-column {
+    background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    padding: 40px;
+    width:35%;
+    border-radius: 12px; /* Arrondit les coins du container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre subtile */
+}
+
+.right-column h1 {
+    text-align: left;
+    color: #003973; /* Accent bleu-vert foncé */
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Effet de profondeur */
+}
+
+.left-column h1 {
+    margin:0;
+    text-align: left;
+    color: #003973; /* Accent bleu-vert foncé */
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Effet de profondeur */
+}
+.right-column .alert {
+    background-color: #d4edda; /* Vert pâle pour succès */
+    color: #155724; /* Texte vert foncé */
+    padding: 15px;
+    border: 1px solid #c3e6cb; /* Bordure verte douce */
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.right-column table {
+    width: 100%; /* Occupe toute la largeur */
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px; /* Taille du texte pour lisibilité */
+    background: rgba(255, 255, 255, 1); /* Fond blanc pur */
+    border: 1px solid #ddd; /* Bordure subtile autour du tableau */
+    border-radius: 8px; /* Coins arrondis */
+    overflow: hidden; /* Prévenir tout débordement */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Donne un léger effet flottant */
+}
+
+.right-column table thead {
+    background-color: #001932; /* Fond bleu foncé pour la tête du tableau */
+    color: #ffffff; /* Texte blanc */
+    font-weight: bold; /* Mettre en valeur les titres */
+    text-transform: uppercase; /* Majuscules */
+}
+
+.right-column table th,
+.right-column table td {
+    padding: 12px 15px; /* Espacement interne */
+    text-align: left; /* Alignement du texte à gauche */
+    border-bottom: 1px solid #eee; /* Ligne de séparation subtile */
+}
+
+.right-column table tr:hover {
+    background-color: rgba(0, 41, 85, 0.1); /* Légère surbrillance au survol */
+}
+
+.right-column table tbody tr:last-child td {
+    border-bottom: none; /* Supprime la ligne pour la dernière rangée */
+}
+
+.right-column table td {
+    color: #333; /* Texte standard */
+}
+
+.right-column table td:first-child {
+    font-weight: bold; /* Mettez en gras les noms des salles */
+}
+
+.right-column .table-container {
+    max-height: 400px; /* Limitation de la hauteur pour prévenir l'encombrement */
+    overflow-y: auto; /* Barre de défilement si les données débordent */
+    margin-top: 20px;
+}
+
+/* Style pour la barre de défilement */
+.right-column .table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.right-column .table-container::-webkit-scrollbar-thumb {
+    background-color: #0041b5; /* Couleur bleue pour la barre */
+    border-radius: 8px;
+}
+
+.data-header {
+    display: flex; /* Permet d'aligner les enfants en ligne */
+    align-items: center; /* Centre verticalement h2 et la section */
+    justify-content: space-between; /* Ajuste l'espace entre les deux éléments */
+    margin-bottom: 15px; /* Ajoute un espacement en dessous */
+}
+
+.data-header h2 {
+    margin: 0; /* Supprime les marges ajoutées par défaut */
+    font-size: 24px; /* Ajustement éventuel de la taille */
+    color: #333; /* Couleur du texte */
+}
+
+.period-options {
+    margin: 0; /* Supprime les marges ajoutées par défaut */
+}
+
+#timePeriod{
+    padding: 8px 10px; /* Ajuste l'espacement interne du champ */
+    font-size: 14px; /* Taille du texte */
+    border: 1px solid #ccc; /* Couleur de bordure discrète */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #ffffff; /* Fond blanc */
+    transition: all 0.3s ease; /* Animation au survol */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+        SECTION LISTE SALLES USER & TECHNICIEN & ADMIN
+ */
+
+/* Général */
+
+.search {
+    margin-left: 0;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    justify-content: flex-start;
+    display: flex;
+    gap: 10px;
+}
+
+.titleSalles {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.containerSalles {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.listeSalles {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5%;
+    width: 100%;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.checkboxSalle {
+    width: 15px;
+}
+
+/* Card style */
+.salleBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.salleBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.salleMainInfos {
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.salleMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.salleName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.salleTop {
+    background-color: transparent;
+    height: 40%;
+    padding: 0;
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-weight: bold;
+}
+
+.etatSalle {
+    display: flex;
+    flex-direction: row;
+}
+
+.salleStatus {
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.sallePastilleStatus {
+    width: 20px;
+    height: 20px;
+    border-radius: 30px;
+}
+
+#salleLastUpdate {
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+/* Hidden content */
+.salleContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.salleContent .location {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.salleContent .saAttribue {
+    font-size: 2em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.salleMetrics {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.salleMetric {
+    color: #000;
+    padding: 5px;
+    border-radius: 8px;
+    width: 100px;
+    height: 100px;
+}
+
+.salleMetric .icon {
+    float: right;
+    height: 20px;
+}
+
+.salleMetric .value {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-top: 20px;
+    font-size: 40px;
+}
+
+.salleMetric .unit {
+    margin-top: -20px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 16px;
+}
+
+.m1 {
+    background-color: #FFFB78;
+    border: 2px solid #FFD900;
+}
+
+.m2 {
+    background-color: #FFBABA;
+    border: 2px solid #FF7171;
+}
+
+.m3 {
+    background-color: #B9F0FF;
+    border: 2px solid #6ADFFF;
+}
+
+.salleBtnDetail {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.salleBtnDetail:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.salleBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.salleBtnModif:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+/*
+        SECTION LISTE BATIMENTS
+ */
+
+.titleBatiment {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.containerBatiment {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.listeBatiments {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.batimentBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.batimentBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.batimentMainInfos {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.batimentMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.checkboxBatiment {
+    width: 15px;
+}
+
+.batimentName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.batimentContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.batimentContent .adresse {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.batimentBtnDetail {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.batimentBtnDetail:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.batimentBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.batimentBtnModif:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+/*
+        SECTION LISTE PLANS
+ */
+
+.titlePlan {
+    margin-top: 15px;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
+}
+
+.containerPlan {
+    margin: auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.btnAjout {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #289EFF;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnAjout:hover {
+    background-color: #008CFF;
+}
+
+.hidden {
+    display: none;
+}
+
+.btnSuppr {
+    margin: 10px 0 10px 0;
+    width: min-content;
+    background-color: #FF282C;
+    border-radius: 10px;
+    color: white;
+}
+
+.btnSuppr:hover {
+    background-color: #DC0004;
+}
+
+.listePlans {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.planBlock {
+    color: white;
+    background-color: #0080FF;
+    border: 1px solid white;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.planBlock.expanded {
+    background-color: #82C1FF;
+}
+
+.planMainInfos {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    width: 100%;
+    height: 100px;
+    border: 1px solid white;
+    border-radius: 20px;
+    background-color: #0080FF;
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF; /* Deuxième ombre intérieure */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+}
+
+.planMainInfos:hover {
+    box-shadow:
+            inset 0 -17.01px 17.01px #004991, /* Première ombre intérieure */
+            inset 0 17.01px 17.01px #00ABFF, /* Deuxième ombre intérieure */
+            2px 2px 20px white,
+            -2px -2px 20px white;
+}
+
+.checkboxplan {
+    width: 15px;
+}
+
+.planName {
+    font-size: 40px;
+    padding: 0;
+}
+
+.planContent {
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: black;
+    display: none;
+    margin-top: 15px;
+}
+
+.planBtnDetail {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: #0080FF;
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.planBtnDetail:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+.planBtnModif {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(0, 215, 0);
+    color: black;
+    transition: box-shadow 0.2s ease, transform 0.3s ease; /* Ajoute une transition fluide */
+    border: 1px solid black;
+}
+
+.planBtnModif:hover {
+    box-shadow:
+            1px 1px 5px black,
+            -1px -1px 5px black;
+}
+
+
+
+
+
+
+/*
+        SECTION INFOS SALLE USER
+ */
+
+.salleUserInfosAll {
+    width: 75%;
+    margin: auto;
+    color: white;
+}
+
+.salleUserInfosMetriques {
+    color: black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10%;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.salleUserInfosDataBlock {
+    border-radius: 10px;
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.salleUserInfosBottomMet {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.temp {
+    border: 2px solid #FFD900;
+    background-color: #FFFB78;
+}
+
+.co2 {
+    border: 2px solid #FF7171;
+    background-color: #FFBABA;
+}
+
+.humidite {
+    border: 2px solid #6ADFFF;
+    background-color: #B9F0FF;
+}
+
+.salleUserInfosTextData {
+    font-size: 18px;
+    font-weight: 20;
+}
+
+.salleUserInfosEtatNomCap {
+    height: min-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.salleUserInfosNomCap {
+    margin-left: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 30px;
+}
+
+.data {
+    text-align: end;
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.ppm {
+    font-size: 18px;
+}
+
+.el {
+    margin-left: 10px;
+}
+
+.salleUserInfosConseils {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+    color: white;
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    border-radius: 10px;
+}
+
+.sticky-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
+.sticky-wrapper.is-sticky .navbar {
+    background-color: white;
+}
+
+.navbar {
+    background-color: #FFFFFF;
+    /*border-bottom: 1px solid rgba(128, 208, 199, 0.35);*/
+    z-index: 9;
+}
+
+.navbar-brand,
+.navbar-brand:hover {
+    display: block;
+}
+
+.navbar-brand span {
+}
+
+.navbar-expand-lg .navbar-nav .nav-link {
+    margin: 0px 15px 0px 15px;
+    padding: 10px;
+}
+
+.navbar-nav .nav-link {
+    display: inline-block;
+    color: black;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+    color: lightgray;
+}
+
+.navbar .dropdown-menu {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+    border: 0;
+    display: inherit;
+    opacity: 0;
+    min-width: 9rem;
+    margin-top: 20px;
+    padding: 13px 0 10px 0;
+    transition: all 0.3s;
+    pointer-events: none;
+}
+
+.navbar .dropdown-menu::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 15px solid black;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+}
+
+.navbar .dropdown-item {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.navbar .dropdown-item.active,
+.navbar .dropdown-item:active,
+.navbar .dropdown-item:focus,
+.navbar .dropdown-item:hover {
+    background: transparent;
+}
+
+.navbar .dropdown-toggle::after {
+    content: "\f282";
+    display: inline-block;
+    font-family: bootstrap-icons !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: -.125em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    left: 2px;
+    border: 0;
+}
+
+@media screen and (min-width: 992px) {
+    .navbar .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        margin-top: 0;
+        pointer-events: auto;
+    }
+}
+
+.navbar-icon {
+    background: black;
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 15px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.navbar-icon:hover {
+    background: black;
+    color: black;
+}
+
+.navbar-toggler {
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    margin: 0;
+    width: 30px;
+    height: 35px;
+    outline: none;
+}
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+    background: transparent;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon:before,
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon:after {
+    transition: top 300ms 50ms ease, -webkit-transform 300ms 350ms ease;
+    transition: top 300ms 50ms ease, transform 300ms 350ms ease;
+    transition: top 300ms 50ms ease, transform 300ms 350ms ease, -webkit-transform 300ms 350ms ease;
+    top: 0;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon:before {
+    transform: rotate(45deg);
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon:after {
+    transform: rotate(-45deg);
+}
+
+.navbar-toggler .navbar-toggler-icon {
+    background: white;
+    transition: background 10ms 300ms ease;
+    display: block;
+    width: 30px;
+    height: 2px;
+    position: relative;
+}
+
+.navbar-toggler .navbar-toggler-icon:before,
+.navbar-toggler .navbar-toggler-icon:after {
+    transition: top 300ms 350ms ease, -webkit-transform 300ms 50ms ease;
+    transition: top 300ms 350ms ease, transform 300ms 50ms ease;
+    transition: top 300ms 350ms ease, transform 300ms 50ms ease, -webkit-transform 300ms 50ms ease;
+    position: absolute;
+    right: 0;
+    left: 0;
+    background: white;
+    width: 30px;
+    height: 2px;
+    content: '';
+}
+
+.navbar-toggler .navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler .navbar-toggler-icon::after {
+    top: 8px;
+}
+
+
+
+/*
+*  Diagnostic Section
+ */
+/* Styles généraux pour la carte */
+.card-diagnostic {
+    border-radius: 25px;
+    padding: 15px;
+
+    width: 30%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: black;
+    text-align: center;
+}
+
+/* Température spécifique */
+.temp {
+    border: 2px solid #FFD900;
+    background-color: #FFFB78;
+}
+.temp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left:15%;
+    font-size:30px;
+}
+
+.current-temp {
+    font-size: 1.8em; /* Température actuelle en plus gros */
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Icône de thermomètre à droite */
+.icon-temp {
+    font-size: 8em; /* Taille de l'icône */
+    color: #000000; /* Adapté à la couleur de la carte */
+    position:absolute;
+    margin-left:4.5%;
+
+}
+
+/* Statistiques : moyenne et écart type */
+.temp-stats {
+    margin-top:0;
+    margin-left:15%;
+}
+
+.temp-stats p {
+    display: flex;
+    align-items: flex-start;
+    justify-content: start;
+    font-size:18px;
+    margin: 5px 0;
+}
+
+.temp-stats .icon-mean,
+.temp-stats .icon-ecarttype {
+    font-size: 1.2em; /* Taille des icônes */
+    margin-right: 8px; /* Espacement avec le texte */
+    color: #6c757d; /* Couleur grise */
+}
+
+/* Attention/Mise en garde */
+.warning {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* CO2 spécifique */
+.co2 {
+    border: 2px solid #FF7171; /* Couleur de la bordure spécifique à CO2 */
+    background-color: #FFBABA; /* Couleur de fond spécifique à CO2 */
+}
+.co2-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left: 15%;
+    font-size: 30px;
+}
+
+.current-co2 {
+    font-size: 1.8em; /* CO2 actuelle en plus gros */
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Icône pour CO2 à droite */
+.icon-co2 {
+    font-size: 8em; /* Taille de l'icône */
+    color: #FF7171; /* Adaptée à la couleur de la carte */
+    position: absolute;
+    margin-left: 4.5%;
+}
+
+.co2-stats {
+    margin-top: 0;
+    margin-left: 15%;
+}
+
+.co2-stats p {
+    display: flex;
+    align-items: flex-start;
+    justify-content: start;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.co2-stats .icon-mean,
+.co2-stats .icon-ecarttype {
+    font-size: 1.2em; /* Taille des icônes */
+    margin-right: 8px; /* Espacement avec le texte */
+    color: #6c757d; /* Couleur grise */
+}
+
+.co2-warning {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Humidité spécifique */
+.humidite {
+    border: 2px solid #6ADFFF; /* Couleur de la bordure spécifique à humidité */
+    background-color: #B9F0FF; /* Couleur de fond spécifique à humidité */
+}
+.hum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left: 15%;
+    font-size: 30px;
+}
+
+.current-hum {
+    font-size: 1.8em; /* Humidité actuelle en plus gros */
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Icône pour humidité à droite */
+.icon-hum {
+    font-size: 8em; /* Taille de l'icône */
+    color: #6ADFFF; /* Adaptée à la couleur de la carte */
+    position: absolute;
+    margin-left: 4.5%;
+}
+
+.hum-stats {
+    margin-top: 0;
+    margin-left: 15%;
+}
+
+.hum-stats p {
+    display: flex;
+    align-items: flex-start;
+    justify-content: start;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.hum-stats .icon-mean,
+.hum-stats .icon-ecarttype {
+    font-size: 1.2em; /* Taille des icônes */
+    margin-right: 8px; /* Espacement avec le texte */
+    color: #6c757d; /* Couleur grise */
+}
+
+.hum-warning {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.cards-diagnostics {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.sallesrow {
+    display: flex;
+    flex-wrap: wrap; /* Permet d'aller à la ligne lorsque les éléments dépassent */
+    justify-content: space-between; /* Espace égal entre les éléments */
+    gap: 20px; /* Ajoute un espace entre les éléments */
+}
+
+
+/* Ajout d'un fond blanc avec 80% d'opacité pour la section listeBat */
+/* Ajout d'un fond blanc avec 80% d'opacité pour la section listeBat */
+/* Conteneur principal */
+.containerAccueil {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; /* Ajoute un écart entre les deux divs */
+    padding: 20px;
+    margin-right: 1%;
+}
+
+/* Partie de gauche (listeBat) */
+.listeBat {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec 80% d'opacité */
+    padding: 20px;
+    border-radius: 10px; /* Optionnel: pour des coins arrondis */
+    flex: 0 0 55%; /* Réduit la largeur de la partie gauche à 55% */
+}
+
+/* Partie de droite (sidebar) */
+.sidebar {
+    background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec 80% d'opacité */
+    padding: 20px;
+    border-radius: 10px; /* Optionnel: pour des coins arrondis */
+    flex: 0 0 40%; /* Réduit la largeur de la partie droite à 40% */
+}
+
+.cardTaches {
+    background-color: #dddddd; /* Fond gris clair */
+    border-radius: 20px;
+    padding: 15px;
+    width: 30%; /* Chaque carte occupe environ 30% de la section */
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}

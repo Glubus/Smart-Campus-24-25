@@ -16,13 +16,13 @@
                             <strong>Nom :</strong> {{ salle.nom }}
                         </li>
                         <li class="list-group-item">
-                            <strong>Bâtiment :</strong> {{ salle.batiment.nom }}
+                            <strong>Bâtiment :</strong> {{ salle.etage.batiment.nom }}
                         </li>
                         <li class="list-group-item">
-                            <strong>Adresse :</strong> {{ salle.batiment.adresse }}
+                            <strong>Adresse :</strong> {{ salle.etage.batiment.adresse }}
                         </li>
                         <li class="list-group-item">
-                            <strong>Étage :</strong> {{ salle.etage }}
+                            <strong>Étage :</strong> {{ salle.etage.nom }}
                         </li>
                         <li class="list-group-item">
                             <strong>Radiateur : </strong>{{salle.radiateur}}
@@ -34,8 +34,7 @@
                         </li>
                         <li class="list-group-item">
                             <strong>SA attribué : </strong>
-                                <a href="{{ path('app_lier_liste') }}" class="btn btn-primary">Attribuer un SA</a>
-
+                                <a href="{{ path('app_lier_ajout', {'nom': salle.etage.batiment.plan.nom, 'salle' : salle.id}) }}" class="btn btn-primary">Attribuer un SA</a>
                         </li>
                     </ul>
                 </div>

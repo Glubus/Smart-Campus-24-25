@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ActionLog;
 use App\Entity\Commentaires;
 use App\Entity\SA;
+use Symfony\Component\Security\Core\Security;
 use App\Entity\DetailPlan;
 use App\Entity\SALog;
 use App\Entity\TypeCapteur;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\VarDumper\VarDumper;
 
 class SAController extends AbstractController
@@ -29,7 +31,8 @@ class SAController extends AbstractController
     public function modifier(int $id, SARepository $SARepository, EntityManagerInterface $entityManager,Request $request): Response
     {
         $SA=$SARepository->find($id);
-        if ($SA==null) {
+        if (!$SA)
+        {
             return new Response('Page Not Found', 404);
         }
         $form = $this->createForm(AjoutSAType::class, $SA);
@@ -37,7 +40,7 @@ class SAController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
 
-            if (count($SARepository->findBy(["nom" => $SA->getNom()], ["nom" => "ASC"]))>1){
+            if (count($SARepository->findBy(["nom" => $SA->getNom()], ["nom" => "ASC"]))>0){
                 $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
             }
             else{
@@ -53,8 +56,13 @@ class SAController extends AbstractController
             }
         }
         // Affichage du formulaire
-        return $this->render('sa/ajout.html.twig', [
+        return $this->render('sa/ajouter.html.twig', [
             'form' => $form->createView(),
+            'css' => 'sa',
+            'classItem' => "sa",
+            'routeItem'=> "app_sa_modifier",
+            'classSpecifique' => "",
+            'Type' => "Modifier"
         ]);
     }
     #[Route('/sa/ajouter', name: 'app_sa_ajouter')]
@@ -66,24 +74,31 @@ class SAController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($sa);
-            $entityManager->flush();
+            if (count($entityManager->getRepository(SA::class)->findBy(["nom" => $sa->getNom()], ["nom" => "ASC"]))>0){
+                $this->addFlash('error', 'Le nom saisi est déjà utilisé.');
+            }
+            else {
+                $entityManager->persist($sa);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'SA ajouté avec succès.');
+                $this->addFlash('success', 'SA ajouté avec succès.');
 
-            return $this->redirectToRoute('app_sa_liste');
+                return $this->redirectToRoute('app_sa_liste');
+            }
         }
 
         return $this->render('sa/ajouter.html.twig', [
             'form' => $form->createView(),
-            'css' => 'sa',
+            'css' => 'common',
             'classItem' => "sa",
             'routeItem'=> "app_sa_ajouter",
-            'classSpecifique' => ""
+            'classSpecifique' => "",
+            'Type' => "Ajouter"
         ]);
     }
 
     #[Route('/sa', name: 'app_sa_liste')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function lister(SARepository $saRepo, Request $request): Response
     {
         // Create the form for searching
@@ -95,20 +110,32 @@ class SAController extends AbstractController
             $data = $form->getData();
 
             // Filter the `SA` entities based on the search term
-            $sa = $saRepo->findByNomSA($data['nom']);
+            $sas = $saRepo->findByNomSA($data['nom']);
         } else {
             // If no filtering, get all entities
-            $sa = $saRepo->findAll();
+            $sas = $saRepo->findAll();
         }
 
-        // Render the page with the form and filtered results
+        $index = 0;
+        $col1 = [];
+        $col2 = [];
+        $col3 = [];
+        foreach ($sas as $sa) {
+            if($index%3 == 0){
+                $col1[] = $sa;
+            } elseif ($index%3 == 1) {
+                $col2[] = $sa;
+            } else {
+                $col3[] = $sa;
+            }
+            $index++;
+        }
+
         return $this->render('sa/liste.html.twig', [
-            'css' => 'sa',
-            'classItem' => "sa",
-            'items' => $sa,
-            'routeItem'=> "app_sa_ajouter",
-            'classSpecifique' => "",
-            'form' => $form->createView()
+            'col1' => $col1,
+            'col2' => $col2,
+            'col3' => $col3,
+            'form' => $form->createView(),
         ]);
     }
     #[Route('/sa/{id}/suppression', name: 'app_sa_suppression')]
@@ -132,7 +159,7 @@ class SAController extends AbstractController
                 }
             }
 
-            return $this->render('sa/supprimer.html.twig', [
+            return $this->render('template/supprimer.html.twig', [
                 "form" => $form->createView(),
                 "SA" => $SA,
             ]);
@@ -142,87 +169,8 @@ class SAController extends AbstractController
     }
 
 
-    #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
-    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
-    {
-        $SA = $repo->find($id);
-        $commentaires = $commentairesRepository->findBy(['SA' => $SA], ['dateAjout' => 'DESC'], 5);
-
-        if (!$SA) {
-            throw $this->createNotFoundException('SA introuvable.');
-        }
-        $histo=$SA->getSALogs();
-        // trouver la salle d'un Sa
-        $plan = $entityManager->getRepository(DetailPlan::class)->findOneBy(['sa' => $SA]);
-        $salle = $plan ? $plan->getSalle() : null;
-        dump($commentaires);
-
-        return $this->render('sa/info.html.twig', [
-            "SA" => $SA,
-            "salle" => $salle,
-            "histo" => $histo,
-            'commentaires' => $commentaires,
-        ]);
-    }
 
 
-    #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
-    public function ajouterCommentaire(int $id,Request $request,EntityManagerInterface $entityManager,SARepository $SARepository): Response {
-        // Récupérer l'entité SA
-        $SA = $SARepository->find($id);
-
-        // Récupérer la description du commentaire
-        $description = $request->request->get('description');
-        $nomTech = $request->request->get('nomTech');
-
-        // Créer et associer le commentaire
-        $commentaire = new Commentaires();
-        $commentaire->setNomTech($nomTech);
-        $commentaire->setDescription($description);
-        $commentaire->setSA($SA);
-
-        // Persist le commentaire
-        $entityManager->persist($commentaire);
-        $entityManager->flush();
-
-        // Rediriger vers la page du SA
-        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
-    }
-    #[Route('/sa/{id}/commentaire/{commentaireId}/supprimer', name: 'app_sa_commentaire_supprimer')]
-    public function supprimerCommentaire(
-        int $id,
-        int $commentaireId,
-        EntityManagerInterface $entityManager,
-        SARepository $SARepository,
-        CommentairesRepository $commentairesRepository
-    ): Response {
-        // Récupérer l'entité SA
-        $SA = $SARepository->find($id);
-        if (!$SA) {
-            throw $this->createNotFoundException("L'entité SA n'a pas été trouvée.");
-        }
-
-        // Récupérer le commentaire à supprimer
-        $commentaire = $commentairesRepository->find($commentaireId);
-        if (!$commentaire) {
-            throw $this->createNotFoundException("Le commentaire n'a pas été trouvé.");
-        }
-
-        // Vérifier si le commentaire appartient bien à l'entité SA
-        if ($commentaire->getSA() !== $SA) {
-            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à supprimer ce commentaire.");
-        }
-
-        // Supprimer le commentaire
-        $entityManager->remove($commentaire);
-        $entityManager->flush();
-
-        // Ajouter un message flash pour informer l'utilisateur
-        $this->addFlash('success', "Le commentaire a été supprimé avec succès.");
-
-        // Rediriger vers la page de l'entité SA après suppression
-        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
-    }
 
 
     #[Route('/sa/log/{id}', name: 'app_sa_log')]
@@ -240,35 +188,6 @@ class SAController extends AbstractController
     }
 
 
-    #[Route("/sa/{id}/commentaires-ajax", name: 'app_sa_commentaires_ajax')]
-    public function commentairesAjax(Sa $SA, Request $request, CommentairesRepository $commentairesRepository): JsonResponse
-    {
-        $offset = (int) $request->query->get('offset', 0);
-
-        // Récupérer les commentaires associés
-        $commentaires = $commentairesRepository->findBy(
-            ['sa' => $SA],
-            ['dateAjout' => 'DESC'],
-            5,
-            $offset
-        );
-
-        // Si aucun commentaire n'est trouvé
-        if (!$commentaires) {
-            return new JsonResponse([], 200);
-        }
-
-        // Préparer les données pour JSON
-        $data = array_map(fn($commentaire) => [
-            'id' => $commentaire->getId(),
-            'nomTech' => $commentaire->getNomTech(),
-            'dateAjout' => $commentaire->getDateAjout()->format('d/m/Y'),
-            'description' => $commentaire->getDescription(),
-        ], $commentaires);
-
-        return new JsonResponse($data, 200);
-    }
-
 
     #[Route('/sa/supprimer-selection', name: 'app_sa_supprimer_selection', methods: ['POST', 'GET'])]
     public function suppSelection(
@@ -278,12 +197,12 @@ class SAController extends AbstractController
         SessionInterface $session
     ): Response
     {
-        $ids = $request->request->all('selected_sa');
+        $ids = $request->request->all('selected');
         if(empty($ids)) {
-            $ids = $session->get('selected_sa', []);
+            $ids = $session->get('selected', []);
         }
         else
-            $session->set('selected_sa', $ids);
+            $session->set('selected', $ids);
 
         $sa = array_map(fn($id) => $saRepository->find($id), $ids);
         $form = $this->createForm(SuppressionType::class, null, [
@@ -296,15 +215,9 @@ class SAController extends AbstractController
             if ($submittedString=='CONFIRMER'){
 
                 foreach ($sa as $sas) {
-                    foreach ($sas->getPlans() as $plan) {
-                        $entityManager->remove($plan);
-                    }
                     // Remove related SALog entries
                     foreach ($sas->getSALogs() as $log) {
                         $entityManager->remove($log);
-                    }
-                    foreach ($sas->getValCapteurs() as $valCapteur) {
-                        $entityManager->remove($valCapteur);
                     }
                     // Remove the SA entity
                     $entityManager->remove($sas);
@@ -318,9 +231,10 @@ class SAController extends AbstractController
             }
         }
 
-        return $this->render('sa/suppression_sa.html.twig', [
+        return $this->render('template/suppression.html.twig', [
             'form' => $form->createView(),
-            'sa' => $sa,
+            'items' => $sa,
+            'classItem'=> "sa",
         ]);
     }
 }

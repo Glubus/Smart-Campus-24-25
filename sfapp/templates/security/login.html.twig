@@ -7,7 +7,7 @@
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    <div class="container">
+    <div class="login-container">
         <!-- Form Section -->
         <div class="form-section">
             <h2>Smart Campus</h2>
@@ -16,14 +16,14 @@
                 <div class="input-icon">
                     <i class="fas fa-user"></i> <!-- Icône pour l'utilisateur -->
                     <input type="text" value="{{ last_username }}" name="_username"
-                           id="username" class="form-control" placeholder="Entrée votre nom d'utilisateur" autocomplete="username" required autofocus>
+                           id="username" class="line-edit" placeholder="Entree votre nom d'utilisateur" autocomplete="username" required autofocus>
                 </div>
 
                 <label for="password">Mot de passe</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i> <!-- Icône pour le mot de passe -->
                     <input type="password" name="_password"
-                           id="password" class="form-control" placeholder="Entrée votre mot de passe" autocomplete="current-password" required>
+                           id="password" class="line-edit" placeholder="Entree votre mot de passe" autocomplete="current-password" required>
                 </div>
 
                 <!-- Hidden CSRF Token -->
@@ -68,30 +68,11 @@
             height: 100vh;
         }
 
-        .container {
-            z-index: 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Décale de la moitié de la taille */
-            display: flex;
-            width: 900px;
-            height:500px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.35);
-            overflow: hidden;
-        }
 
         /* Left Section */
         .form-section {
             flex: 1;
             padding: 40px;
-        }
-        .form-control {
-            border-radius: 10px;
-            padding: 10px 10px 10px 40px; /* Ajout de padding à gauche pour laisser place à l'icône */
-
         }
         .form-section h2 {
             font-size: 55px;

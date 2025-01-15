@@ -8,10 +8,9 @@ ENV APP_ENV=dev
 
 # Copy php default configuration
 COPY ./build/sfapp/conf/default.ini /usr/local/etc/php/conf.d/default.ini
-
+RUN echo "date.timezone = Europe/Paris" >> /usr/local/etc/php/conf.d/timezone.ini
 # Set working directory
 WORKDIR /app/sfapp
-
 # Arguments defined in compose.yml
 ARG USER_NAME
 ARG USER_ID

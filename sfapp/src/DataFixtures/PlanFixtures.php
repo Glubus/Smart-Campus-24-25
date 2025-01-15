@@ -17,12 +17,13 @@ class PlanFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $bat=$this->getReference(BatimentFixtures::BATIMENT_D, Batiment::class);
-        $plan=$this->make_plan("Prototype 1",new \DateTime(), $bat);
+        $plan=$this->make_plan("PlanTest",new \DateTime(), $bat);
+        $bat=$this->getReference(BatimentFixtures::BATIMENT_C, Batiment::class);
+        $plan->addBatiment($bat);
         $manager->persist($plan);
         $this->addReference(self::PLAN_1, $plan);
 
-        $bat=$this->getReference(BatimentFixtures::BATIMENT_A, Batiment::class);
-        $plan=$this->make_plan("Prototype 2",new \DateTime(), $bat);
+        $plan=$this->make_plan("PlanA_Nov2024",new \DateTime(), $bat);
         $manager->persist($plan);
 
         $manager->flush();
@@ -32,7 +33,7 @@ class PlanFixtures extends Fixture implements DependentFixtureInterface
         $plan = new Plan();
         $plan->setNom($nom);
         $plan->setDate($aDate);
-        $plan->setBatiment($bat);
+        $plan->addBatiment($bat);
         return $plan;
     }
     public function getDependencies() : array{

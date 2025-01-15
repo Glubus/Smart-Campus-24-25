@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Batiment;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,18 +37,11 @@ class AjoutBatimentType extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('nbEtages', TextType::class, [
-                'label' => 'Nombre d\'étages',
-                'label_attr' => [
-                    'class' => 'form-label text-primary'
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'maxlength' => '2',
-                    'placeholder' => 'Nombre d\'étages',
-                    'inputmode' => 'numeric', // Provides a numeric keyboard on mobile devices
-                    'pattern' => '^\d+$',   // Enforces numeric input on the browser side
-                ],
+            ->add('nbEtages', ChoiceType::class, [
+                'label' => 'Nombre de niveaux',
+                'label_attr' => ['class' => 'form-label text-primary'],
+                'choices' => array_combine(range(1, 10), range(1, 10)), // Dropdown with values 1 to 100
+                'attr' => ['class' => 'form-select'],
                 'required' => true,
             ])
         ;
@@ -56,6 +51,7 @@ class AjoutBatimentType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Batiment::class,
+            'allow_extra_fields' => true,
         ]);
     }
 }

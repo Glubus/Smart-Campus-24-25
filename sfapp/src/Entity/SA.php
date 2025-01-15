@@ -17,21 +17,19 @@ class SA
     #[ORM\Column(length: 50, unique: true)]
     private ?string $nom = null;
 
-    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'sa')]
-    private Collection $plans;
 
     #[ORM\OneToMany(targetEntity: SALog::class, mappedBy: 'SA')]
     private Collection $sALogs;
 
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'SA')]
-    private Collection $valCapteurs;
+
+    #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
+    private ?DetailPlan $detailPlan = null;
 
 
     public function __construct()
     {
         $this->plans = new ArrayCollection();
         $this->sALogs = new ArrayCollection();
-        $this->valCapteurs = new ArrayCollection();
     }
 
 
@@ -52,31 +50,6 @@ class SA
         return $this;
     }
 
-    public function getPlans(): Collection
-    {
-        return $this->plans;
-    }
-
-    public function addPlan(DetailPlan $plan): static
-    {
-        if (!$this->plans->contains($plan)) {
-            $this->plans->add($plan);
-            $plan->setSa($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlan(DetailPlan $plan): static
-    {
-        if ($this->plans->removeElement($plan)) {
-            if ($plan->getSa()=== $this) {
-                $plan->setSa(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getSALogs(): Collection
     {
@@ -104,34 +77,17 @@ class SA
         return $this;
     }
 
-    public function getValCapteurs(): Collection
+    public function getDetailPlan(): ?DetailPlan
     {
-        return $this->valCapteurs;
+        return $this->detailPlan;
     }
 
-    public function addValCapteur(ValeurCapteur $valCapteur): static
+    public function setDetailPlan(?DetailPlan $detailPlan): static
     {
-        if (!$this->valCapteurs->contains($valCapteur)) {
-            $this->valCapteurs->add($valCapteur);
-            $valCapteur->setSA($this);
-        }
+        $this->detailPlan = $detailPlan;
 
         return $this;
     }
-
-    public function removeValCapteur(ValeurCapteur $valCapteur): static
-    {
-        if ($this->valCapteurs->removeElement($valCapteur)) {
-            if ($valCapteur->getSA() === $this) {
-                $valCapteur->setSA(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-
 
 
 }

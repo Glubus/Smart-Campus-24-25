@@ -1,4 +1,4 @@
-name: 'ndi'
+name: 'but-info2-a-sae3'
 
 services:
   nginx:
@@ -49,10 +49,10 @@ services:
         source: database-ds-volume
         target: /var/lib/mysql
     environment:
-      MYSQL_DATABASE: db
-      MYSQL_ROOT_PASSWORD: rndi
-      MYSQL_USER: ndi
-      MYSQL_PASSWORD: ndi
+      MYSQL_DATABASE: dbsfapp
+      MYSQL_ROOT_PASSWORD: rdbsfapp
+      MYSQL_USER: udbsfapp
+      MYSQL_PASSWORD: pdbsfapp
     networks:
       - network
 

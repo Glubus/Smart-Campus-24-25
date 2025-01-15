@@ -1,6 +1,150 @@
 {# templates/detail_plan/list.html.twig #}
 
+{% extends 'base.html.twig' %}
 
+{% block title %}Liste des batiments{% endblock %}
+
+{% block body %}
+<h1 class="titleBatiment">Batiments</h1>
+<div class="containerBatiment">
+        <div style="display: flex; justify-content: space-between">
+                <a href="{{ path('app_batiment_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+        </div>
+        <div class="listeBatiments">
+            <div class="col">
+                {% for batiment in col1 %}
+                        <div class="batimentBlock" id="card">
+                                <div class="batimentMainInfos">
+                                        {#  <div class="batimentTop">  #}
+                                                <div style="display: flex; gap: 5px">
+                                                        <input class="checkboxBatiment" type="checkbox" value="{{ batiment.id }}">
+                                                        <p class="batimentName">{{ batiment.nom }}</p>
+                                                </div>
+                                </div>
+                                <!-- Contenu caché qui s'affichera au clic -->
+                                <div class="batimentContent" id="card-content">
+                                        <p class="adresse">{{ batiment.adresse }}</p>
+
+                                        {% if batiment.plan %}<a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>{% endif %}
+                                </div>
+                        </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for batiment in col2 %}
+                    <div class="batimentBlock" id="card">
+                        <div class="batimentMainInfos">
+                            {#  <div class="batimentTop">  #}
+                            <div style="display: flex; gap: 5px">
+                                <input class="checkboxBatiment" type="checkbox" value="{{ batiment.id }}">
+                                <p class="batimentName">{{ batiment.nom }}</p>
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="batimentContent" id="card-content">
+                            <p class="adresse">{{ batiment.adresse }}</p>
+                            {% if batiment.plan %}<a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for batiment in col3 %}
+                    <div class="batimentBlock" id="card">
+                        <div class="batimentMainInfos">
+                            {#  <div class="batimentTop">  #}
+                            <div style="display: flex; gap: 5px">
+                                <input class="checkboxBatiment" type="checkbox" value="{{ batiment.id }}">
+                                <p class="batimentName">{{ batiment.nom }}</p>
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="batimentContent" id="card-content">
+                            <p class="adresse">{{ batiment.adresse }}</p>
+                            {% if batiment.plan %}<a class="batimentBtnModif" href="{{ path('app_lier_liste', {'nom':batiment.plan.nom, 'batiment': batiment.id}) }}">Voir dans le plan</a>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cards = document.querySelectorAll(".batimentBlock");
+            const checkboxes = document.querySelectorAll('.checkboxBatiment');
+            const deleteButton = document.getElementById('btnSuppr');
+
+            console.log("Checkboxes trouvées:", checkboxes);
+            console.log("Bouton Supprimer trouvé:", deleteButton);
+
+            if (!checkboxes || !deleteButton) {
+                console.error("Éléments manquants dans le DOM !");
+                return;
+            }
+
+            function toggleDeleteButton() {
+                const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                console.log("Checkboxes cochées :", isAnyChecked);
+
+                if (isAnyChecked) {
+                    deleteButton.classList.remove('hidden');
+                } else {
+                    deleteButton.classList.add('hidden');
+                }
+            }
+
+            checkboxes.forEach(checkbox => {
+                // Empêche le clic sur la checkbox de déclencher l'expansion du bloc
+                checkbox.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                });
+
+                checkbox.addEventListener('change', toggleDeleteButton);
+            });
+
+            deleteButton.addEventListener('click', function () {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ path('app_batiment_supprimer_selection') }}';
+
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'selected[]';
+                        input.value = checkbox.value;
+                        form.appendChild(input);
+                    }
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            toggleDeleteButton();
+            cards.forEach((card) => {
+                const cardContent = card.querySelector(".batimentContent");
+                card.addEventListener("click", function () {
+                    // Toggle la classe "expanded" pour agrandir/rétrécir
+                    card.classList.toggle("expanded");
+                    cardContent.classList.toggle("expanded");
+
+                    // Afficher/masquer le contenu
+                    if (cardContent.style.display === "block") {
+                        cardContent.style.display = "none";
+                    } else {
+                        cardContent.style.display = "block";
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{#
 {% extends 'template/liste.html.twig' %}
 
 {% block nom %}
@@ -14,3 +158,4 @@
 {% block modif %}
 
 {% endblock %}
+#}

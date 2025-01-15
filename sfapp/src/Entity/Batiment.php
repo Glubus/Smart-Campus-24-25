@@ -24,23 +24,40 @@ class Batiment
     #[ORM\Column]
     private ?int $nbEtages = null;
 
-    /**
-     * @var Collection<int, Plan>
-     */
-    #[ORM\OneToMany(targetEntity: Plan::class, mappedBy: 'batiment')]
-    private Collection $plans;
+    #[ORM\ManyToOne(inversedBy: 'batiments')]
+    private ?Plan $plan = null;
 
     /**
-     * @var Collection<int, Salle>
+     * @var Collection<int, Etage>
      */
-    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'batiment', cascade: ['persist', 'remove'])]
-    private Collection $salles;
+    #[ORM\OneToMany(targetEntity: Etage::class, mappedBy: 'batiment', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $etages;
 
     public function __construct()
     {
-        $this->plans = new ArrayCollection();
-        $this->salles = new ArrayCollection();
+        $this->etages = new ArrayCollection();
     }
+
+    public function getAllSalle(){
+        $arr=[];
+        foreach ($this->etages as $etage)
+        {
+            foreach ($etage->getSalles() as $salle)
+            {
+                $arr[]=$salle;
+            }
+        }
+        return $arr;
+    }
+
+    public function renameEtage(int $index, string $newName): self
+    {
+        $etage = $this->etages[$index];
+        $etage->setNom($newName);
+
+        return $this;
+    }
+
 
     public function getId(): ?int
     {
@@ -79,62 +96,58 @@ class Batiment
     public function setNbEtages(int $nbEtages): static
     {
         $this->nbEtages = $nbEtages;
-
-        return $this;
-    }
-
-    public function getPlanIds(): array
-    {
-        return $this->plans->map(fn($plan) => $plan->getId())->toArray();
-    }
-
-    public function addPlan(Plan $plan): static
-    {
-        if (!$this->plans->contains($plan)) {
-            $this->plans->add($plan);
-            $plan->setBatiment($this);
+        for($i = 0; $i < $nbEtages; $i++) {
+            $etage = new Etage();
+            $etage->setBatiment($this);
+            $etage->setNiveau($i);
+            $etage->setNom((string)$i);
+            $this->addEtage($etage);
         }
 
         return $this;
     }
 
-    public function removePlan(Plan $plan): static
+
+    public function getPlan(): ?Plan
     {
-        if ($this->plans->removeElement($plan)) {
-            if ($plan->getBatiment() === $this) {
-                $plan->setBatiment(null);
-            }
-        }
+        return $this->plan;
+    }
+
+    public function setPlan(?Plan $plan): static
+    {
+        $this->plan = $plan;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Salle>
+     * @return Collection<int, Etage>
      */
-    public function getSalles(): Collection
+    public function getEtages(): Collection
     {
-        return $this->salles;
+        return $this->etages;
     }
 
-    public function addSalle(Salle $salle): static
+    public function addEtage(Etage $etage): static
     {
-        if (!$this->salles->contains($salle)) {
-            $this->salles->add($salle);
-            $salle->setBatiment($this);
+        if (!$this->etages->contains($etage)) {
+            $this->etages->add($etage);
+            $etage->setBatiment($this);
         }
 
         return $this;
     }
 
-    public function removeSalle(Salle $salle): static
+    public function removeEtage(Etage $etage): static
     {
-        if ($this->salles->removeElement($salle)) {
-            if ($salle->getBatiment() === $this) {
-                $salle->setBatiment(null);
+        if ($this->etages->removeElement($etage)) {
+            // set the owning side to null (unless already changed)
+            if ($etage->getBatiment() === $this) {
+                $etage->setBatiment(null);
             }
         }
 
         return $this;
     }
+
 }

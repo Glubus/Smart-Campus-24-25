@@ -3,33 +3,36 @@
 namespace App\Controller;
 
 use App\Entity\DetailPlan;
+use App\Entity\EtatInstallation;
 use App\Entity\Plan;
 use App\Entity\SA;
 use App\Entity\Salle;
 use App\Form\AssociationSASalle;
-use App\Form\SuppressionType;
-use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
 use App\Repository\PlanRepository;
 use App\Repository\SalleRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function PHPUnit\Framework\isNull;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DetailPlanController extends AbstractController
 {
-    #[Route('/lier/{id}/ajout', name: 'app_lier_ajout')]
-    public function ajouter(EntityManagerInterface $em, Request $request, int $id): Response
+    #[Route('/plan/{nom}/attribuer', name: 'app_lier_ajout')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
+    public function ajouter(EntityManagerInterface $em, Request $request, string $nom): Response
     {
         $sa_id = $request->query->get('sa_id');
         $salle_id = $request->query->get('salle');
 
         $salle = $em->getRepository(Salle::class)->find($salle_id);
-        $plan = $em->getRepository(Plan::class)->find($id);
+        $plan = $em->getRepository(Plan::class)->findOneBy(['nom' => $nom]);
+
         $detail_plan = new DetailPlan();
         $detail_plan->setSalle($salle);
         $detail_plan->setPlan($plan);
@@ -40,16 +43,6 @@ class DetailPlanController extends AbstractController
             if (!$sa) {
                 throw $this->createNotFoundException('Système d\'acquisition non trouvé.');
             }
-            /*
-            // Utiliser findBy pour récupérer tous les plans associés à ce SA
-            $planExist = $em->getRepository(DetailPlan::class)->findOneBy([
-                'sa' => $sa  // On filtre les plans par l'objet SA
-            ]);
-
-            if (!$plan)
-            {
-                $plan->setSa($sa);
-            }*/
 
             $detail_plan->setSA($sa);
         }
@@ -60,71 +53,171 @@ class DetailPlanController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $detail_plan->setDateAjout(new DateTime());
+            $detail_plan->setEtatSA(EtatInstallation::INSTALLATION);
             $em->persist( $detail_plan);
             $em->flush();
 
             return $this->redirectToRoute('app_lier_liste', [
-                'plan' =>  $id
+                'nom' =>  $nom,
+                "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
             ]);// Redirection après soumission
         }
 
         return $this->render('detail_plan/ajouter.html.twig', [
             'form' => $form->createView(),
+            'nom' =>  $nom,
+            "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
         ]);
     }
 
-    #[Route('/lier', name: 'app_lier_liste')]
-    public function list(SalleRepository $salleRepo, PlanRepository $planRepo, Request $request): Response
+    #[Route('/plan/{nom}/detail', name: 'app_lier_liste')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request,  string $nom): Response
     {
-        $selected_plan = $request->query->get('plan');
+        $selected_batiment = $request->query->get('batiment');
         $selected_etage = $request->query->get('etage');
 
+        $plan = $planRepo->findOneBy(['nom' => $nom]);
+
+        if($plan == null)
+        {
+            return $this->redirectToRoute('app_plan_liste');
+        }
+
+
         $salles = null;
-        if($selected_plan) {
-            $batiment = $planRepo->findOneBy(['id' => $selected_plan])->getBatiment();
+        if($selected_batiment) {
+            $batiment = null;
+            foreach ($plan->getBatiments() as $b) {
+                if ($b->getId() == $selected_batiment) {
+                    $batiment = $b;
+
+                    break; // Exit the loop once found
+                }
+            }
+
             if ($selected_etage == null) {
-                $salles = $salleRepo->findBy(['batiment' => $batiment]);
-                } else {
-                $salles = $salleRepo->findBy(['batiment' => $batiment, 'etage' => $selected_etage]);
+                $salles = array_merge(...array_map(fn($etage) => $etage->getSalles()->toArray(),
+                    $batiment->getEtages()->toArray()));
+            } else {
+                $salles = $batiment->getEtages()[$selected_etage]->getSalles()->toArray();
             }
         }
 
+        $batimentsArray = [];
+        foreach ($plan->getBatiments() as $b) {
+            $etageNames = [];
+            foreach ($b->getEtages() as $etage) {
+                $etageNames[] = $etage->getNom();
+            }
 
-        $plansArray = [];
-        $plans = $planRepo->findAll();
-        foreach ($plans as $plan) {
-            $plansArray[] = [
-                'id' => $plan->getId(),
-                'nom' => $plan->getNom(),
-                'nbEtages' => $plan->getBatiment()->getNbEtages(),
-                'batNom' => $plan->getBatiment()->getNom()
+            $batimentsArray[] = [
+                'id' => $b->getId(),
+                'nom' => $b->getNom(),
+                'nomEtages' => $etageNames,
             ];
         }
 
+        $form = $this->createFormBuilder()
+            ->add('nom', TextType::class, [
+                'label' => false,
+                'attr' => [
+                    'placeholder' => 'Rechercher par nom de salle',
+                    'class' => 'form-control',
+                    ],
+               ])
+        ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $salleFiltrer = $salleRepo->findByNomRessemblant($data['nom']);
+            $salles = array_intersect_key(
+                $salles,
+                array_intersect(
+                    array_map(fn($s):string => $s->getNom(), $salles),
+                    array_map(fn($s):string => $s->getNom(), $salleFiltrer)
+                )
+            );
+        }
+
+
         // Afficher la liste des plans dans le template
         return $this->render('detail_plan/liste.html.twig', [
+            'form' => $form->createView(),
             'salles' => $salles,
-            'plans' => $plansArray,
-            'selected_plan' => $selected_plan,
+            'batiments' => $batimentsArray,
+            'selected_batiment' => $selected_batiment,
             'selected_etage' => $selected_etage,
+            'plan_select' => $plan,
         ]);
     }
-    #[Route('/lier/{id}/suppression', name: 'app_lier_suppression')]
+
+    #[Route('/detail_plan/{id}/suppression', name: 'app_lier_suppression')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function supprimer(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
     {
         $detail_plan = $repo->find($id);
 
         if ($request->isMethod('POST')) {
             if ($detail_plan) {
-                $em->remove($detail_plan);
+                if($detail_plan->getEtatInstallation() == EtatInstallation::PRET){
+                    $detail_plan->setEtatSA(EtatInstallation::DESINSTALLATION);
+                    $detail_plan->setDateEnleve(new DateTime());
+                    $em->persist($detail_plan);
+                }
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateEnleve(null);
+                    $em->persist($detail_plan);
+                }
+                else
+                {
+                    $em->remove($detail_plan);
+                }
                 $em->flush();
+
+
                 return $this->redirectToRoute('app_lier_liste', [
-                    'plan' => $detail_plan->getPlan()->getId()
+                    'nom' => $detail_plan->getPlan()->getNom(),
+                    "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
                 ]);
             }
         }
             return $this->render('detail_plan/supprimer.html.twig', [
                 "detail_plan" => $detail_plan,
             ]);
+    }
+
+    #[Route('/detail_plan/{id}/valider', name: 'app_lier_validation')]
+    #[IsGranted('ROLE_TECHNICIEN')]
+    public function valider(Request $request, int $id, DetailPlanRepository $repo, EntityManagerInterface $em): Response
+    {
+        $detail_plan = $repo->find($id);
+
+        if ($request->isMethod('POST')) {
+            if ($detail_plan) {
+                if($detail_plan->getEtatInstallation() == EtatInstallation::INSTALLATION){
+                    $detail_plan->setEtatSA(EtatInstallation::PRET);
+                    $detail_plan->setDateAjout(new DateTime());
+                    $em->persist($detail_plan);
+                    $em->flush();
+                }
+                else if($detail_plan->getEtatInstallation() == EtatInstallation::DESINSTALLATION){
+                    $em->remove($detail_plan);
+                    $em->flush();
+                }
+
+                return $this->redirectToRoute('app_lier_liste', [
+                    'nom' => $detail_plan->getPlan()->getNom(),
+                    "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment()->getId(),
+                ]);
+            }
+        }
+        return $this->render('detail_plan/valider.html.twig', [
+            "detail_plan" => $detail_plan,
+            "batiment" => $detail_plan->getSalle()->getEtage()->getBatiment(),
+        ]);
     }
 }

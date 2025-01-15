@@ -3,12 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\SalleRepository;
-use App\Entity\Batiment;
-use ContainerWYV09s8\getTranslation_ProviderFactory_NullService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\EtageSalle;
 
 #[ORM\Entity(repositoryClass: SalleRepository::class)]
 class Salle
@@ -18,14 +15,8 @@ class Salle
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 1)]
-    private ?int $etage = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Batiment $batiment = null;
-
-    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle')]
+    #[ORM\OneToMany(targetEntity: DetailPlan::class, mappedBy: 'salle', cascade: ['remove'])]
     private Collection $detailPlans;
     #[ORM\Column(length: 20)]
     private ?string $nom = null;
@@ -37,14 +28,18 @@ class Salle
     private ?int $radiateur = null;
 
     /**
-     * @var Collection<int, ValeurCapteur>
+     * @var Collection<int, DetailIntervention>
      */
-    #[ORM\OneToMany(targetEntity: ValeurCapteur::class, mappedBy: 'Salle')]
-    private Collection $valeurCapteurs;
+    #[ORM\OneToMany(targetEntity: DetailIntervention::class, mappedBy: 'salle', cascade: ['remove'])]
+    private Collection $detailInterventions;
+
+    #[ORM\ManyToOne(inversedBy: 'salles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etage $etage = null;
     public function __construct()
     {
         $this->plans = new ArrayCollection();
-        $this->valeurCapteurs = new ArrayCollection();
+        $this->detailInterventions = new ArrayCollection();
     }
 
     public function getCountSA(): int
@@ -73,30 +68,6 @@ class Salle
     public function setId(int $id): static
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    public function getEtage(): int
-    {
-        return $this->etage;
-    }
-
-    public function setEtage(int $etage): static
-    {
-        $this->etage = $etage;
-
-        return $this;
-    }
-
-    public function getBatiment(): ?Batiment
-    {
-        return $this->batiment;
-    }
-
-    public function setBatiment(?Batiment $batiment): static
-    {
-        $this->batiment = $batiment;
 
         return $this;
     }
@@ -167,32 +138,45 @@ class Salle
         return $this;
     }
 
+
     /**
-     * @return Collection<int, ValeurCapteur>
+     * @return Collection<int, DetailIntervention>
      */
-    public function getValeurCapteurs(): Collection
+    public function getDetailInterventions(): Collection
     {
-        return $this->valeurCapteurs;
+        return $this->detailInterventions;
     }
 
-    public function addValeurCapteur(ValeurCapteur $valeurCapteur): static
+    public function addDetailIntervention(DetailIntervention $detailIntervention): static
     {
-        if (!$this->valeurCapteurs->contains($valeurCapteur)) {
-            $this->valeurCapteurs->add($valeurCapteur);
-            $valeurCapteur->setSalle($this);
+        if (!$this->detailInterventions->contains($detailIntervention)) {
+            $this->detailInterventions->add($detailIntervention);
+            $detailIntervention->setSalle($this);
         }
 
         return $this;
     }
 
-    public function removeValeurCapteur(ValeurCapteur $valeurCapteur): static
+    public function removeDetailIntervention(DetailIntervention $detailIntervention): static
     {
-        if ($this->valeurCapteurs->removeElement($valeurCapteur)) {
+        if ($this->detailInterventions->removeElement($detailIntervention)) {
             // set the owning side to null (unless already changed)
-            if ($valeurCapteur->getSalle() === $this) {
-                $valeurCapteur->setSalle(null);
+            if ($detailIntervention->getSalle() === $this) {
+                $detailIntervention->setSalle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEtage(): ?Etage
+    {
+        return $this->etage;
+    }
+
+    public function setEtage(?Etage $etage): static
+    {
+        $this->etage = $etage;
 
         return $this;
     }

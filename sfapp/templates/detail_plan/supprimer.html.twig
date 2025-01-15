@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer une attribution {% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="{{ asset('/styles/detail_plan/common.scss') }}">
+    <div class="container my-5 card-body" style="width: 50%">
+        <div class="card shadow full-width">
+            <div class="card-body">
+
+                {% if detail_plan.etatSA == 'pret' %}
+                    <h1 class="text-center mb-4"> {{ 'Demande pour la deinstallation de ' ~ detail_plan.SA.getNom ~ ' dans ' ~ detail_plan.Salle.getNom ~ ' ?'}}</h1>
+                {% else %}
+                    <h1 class="text-center mb-4"> {{ detail_plan.etatSA ~ ' de ' ~ detail_plan.SA.getNom ~ ' dans ' ~ detail_plan.Salle.getNom}}</h1>
+                    <p class="text-center mb-4">Êtes vous sur de vouloir supprimer cette demande ?</p>
+                {% endif %}
+
+                <form method="post">
+                    <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_lier_liste', {'nom':detail_plan.plan.nom, 'batiment':detail_plan.salle.etage.batiment.id})}}" class="btn btn-secondary mr-1 mt-1 action" role="button">Annuler</a>
+                            <button type="submit" class="btn btn-primary mr-1 mt-1 action" role="button">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

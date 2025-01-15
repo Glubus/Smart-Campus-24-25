@@ -3,7 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Batiment;
+use App\Entity\Etage;
 use App\Entity\Salle;
+use App\Repository\BatimentRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
@@ -20,22 +23,6 @@ class AjoutSalleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Champ Batiment (EntityType)
-            ->add('batiment', EntityType::class, [
-                'class' => Batiment::class,
-                'choice_label' => 'nom',
-                'label' => 'Bâtiment',
-                'label_attr' => [
-                    'class' => 'form-label text-primary',
-                    'style' => 'margin-top: 10px;',
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'style' => 'width: 80%;', // Style en ligne pour ajuster la largeur
-                    'data-action' => 'update-max-etages',
-                ],
-                'required' => true,
-            ])
             ->add('add_batiment', ButtonType::class, [
                 'label' => 'Ajouter un bâtiment',
                 'attr' => [
@@ -44,12 +31,19 @@ class AjoutSalleType extends AbstractType
                     'onclick' => "window.location.href='/batiment/ajout'",
                 ],
             ])
-            ->add('etage', TextType::class, [
-                'label' => 'Étage',
+            ->add('etage', EntityType::class, [
+                'class' => Etage::class, // Class of the entity
+                'choice_label' => 'nom',
                 'label_attr' => [
                     'class' => 'form-label text-primary',
                     'style' => 'margin-top: 10px;',
                 ],
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    // Create the query to retrieve the Batiments
+                    return $er->createQueryBuilder('e')
+                        ->setParameter('batiment', $options['batiment'])
+                        ->where('e.batiment = :batiment');
+                },
                 'attr' => [
                     'class' => 'form-control',
                     'style' => 'width: 100%;', // Largeur par défaut
@@ -105,6 +99,7 @@ class AjoutSalleType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Salle::class,  // Associe ce formulaire à l'entité Salle
+            'batiment' => null,
         ]);
     }
 }

@@ -15,7 +15,7 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap1</p>
                             </div>
-                            <h3 class="data">20°C</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
 
@@ -26,7 +26,7 @@
                                 <div class="etatCapFonctionne"></div>
                                 <p class="nomCap">Cap2</p>
                             </div>
-                            <h3 class="data">400ppm</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
 
@@ -37,17 +37,17 @@
                                 <div class="etatCap"></div>
                                 <p class="nomCap">Cap3</p>
                             </div>
-                            <h3 class="data">51.5%</h3>
+                            {{ latestByType['humidite'].valeur|default('N/A') }}%
                         </div>
                     </div>
             </div>
             <div class="below">
                 <aside class="infosSalle">
                     <h3 class="titreInfo">Informations</h3>
-                    <p class="el"><strong>Nom : </strong>{{ salle.nom }}</p>
+                    {# <p class="el"><strong>Nom : </strong>{{ salle.nom }}</p>
                     <p class="el"><strong>Batiment : </strong>{{ salle.batiment.nom }}</p>
-                    <p class="el"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p>
-                    <p class="el"><strong>Etage : </strong>{{ salle.etage }}</p>
+                    <p class="el"><strong>Adresse : </strong>{{ salle.batiment.adresse }}</p> #}
+                    <p class="el"><strong>Etage : </strong>{{ salle.etage.nom }}</p>
                 </aside>
 
                 {#

@@ -1,6 +1,324 @@
-{# templates/detail_plan/list.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des salles{% endblock %}
+
+{% block body %}
+    <h1 class="titleSalles">Salles</h1>
+    <div class="containerSalles">
+        <div style="width: 70%">
+            {{ form_start(form) }}
+            <div class="search">
+                {{ form_widget(form.salleNom) }}
+                {{ form_widget(form.rechercher) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+            <div style="display: flex; justify-content: space-between">
+                <a href="{{ path('app_salle_ajouter') }}"><button class="btnAjout">Ajouter</button></a>
+                <button class="btnSuppr hidden" id="btnSuppr">Supprimer</button>
+            </div>
+        {% endif %}
+        <div class="listeSalles">
+            <div class="col">
+                {% for item in col1 %}
+                    <div class="salleBlock" id="card">
+                        <div class="salleMainInfos">
+                            <div class="salleTop">
+                                <div style="display: flex; gap: 5px">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
+                                    <p class="salleName">{{ item.salle.nom }}</p>
+                                </div>
+                                <div class="etatSalle">
+                                    <p class="salleStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="sallePastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-left: 20px">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="salleLastUpdate">Aucune donnée enregistrée</p>
+                                {% else %}
+                                    <p id="salleLastUpdate">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
+                                {% endif %}
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="salleContent" id="card-content">
+                            {% if item.sa is not empty %}
+                                <p class="saAttribue">
+                                    {{ item.sa | map(o => o.nom) | join(', ') }}
+                                </p>
+                            {% endif %}
+
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="salleMetrics">
+                                    <div class="salleMetric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="salleMetric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="salleMetric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.hum }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for item in col2 %}
+                    <div class="salleBlock" id="card">
+                        <div class="salleMainInfos">
+                            <div class="salleTop">
+                                <div style="display: flex; gap: 5px">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
+                                    <p class="salleName">{{ item.salle.nom }}</p>
+                                </div>
+                                <div class="etatSalle">
+                                    <p class="salleStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="sallePastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-left: 20px">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="salleLastUpdate">Aucune donnée enregistrée</p>
+                                {% else %}
+                                    <p id="salleLastUpdate">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
+                                {% endif %}
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="salleContent" id="card-content">
+                            {% if item.sa is not empty %}
+    <p class="saAttribue">
+        {{ item.sa | map(o => o.nom) | join(', ') }}
+    </p>
+{% endif %}
+
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="salleMetrics">
+                                    <div class="salleMetric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="salleMetric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="salleMetric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.hum }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
+                            {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for item in col3 %}
+                    <div class="salleBlock" id="card">
+                        <div class="salleMainInfos">
+                            <div class="salleTop">
+                                <div style="display: flex; gap: 5px">
+                                    {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+                                        <input class="checkboxSalle" type="checkbox" value="{{ item.salle.id }}">
+                                    {% endif %}
+                                    <p class="salleName">{{ item.salle.nom }}</p>
+                                </div>
+                                <div class="etatSalle">
+                                    <p class="salleStatus" id="status">{{ item.etat.texte }}</p>
+                                    <div class="sallePastilleStatus" style="background-color: {{ item.etat.color }}"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-left: 20px">
+                                {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                    <p id="salleLastUpdate">Aucune donnée enregistrée</p>
+                                {% else %}
+                                    <p id="salleLastUpdate">Dernière donnée enregistrée il y a
+                                    {% if (item.time.jours is null or item.time.jours == 0) and (item.time.heures is null or item.time.heures == 0) %}
+                                        {{ item.time.minutes }} minutes.</p>
+                                    {% elseif item.time.jours is null or item.time.jours != 0 and (item.time.heures is not null or item.time.heures != 0) %}
+                                        {{ item.time.heures }} heures.</p>
+                                    {% else %}
+                                        {{ item.time.jours }} jours.</p>
+                                    {% endif %}
+                                {% endif %}
+                                {% if item.conseils is not null %}
+                                    {% if item.conseils.danger and item.etat.texte == "Fonctionnelle" %}
+                                        <img src="{{ asset('/img/attention.png') }}" style="width: 25px; height: 25px; margin-right: 10px">
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Contenu caché qui s'affichera au clic -->
+                        <div class="salleContent" id="card-content">
+                            {% if item.sa is not empty %}
+    <p class="saAttribue">
+        {{ item.sa | map(o => o.nom) | join(', ') }}
+    </p>
+{% endif %}
+
+                            <p class="location">{{ item.salle.etage.batiment.nom }} - Etage {{ item.salle.etage.nom }}</p>
+                            {% if (item.data.temp is null or item.data.temp == 0) and (item.data.co2 is null or item.data.co2 == 0) and (item.data.hum is null or item.data.hum == 0) %}
+                                <h3 style="font-size: 20px; text-align: center">Aucune donnée disponible !</h3>
+                            {% else %}
+                                <div class="salleMetrics">
+                                    <div class="salleMetric m1">
+                                        <img src="{{ asset('/img/temp.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.temp }}</h3>
+                                        <h4 class="unit">C°</h4>
+                                    </div>
+                                    <div class="salleMetric m2">
+                                        <img src="{{ asset('/img/co2.png') }}" class="icon">
+                                        <h3 class="value" style="color: {{ item.conseils.co2.color }};
+                                        {% if item.data.co2|length > 3 %} font-size: 35px {% endif %}
+                                                ">{{ item.data.co2 }}</h3>
+                                        <h4 class="unit">ppm</h4>
+                                    </div>
+                                    <div class="salleMetric m3">
+                                        <img src="{{ asset('/img/humi.png') }}" class="icon">
+                                        <h3 class="value">{{ item.data.hum }}</h3>
+                                        <h4 class="unit">%</h4>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <a class="salleBtnDetail" href="{{ path('app_diagnostic_salle', {'batiment': item.salle.etage.batiment.nom, 'salle': item.salle.nom}) }}">Voir plus</a>
+                            <a class="salleBtnModif" href="{{ path('app_salle_modifier', {'id':item.salle.id}) }}">Modifier</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".salleBlock");
+        const checkboxes = document.querySelectorAll('.checkboxSalle');
+        const deleteButton = document.getElementById('btnSuppr');
 
 
+        {% if is_granted('ROLE_CHARGE_DE_MISSION') %}
+        function toggleDeleteButton() {
+            const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            console.log("Checkboxes cochées :", isAnyChecked);
+
+            if (isAnyChecked) {
+                deleteButton.classList.remove('hidden');
+            } else {
+                deleteButton.classList.add('hidden');
+            }
+        }
+
+        checkboxes.forEach(checkbox => {
+            // Empêche le clic sur la checkbox de déclencher l'expansion du bloc
+            checkbox.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+
+            checkbox.addEventListener('change', toggleDeleteButton);
+        });
+
+        deleteButton.addEventListener('click', function () {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ path('app_salle_supprimer_selection') }}';
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selected[]';
+                    input.value = checkbox.value;
+                    form.appendChild(input);
+                }
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+
+        toggleDeleteButton();
+        {% endif %}
+
+        cards.forEach((card) => {
+            const cardContent = card.querySelector(".salleContent");
+            card.addEventListener("click", function () {
+                // Toggle la classe "expanded" pour agrandir/rétrécir
+                card.classList.toggle("expanded");
+                cardContent.classList.toggle("expanded");
+
+                // Afficher/masquer le contenu
+                if (cardContent.style.display === "block") {
+                    cardContent.style.display = "none";
+                } else {
+                    cardContent.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+
+{#
 {% extends 'template/liste.html.twig' %}
 
 {% block nom %}
@@ -19,16 +337,16 @@
 {% endblock  %}
 
 {% block entry %}
-    <p>Batiment {{ item.batiment.nom }}</p>
-    <p>Etage {{ item.etage }}</p>
+    <p>{{ item.etage.batiment.nom }}</p>
+    <p>Etage {{ item.etage.nom }}</p>
 {% endblock %}
 
 {% block modif %}
-    {% if item.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle #}
+    {% if item.getCountSA == 1 %}  {# Si il n'y a qu'un seul SA attribué à la salle
         <a href="{{ path('app_sa_infos', {'id': item.getOnlySa()}) }}"><button class="btnDetailSA">Détails SA</button></a>
-    {% elseif item.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle #}
+    {% elseif item.getCountSA > 1 %}   {# Si il y'a plus d'un SA attribué à la salle
         <a><button class="btnDetailSA">Détails des SA</button></a>
-    {% else %}  {# Si il n'y a aucun SA attribué à la salle #}
+    {% else %}  {# Si il n'y a aucun SA attribué à la salle
         <a><button class="btnDetailSA">Attribuer SA</button></a>
     {% endif %}
-{% endblock %}
+{% endblock %} #}
