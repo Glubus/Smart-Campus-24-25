@@ -169,97 +169,8 @@ class SAController extends AbstractController
     }
 
 
-    #[Route('/sa/{id}', name: 'app_sa_infos', requirements: ['id' => '\d+'])]
-    public function affichage_SA(Request $request, int $id, SARepository $repo,EntityManagerInterface $entityManager, CommentairesRepository $commentairesRepository): Response
-    {
-        $SA = $repo->find($id);
-        $commentaires = $commentairesRepository->findBy(['SA' => $SA], ['dateAjout' => 'DESC'], 5);
-
-        if (!$SA) {
-            throw $this->createNotFoundException('SA introuvable.');
-        }
-        $histo=$SA->getSALogs();
-        // trouver la salle d'un Sa
-        $plan = $entityManager->getRepository(DetailPlan::class)->findOneBy(['sa' => $SA]);
-        $salle = $plan ? $plan->getSalle() : null;
-        dump($commentaires);
-
-        return $this->render('sa/info.html.twig', [
-            "SA" => $SA,
-            "salle" => $salle,
-            "histo" => $histo,
-            'commentaires' => $commentaires,
-        ]);
-    }
 
 
-    #[Route('/sa/{id}/commentaire', name :'app_sa_commentaire')]
-    public function ajouterCommentaire(
-        int $id,
-        Request $request,
-        EntityManagerInterface $entityManager,
-        SARepository $SARepository,
-        Security $security // Ajout du service Security
-    ): Response
-    {
-        // Récupérer l'entité SA
-        $SA = $SARepository->find($id);
-
-        // Récupérer la description du commentaire
-        $description = $request->request->get('description');
-
-        // Récupérer le nom du technicien connecté
-        $user = $security->getUser();
-        $nomTech = $user ? $user->getNom() : '';
-
-        // Créer et associer le commentaire
-        $commentaire = new Commentaires();
-        $commentaire->setNomTech($nomTech);
-        $commentaire->setDescription($description);
-        $commentaire->setSA($SA);
-
-        // Persist le commentaire
-        $entityManager->persist($commentaire);
-        $entityManager->flush();
-
-        // Rediriger vers la page du SA
-        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
-    }
-    #[Route('/sa/{id}/commentaire/{commentaireId}/supprimer', name: 'app_sa_commentaire_supprimer')]
-    public function supprimerCommentaire(
-        int $id,
-        int $commentaireId,
-        EntityManagerInterface $entityManager,
-        SARepository $SARepository,
-        CommentairesRepository $commentairesRepository
-    ): Response {
-        // Récupérer l'entité SA
-        $SA = $SARepository->find($id);
-        if (!$SA) {
-            throw $this->createNotFoundException("L'entité SA n'a pas été trouvée.");
-        }
-
-        // Récupérer le commentaire à supprimer
-        $commentaire = $commentairesRepository->find($commentaireId);
-        if (!$commentaire) {
-            throw $this->createNotFoundException("Le commentaire n'a pas été trouvé.");
-        }
-
-        // Vérifier si le commentaire appartient bien à l'entité SA
-        if ($commentaire->getSA() !== $SA) {
-            throw $this->createAccessDeniedException("Vous n'êtes pas autorisé à supprimer ce commentaire.");
-        }
-
-        // Supprimer le commentaire
-        $entityManager->remove($commentaire);
-        $entityManager->flush();
-
-        // Ajouter un message flash pour informer l'utilisateur
-        $this->addFlash('success', "Le commentaire a été supprimé avec succès.");
-
-        // Rediriger vers la page de l'entité SA après suppression
-        return $this->redirectToRoute('app_sa_infos', ['id' => $id]);
-    }
 
 
     #[Route('/sa/log/{id}', name: 'app_sa_log')]
@@ -274,39 +185,6 @@ class SAController extends AbstractController
         return $this->render('sa/historique.html.twig', [
             "histo" => $histo,
         ]);
-    }
-
-
-    #[Route("/sa/{id}/commentaires-ajax", name: 'app_sa_commentaires_ajax')]
-    public function commentairesAjax(Sa $SA, Request $request, CommentairesRepository $commentairesRepository): JsonResponse
-    {
-        $offset = (int) $request->query->get('offset', 0);
-
-        try {
-            // Fetch comments associated with the SA
-            $commentaires = $commentairesRepository->findBy(
-                ['SA' => $SA], ['dateAjout' => 'DESC'], 5, $offset
-            );
-
-            // Check if comments exist
-            if (!$commentaires) {
-                return new JsonResponse(['message' => 'No comments found.'], 404);
-            }
-
-            // Prepare JSON data
-            $data = array_map(fn($commentaire) => [
-                'id' => $commentaire->getId(),
-                'nomTech' => $commentaire->getNomTech(),
-                'dateAjout' => $commentaire->getDateAjout()?->format('Y-m-d H:i'),
-                'description' => $commentaire->getDescription(),
-            ], $commentaires);
-
-            return new JsonResponse($data, 200);
-        } catch (\Exception $e) {
-            // Log error for debugging
-            error_log('Error fetching comments: ' . $e->getMessage());
-            return new JsonResponse(['error' => 'Une erreur est survenue.'], 500);
-        }
     }
 
 
