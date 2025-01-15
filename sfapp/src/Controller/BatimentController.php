@@ -101,34 +101,6 @@ class   BatimentController extends AbstractController
         ]);
     }
 
-    /**
-     * Handles the modification of a specific building.
-     *
-     * This method retrieves a building entity by its ID using the provided repository
-     * and renders a form for editing the building's details. The modifications
-     * can later be persisted based on the processed user inputs.
-     *
-     * @param int $id The ID of the building to modify.
-     * @param Request $request The current HTTP request, used to handle form submission.
-     * @param BatimentRepository $batimentRepository Repository used to fetch the building data.
-     * @param EntityManagerInterface $em Interface for handling database operations.
-     *
-     * @return Response The rendered HTML response containing the form for building modification.
-     */
-    #[Route('/batiment/modifier/{id}', name: 'app_batiment_modifier')]
-    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
-    public function modifier(int $id, Request $request, BatimentRepository $batimentRepository, EntityManagerInterface $em): Response
-    {
-        $batiment = $batimentRepository->find($id);
-
-        return $this->render('batiment/ajouter.html.twig', [
-            'css' => 'batiment',
-            'classItem' => "batiment",
-            'item' => $batiment,
-            'routeItem'=> "app_batiment_modifier",
-            'classSpecifique' => ""
-        ]);
-    }
 
     /**
      * Handles the addition and editing of a building.
