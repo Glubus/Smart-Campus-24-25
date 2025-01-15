@@ -38,32 +38,12 @@ class TechnicienController extends AbstractController
      */
     #[Route('/technicien', name: 'app_technicien_acceuil')]
     #[IsGranted('ROLE_TECHNICIEN')] // Vérifie que l'utilisateur est un technicien
-    public function accueil(ApiWrapper $wrapper, BatimentRepository $batimentRepository): Response
-    {
-        $technicien = $this->getUser();
-
-        // Fetch all buildings
-        $batiments = $batimentRepository->findAll();
-
-        // Prepare diagnostics for each building
-        $diagnostics = [];
-        foreach ($batiments as $batiment) {
-            $diagnostics[$batiment->getNom()] = $wrapper->detectAllStationsIssues($batiment);
-        }
-
-        dump($diagnostics);
-        return $this->render('technicien/accueil.html.twig', [
-            'technicien' => $technicien,
-            'diagnostics' => $diagnostics,
-        ]);
-    }
-    #[Route('/technicien/commentaires', name: 'app_technicien_commentaire')]
-    #[Security("is_granted('ROLE_TECHNICIEN') or is_granted('ROLE_CHARGE_DE_MISSION')")]
-    public function viewCommentaires(
+    public function accueil(
         Request $request,
+        ApiWrapper $wrapper,
         EntityManagerInterface $entityManager,
-        SalleRepository $salleRepository,
         BatimentRepository $batimentRepository,
+        SalleRepository $salleRepository,
         DetailInterventionRepository $repository,
         ApiWrapper $apiWrapper // Ajout de l'ApiWrapper pour récupérer les salles avec problèmes
     ): Response {
@@ -73,10 +53,22 @@ class TechnicienController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
         }
 
+        // Fetch all buildings
         $batiments = $batimentRepository->findAll();
-        $taches = $repository->findAll();
-        $sallesIssues = [];
+        $taches = $repository->findBy(
+            ['technicien' => $technicien], // Filtrage par technicien
+            ['dateAjout' => 'DESC'],        // Tri par date d'ajout, décroissant
+        );
 
+
+        // Prepare diagnostics for each building
+        $diagnostics = [];
+        foreach ($batiments as $batiment) {
+            $diagnostics[$batiment->getNom()] = $wrapper->detectAllStationsIssues($batiment);
+        }
+
+        // Récupérer les salles avec problèmes
+        $sallesIssues = [];
         if (!empty($batiments)) {
             foreach ($batiments as $batiment) {
                 // Obtenez les données des salles ayant des problèmes pour le bâtiment actuel
@@ -90,8 +82,7 @@ class TechnicienController extends AbstractController
             $sallesIssues = array_unique($sallesIssues);
         }
 
-        // Déboguez pour vérifier les résultats
-
+        // Créer le formulaire de commentaire
         $form = $this->createForm(CommentaireType::class, new DetailIntervention());
         $form->handleRequest($request);
 
@@ -106,15 +97,17 @@ class TechnicienController extends AbstractController
 
             $this->addFlash('success', 'Commentaire ajouté avec succès.');
 
-            return $this->redirectToRoute('app_technicien_commentaire');
+            return $this->redirectToRoute('app_technicien_acceuil');
         }
 
-        return $this->render('technicien/commentaires.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('technicien/accueil.html.twig', [
             'technicien' => $technicien,
+            'diagnostics' => $diagnostics,
             'taches' => $taches,
             'sallesIssues' => $sallesIssues, // Transmettre les salles avec problèmes
             'batiments' => $batiments,
+
+            'form' => $form->createView(), // Formulaire pour ajouter un commentaire
         ]);
     }
 
@@ -140,7 +133,7 @@ class TechnicienController extends AbstractController
 
         if (!$description || !$salle) {
             $this->addFlash('error', 'Les champs sont obligatoires.');
-            return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_commentaire'));
+            return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_acceuil'));
         }
 
         $detailIntervention = new DetailIntervention();
@@ -155,7 +148,7 @@ class TechnicienController extends AbstractController
         $this->addFlash('success', 'Votre commentaire a été ajouté avec succès.');
 
         // Rediriger vers la page précédente
-        return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_commentaire'));
+        return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_technicien_acceuil'));
     }
 
 
@@ -172,7 +165,7 @@ class TechnicienController extends AbstractController
 
         if (!$commentaire) {
             $this->addFlash('error', 'Commentaire introuvable.');
-            return $this->redirectToRoute('app_technicien_commentaire');
+            return $this->redirectToRoute('app_technicien_acceuil');
         }
 
         $technicien = $this->getUser();
@@ -180,7 +173,7 @@ class TechnicienController extends AbstractController
         // Vérifiez que le commentaire appartient au technicien connecté
         if ($commentaire->getTechnicien() !== $technicien or $this->isGranted('ROLE_CHARGE_DE_MISSION')) {
             $this->addFlash('error', 'Vous ne pouvez pas supprimer ce commentaire.');
-            return $this->redirectToRoute('app_technicien_commentaire');
+            return $this->redirectToRoute('app_technicien_acceuil');
         }
 
 
@@ -189,8 +182,53 @@ class TechnicienController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Commentaire supprimé avec succès.');
-        return $this->redirectToRoute('app_technicien_commentaire');
+        return $this->redirectToRoute('app_technicien_acceuil');
     }
 
+
+    #[Route("/taches/{id}/ajax", name: 'app_taches_ajax')]
+    public function tachesAjax(
+        int $id,
+        Request $request,
+        DetailInterventionRepository $detailInterventionRepository
+    ): JsonResponse {
+
+        $offset = (int) $request->query->get('offset', 0);
+        try {
+            // Récupérer le technicien connecté
+            $technicien = $this->getUser();
+
+            // Vérifier que l'utilisateur est bien connecté et correspond au technicien avec l'ID
+            if (!$technicien || $technicien->getId() !== $id) {
+                return new JsonResponse(['error' => 'Accès refusé.'], 403);
+            }
+
+            // Récupérer les tâches pour le technicien donné, avec la pagination
+            $taches = $detailInterventionRepository->findTachesByTechnicienWithPagination(
+                5, // Limite de résultats
+                $offset // Offset pour la pagination
+            );
+
+
+            if (!$taches) {
+                return new JsonResponse(['message' => 'Aucune tâche trouvée.'], 404);
+            }
+
+            // Préparation des données JSON pour les tâches
+            $data = array_map(fn($tache) => [
+                'id' => $tache->getId(),
+                'nomTechnicien' => $tache->getTechnicien()->getNom(),
+                'dateAjout' => $tache->getDateAjout()->format('Y-m-d H:i'),
+                'salleNom' => $tache->getSalle()->getNom(),
+                'description' => $tache->getDescription(),
+            ], $taches);
+
+            return new JsonResponse($data, 200);
+        } catch (\Exception $e) {
+            // Log de l'erreur
+            error_log('Erreur lors de la récupération des tâches : ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Une erreur est survenue.'], 500);
+        }
+    }
 
 }

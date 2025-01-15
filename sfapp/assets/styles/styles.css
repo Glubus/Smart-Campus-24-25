@@ -1628,3 +1628,41 @@ h3{
     justify-content: space-around;
     margin-bottom: 20px;
 }
+
+.sallesrow {
+    display: flex;
+    flex-wrap: wrap; /* Permet d'aller à la ligne lorsque les éléments dépassent */
+    justify-content: space-between; /* Espace égal entre les éléments */
+    gap: 20px; /* Ajoute un espace entre les éléments */
+}
+
+
+/* Ajout d'un fond blanc avec 80% d'opacité pour la section listeBat */
+/* Ajout d'un fond blanc avec 80% d'opacité pour la section listeBat */
+/* Conteneur principal */
+.containerAccueil {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; /* Ajoute un écart entre les deux divs */
+    padding: 20px;
+    margin-right: 1%;
+}
+
+/* Partie de gauche (listeBat) */
+.listeBat {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec 80% d'opacité */
+    padding: 20px;
+    border-radius: 10px; /* Optionnel: pour des coins arrondis */
+    flex: 0 0 55%; /* Réduit la largeur de la partie gauche à 55% */
+}
+
+/* Partie de droite (sidebar) */
+.sidebar {
+    background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec 80% d'opacité */
+    padding: 20px;
+    border-radius: 10px; /* Optionnel: pour des coins arrondis */
+    flex: 0 0 40%; /* Réduit la largeur de la partie droite à 40% */
+}
+
