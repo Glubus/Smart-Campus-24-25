@@ -339,9 +339,6 @@ class SAController extends AbstractController
                     foreach ($sas->getSALogs() as $log) {
                         $entityManager->remove($log);
                     }
-                    foreach ($sas->getValCapteurs() as $valCapteur) {
-                        $entityManager->remove($valCapteur);
-                    }
                     // Remove the SA entity
                     $entityManager->remove($sas);
                 }

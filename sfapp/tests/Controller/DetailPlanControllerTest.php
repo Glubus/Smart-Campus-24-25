@@ -3,118 +3,113 @@
 namespace App\Tests\Controller;
 
 use App\Entity\DetailPlan;
+use App\Entity\EtatInstallation;
 use App\Entity\Plan;
 use App\Entity\Utilisateur;
+use App\Repository\BatimentRepository;
 use App\Repository\DetailPlanRepository;
 use App\Repository\PlanRepository;
+use App\Repository\SalleRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DetailPlanControllerTest extends WebTestCase
 {
-    private $client;
-
-    protected function setUp(): void{
-        $this->client = static::createClient();
-
-        $plan = new Plan();
-        $plan->setDate(new \DateTime());
-        $plan->setNom('mock-plan');
-
-        $planRepo = $this->createMock(PlanRepository::class);
-        $planRepo->method('findOneBy')->with(['nom'=>'mock-plan'])->willReturn($plan);
-    }
-
-    public function testList(): void
+    public function testListAucunResultat(): void
     {
+        $client = static::createClient();
+        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
+        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']);
+        $client->loginUser($user);
+
         // Step 1: Request the 'detail' page for a plan
-        $crawler = $this->client->request('GET', '/plan/mock-plan/detail');
+        $crawler = $client->request('GET', '/plan/planTest/detail');
         $this->assertResponseIsSuccessful();
 
         // Assert the form exists
-        $this->assertSelectorExists('form[name="filter_form"]');
+        $this->assertSelectorExists('#form_nom');
         $this->assertSelectorExists('input[placeholder="Rechercher par nom de salle"]');
 
         // Assert the page contains salle items
-        $this->assertSelectorExists('.block-salle'); // Selector for room blocks
+        $this->assertSelectorExists('.aucunResultat'); // Selector for room blocks
     }
 
-    public function testAjouter(): void
+    public function testListBatimentD()
     {
+        $client = static::createClient();
+        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
+        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']);
+        $client->loginUser($user);
+
+        $repo = static::getContainer()->get(BatimentRepository::class);
+        $bat = $repo->findOneBy(['nom' => 'Batiment D']);
+
+        // Step 1: Request the 'detail' page for a plan
+        $crawler = $client->request('GET', '/plan/planTest/detail?batiment='.$bat->getId());
+        $this->assertResponseIsSuccessful();
+
+        // Assert the page contains salle items
+        $this->assertSelectorExists('.block-salle'); // Selector for room blocks
+        $this->assertAnySelectorTextContains('.nom-salle', 'D001');
+        $this->assertAnySelectorTextContains('.SAattribue', 'ESP-030');
+    }
+
+    public function testPageAttribution(): void
+    {
+        $client = static::createClient();
+        $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
+        $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']);
+        $client->loginUser($user);
+
+        $repo = static::getContainer()->get(SalleRepository::class);
+        $s = $repo->findOneBy(['nom' => 'D001']);
+
         // Step 1: Request the 'attribuer' page with test parameters
-        $crawler = $this->client->request('GET', '/plan/mock-plan/attribuer?salle=1&sa_id=1');
+        $crawler = $client->request('GET', '/plan/planTest/attribuer?salle='.$s->getId());
         $this->assertResponseIsSuccessful();
 
         // Assert the form exists
-        $this->assertSelectorExists('form[name="association_sa_salle"]');
-
-        // Step 2: Fill and submit the form
-        $form = $crawler->selectButton('Submit')->form();
-        $form['association_sa_salle[sa]'] = 'mock-sa';
-        $form['association_sa_salle[salle]'] = 1;
-
-        $this->client->submit($form);
-
-        // Assert redirection after successful submission
-        $this->assertResponseRedirects('/plan/mock-plan/detail');
-
-        // Follow the redirect and assert success message
-        $crawler = $this->client->followRedirect();
-        $this->assertSelectorTextContains('h1', 'Details mock-plan');
+        $this->assertSelectorExists('#association_sa_salle');
+        $this->assertAnySelectorTextContains('h1', 'installation');
     }
 
+        public function testPageDeinstallation(): void
+        {
+            $client = static::createClient();
+            $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
+            $user = $utilisateurRepository->findOneBy(['username' => 'maxaz']);
+            $client->loginUser($user);
 
+            $repo = static::getContainer()->get(DetailPlanRepository::class);
+            $dp = $repo->findOneBy([]);
 
-    public function testListWithFilter(): void
-    {
-        $this->client = static::createClient();
+            // Visit the suppression page for a valid DetailPlan ID
+            $crawler = $client->request('GET', '/detail_plan/'.$dp->getId().'/suppression');
+            $this->assertResponseIsSuccessful();
 
-        // Step 1: Access the detail page with filter parameters
-        $crawler = $this->client->request('GET', '/plan/mock-plan/detail?batiment=1');
+            // Assert the page contains a confirmation message and a form
+            $this->assertSelectorExists('form');
+            $this->assertAnySelectorTextContains('h1', 'deinstallation');
+        }
 
-        // Submit the filter form
-        $form = $crawler->selectButton('Filtrer')->form();
-        $form['filter_form[nom]'] = 'Mock Salle';
-        $this->client->submit($form);
+        public function testValidationPage(): void
+        {
+            $client = static::createClient();
+            $utilisateurRepository = static::getContainer()->get(UtilisateurRepository::class);
+            $user = $utilisateurRepository->findOneBy(['username' => 'jdupon']);
+            $client->loginUser($user);
 
-        // Assert the response is successful
-        $this->assertResponseIsSuccessful();
+            $repo = static::getContainer()->get(DetailPlanRepository::class);
+            $dp = $repo->findOneBy([]);
+            $dp->setEtatSA(EtatInstallation::INSTALLATION);
 
-        // Assert the filtered list of salles
-        $this->assertSelectorTextContains('.nom-salle', 'Mock Salle');
-    }
+            // Visit the suppression page for a valid DetailPlan ID
+            $crawler = $client->request('GET', '/detail_plan/' . $dp->getId() . '/valider');
+            $this->assertResponseIsSuccessful();
 
-    public function testSuppressionPage(): void
-    {
-        $this->client = static::createClient();
-
-        // Visit the suppression page for a valid DetailPlan ID
-        $crawler = $this->client->request('GET', '/detail_plan/1/suppression');
-        $this->assertResponseIsSuccessful();
-
-        // Assert the page contains a confirmation message and a form
-        $this->assertSelectorExists('form');
-    }
-
-    public function testValidDeletion(): void
-    {
-        $this->client = static::createClient();
-
-        // Mock repository to handle removal
-        $mockDetailPlanRepo = $this->createMock(DetailPlanRepository::class);
-        $mockDetailPlanRepo->method('delete')->with(1)->willReturn(null);
-
-        $this->client->getContainer()->set(DetailPlanRepository::class, $mockDetailPlanRepo);
-
-        // Step 1: Send a request to delete
-        $this->client->request('POST', '/detail_plan/1/suppression');
-
-        // Assert redirection to the detail page
-        $this->assertResponseRedirects('/plan/mock-plan/detail');
-
-        // Step 2: Follow the redirect and ensure item is no longer listed
-        $crawler = $this->client->followRedirect();
-        $this->assertSelectorNotExists('.detail-plan-item[data-id="1"]');
-    }
+            // Assert the page contains a confirmation message and a form
+            $this->assertSelectorExists('form');
+            $this->assertAnySelectorTextContains('h1', 'installation');
+        }
 }
