@@ -427,7 +427,7 @@ class SalleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $salleExistante = $salleRepository->findBy(['batiment' => $salle->getBatiment(),'etage' => $salle->getEtage(), 'nom' => $salle->getNom()]);
+            $salleExistante = $salleRepository->findBy(['nom' => $salle->getNom()]);
             if($salleExistante) {
                 $this->addFlash('error', 'Cette salle existe déjà');
             }
