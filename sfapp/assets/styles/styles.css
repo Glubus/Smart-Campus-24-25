@@ -255,7 +255,7 @@ button:hover {
     font-weight: 400;
     line-height: 1.5;
     appearance: none; // Fix appearance for date inputs in Safari
-    background-clip: padding-box;
+background-clip: padding-box;
 
 }
 
@@ -1666,3 +1666,12 @@ h3{
     flex: 0 0 40%; /* Réduit la largeur de la partie droite à 40% */
 }
 
+.cardTaches {
+    background-color: #dddddd; /* Fond gris clair */
+    border-radius: 20px;
+    padding: 15px;
+    width: 30%; /* Chaque carte occupe environ 30% de la section */
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
