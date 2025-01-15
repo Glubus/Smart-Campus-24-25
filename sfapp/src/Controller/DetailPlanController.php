@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DetailPlanController extends AbstractController
 {
     #[Route('/plan/{nom}/attribuer', name: 'app_lier_ajout')]
-    ##[IsGranted('ROLE_CHARGE_DE_MISSION')]
+    #[IsGranted('ROLE_CHARGE_DE_MISSION')]
     public function ajouter(EntityManagerInterface $em, Request $request, string $nom): Response
     {
         $sa_id = $request->query->get('sa_id');
@@ -71,7 +71,7 @@ class DetailPlanController extends AbstractController
     }
 
     #[Route('/plan/{nom}/detail', name: 'app_lier_liste')]
-    ##[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function list(PlanRepository $planRepo, SalleRepository $salleRepo, Request $request,  string $nom): Response
     {
         $selected_batiment = $request->query->get('batiment');
