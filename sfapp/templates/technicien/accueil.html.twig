@@ -14,7 +14,7 @@
                     <h2>Bâtiment : {{ batiment }}</h2>
                     <div class="sallesrow">
                         {% for salle, issues in salles %}
-                            <div class="card" id="card" >
+                            <div class="cardTaches" id="card">
                                 <div class="cardMainInfos">
                                     <div class="card-top">
                                         <p class="room-name">{{ salle }}</p>
@@ -24,7 +24,7 @@
                                             {% if issues is empty %}
                                                 <span class="text-success">Aucun problème détecté</span>
                                             {% else %}
-                                                <span class="text-warning">Problèmes détectés : {{ issues|join(', ') }}</span>
+                                                <span style="color: #0041b5;">Problèmes détectés : {{ issues|join(', ') }}</span>
                                             {% endif %}
                                         {% endif %}
                                         <div class="etat">
@@ -118,7 +118,7 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token(tache.id) }}">
                                 <button type="submit"
                                         class="btn btn-danger px-4 py-2 text-sm"
-                                        style="width : 100%;">
+                                        style="width : 100%; margin-left: 10px">
                                     Supprimer
                                 </button>
                             </form>
@@ -137,7 +137,7 @@
 {% block javascripts %}
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const cards = document.querySelectorAll(".card");
+                const cards = document.querySelectorAll(".cardTaches");
 
                 cards.forEach((card) => {
                     const cardContent = card.querySelector(".card-content");
@@ -215,7 +215,7 @@
                         <input type="hidden" name="_token" value="${tache.id}">
                         <button type="submit"
                                         class="btn btn-danger px-4 py-2 text-sm"
-                                        style="width : 100%;">
+                                        style="width : 100%;  margin-left: 10px">
                                     Supprimer
                                 </button>                    </form></p>
                     </div>

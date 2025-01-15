@@ -12,7 +12,6 @@ body {
     background-attachment: fixed; /* Fixe le fond pour qu'il ne bouge pas lors du scroll */
     background-size: cover; /* S'assure que le dégradé couvre tout l'écran */
     background-repeat: no-repeat; /* Évite toute répétition */
-    color: #ffffff;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -94,11 +93,7 @@ canvas {
     text-align: center;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 30px;
-}
+
 
 .input-icon {
     position: relative;
@@ -130,7 +125,6 @@ input:focus {
 /* Buttons (priority: styles.css, with hover states preserved) */
 button {
     width: 60%;
-    padding: 12px;
     background: #007bff;
     color: #ffffff;
     border: none;
@@ -138,8 +132,6 @@ button {
     font-size: 22px;
     cursor: pointer;
     transition: background 0.3s;
-    margin-left: 40%;
-    margin-top: -25px;
 }
 
 button:hover {
@@ -263,7 +255,7 @@ button:hover {
     font-weight: 400;
     line-height: 1.5;
     appearance: none; // Fix appearance for date inputs in Safari
-    background-clip: padding-box;
+background-clip: padding-box;
 
 }
 
@@ -423,6 +415,15 @@ h3{
     color: #333; /* Texte sombre pour une bonne lisibilité */
 }
 
+
+.card-ajouts {
+    background-color: rgba(255, 255, 255, 0.8); /* Fond gris clair */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 30px;
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
 .card h3 {
     text-transform: uppercase;
     color: #007bff; /* Accent bleu */
@@ -1258,7 +1259,7 @@ h3{
 }
 
 .sticky-wrapper.is-sticky .navbar {
-    background-color: var(--secondary-color);
+    background-color: white;
 }
 
 .navbar {
@@ -1269,16 +1270,13 @@ h3{
 
 .navbar-brand,
 .navbar-brand:hover {
-    font-weight: var(--font-weight-bold);
     display: block;
 }
 
 .navbar-brand span {
-    font-family: var(--title-font-family);
 }
 
 .navbar-expand-lg .navbar-nav .nav-link {
-    border-radius: var(--border-radius-large);
     margin: 0px 15px 0px 15px;
     padding: 10px;
 }
@@ -1286,9 +1284,7 @@ h3{
 .navbar-nav .nav-link {
     display: inline-block;
     color: black;
-    font-family: var(--title-font-family);
     font-size: 20px;
-    font-weight: var(--font-weight-medium);
     letter-spacing: 0.5px;
     position: relative;
     padding-top: 15px;
@@ -1301,7 +1297,6 @@ h3{
 }
 
 .navbar .dropdown-menu {
-    background: var(--white-color);
     box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
     border: 0;
     display: inherit;
@@ -1319,7 +1314,7 @@ h3{
     height: 0;
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-bottom: 15px solid var(--white-color);
+    border-bottom: 15px solid black;
     position: absolute;
     top: -10px;
     left: 10px;
@@ -1327,10 +1322,6 @@ h3{
 
 .navbar .dropdown-item {
     display: inline-block;
-    color: var(--p-bg-color);
-    font-family: var(--title-font-family);
-    font-size: var(--menu-font-size);
-    font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     position: relative;
@@ -1341,14 +1332,12 @@ h3{
 .navbar .dropdown-item:focus,
 .navbar .dropdown-item:hover {
     background: transparent;
-    color: var(--primary-color);
 }
 
 .navbar .dropdown-toggle::after {
     content: "\f282";
     display: inline-block;
     font-family: bootstrap-icons !important;
-    font-size: var(--copyright-font-size);
     font-style: normal;
     font-weight: normal !important;
     font-variant: normal;
@@ -1372,9 +1361,9 @@ h3{
 
 .navbar-icon {
     background: black;
-    border-radius: var(--border-radius-large);
+    border-radius: 10px;
     display: inline-block;
-    font-size: var(--h5-font-size);
+    font-size: 15px;
     width: 40px;
     height: 40px;
     line-height: 40px;
@@ -1383,8 +1372,8 @@ h3{
 }
 
 .navbar-icon:hover {
-    background: var(--primary-color);
-    color: var(--white-color);
+    background: black;
+    color: black;
 }
 
 .navbar-toggler {
@@ -1423,7 +1412,7 @@ h3{
 }
 
 .navbar-toggler .navbar-toggler-icon {
-    background: var(--white-color);
+    background: white;
     transition: background 10ms 300ms ease;
     display: block;
     width: 30px;
@@ -1439,7 +1428,7 @@ h3{
     position: absolute;
     right: 0;
     left: 0;
-    background: var(--white-color);
+    background: white;
     width: 30px;
     height: 2px;
     content: '';
@@ -1677,3 +1666,12 @@ h3{
     flex: 0 0 40%; /* Réduit la largeur de la partie droite à 40% */
 }
 
+.cardTaches {
+    background-color: #dddddd; /* Fond gris clair */
+    border-radius: 20px;
+    padding: 15px;
+    width: 30%; /* Chaque carte occupe environ 30% de la section */
+    min-width: 250px; /* Minimum de largeur pour s'adapter à des écrans étroits */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Effet flottant */
+    color: #333; /* Texte sombre pour une bonne lisibilité */
+}
